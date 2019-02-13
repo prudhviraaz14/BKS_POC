@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" 
+		xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" 
+		xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001"
+		xmlns:ansprechpartner="http://www.arcor.net/EPSM-CommonTypes-Ansprechpartner-001"
+		targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Ansprechpartner-001" 
+		elementFormDefault="qualified" 
+		attributeFormDefault="unqualified">
+<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+<xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EPSM_Ansprechpartner_Dokument_Information ">
+	<xs:annotation>
+		<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 07.08.2007  09:57</xs:documentation>
+	</xs:annotation>
+</xs:element>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Name">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) ANSPRECHPARTNER.NAME]
+[Befüllung durch BOI ORGANISATION.NAME]
+Name des Ansprechpartners einer Organisation. Bei SoHos ist der Ansprechpartner der Eigentümer. </xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="60"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Anrede">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) ANSPRECHPARTNER.ANREDE]
+[Befüllung durch BOI  (Ver. 29.5.07) ORGANISATION.ANREDE]
+
+Anredeformel für Geschäftskunden z.B.  Firma
+Anredeformel für Ansprechpartner einer Organisation. Bei SoHos ist der Ansprechpartner der Eigentümer. Z.B. Herr, Frau</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="30"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Vorname">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) ANSPRECHPARTNER.VORNAME]
+[Befüllung durch BOI ORGANISATION.NAME]
+Vorname des Ansprechpartners einer Organisation. Bei SoHos ist der Ansprechpartner der Eigentümer. </xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="30"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Geburtsdatum">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) SELBSTSTAENDIGER.GEBURTSDATUM] Geburtsdatum des Ansprechpartners</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:date"/>
+</xs:simpleType>
+<xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Ansprechpartner">
+	<xs:annotation>
+		<xs:documentation>Daten des Ansprechpartners beim Kunden
+
+Bei Selbstständigen ist der Ansprechpartner der Inhaber. Bei Organisationen kann es bis zu 5 Ansprechpartner für unterschiedliche bereiche geben. Der erste Ansprechpartner ist hier der Hauptansprechpartner wie z.B. ein Vorstand.</xs:documentation>
+	</xs:annotation>
+	<xs:complexContent>
+		<xs:extension base="ape:AuftragsPositionsElement">
+			<xs:sequence>
+				<xs:element name="name" type="ansprechpartner:Name" minOccurs="0"/>
+				<xs:element name="anrede" type="ansprechpartner:Anrede" minOccurs="0"/>
+				<xs:element name="vorname" type="ansprechpartner:Vorname" minOccurs="0"/>
+				<xs:element name="geburtsdatum" type="ansprechpartner:Geburtsdatum" minOccurs="0"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+</xs:schema>

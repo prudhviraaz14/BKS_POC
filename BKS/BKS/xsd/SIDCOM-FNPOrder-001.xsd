@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-FNPOrder-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:master="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" xmlns:product="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" targetNamespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-FNPOrder-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation><![CDATA[
+Author: Heiko Barthel
+Change history (version number references to COM SOW version of IT-26334):
+  0.1  2009-10-01 Heiko Barthel: Initial version
+  0.2  2009-10-07 Heiko Barthel: Added several types, made more SID compliant
+  0.3  2009-10-16 Heiko Barthel: New type ProductOfferingOccurence to be able to differentiate between ProductOfferings and ProductSpecifications, new type ProductPrice, new type ProductBundle, incorporation kinds added
+  0.4  2009-10-23 Heiko Barthel: moved ioid to BackendOrder, no use of customerFacingServices, removed promotion
+  0.5  2009-10-30 Heiko Barthel: 'specification' element is now an attribute as it references to a specific entity or productOffering; removed element 'tariffCode', 'productPrice' is used instead
+  0.6  2009-11-04 Heiko Barthel: no changes
+  0.7  2009-11-10 Heiko Barthel: removed 'preferredCommunicationChannel' because it's the same as 'electronicContactIndicator', added 'accessOwner', added 'amount' to 'ProductPrice'
+  0.8  2009-11-13 Heiko Barthel: changed from attribute to element (as requested by EDS): orderID, Entity.specification, CharacteristicValue.name, SalesOrganizationNumber.type
+  0.91 2009-12-01 Reto Renner: changed file name and namespaces, Heiko Barthel: added district to 'Address' according to review by Reto Renner, XSD split by Common, MasterData, ProductData and FNPOrder, orderID gets orderId, entryDateTime gets entryTimestamp (standardized notation)
+  1.01 2010-02-09 Thomas Schneider:
+    typo ProductOfferingOccurence and ProductOfferingOccurance corrected to ProductOfferingOccurrence
+    customerContactPoint limited to 3 characters
+    subOrderId limited to 10 string characters,added a few documentation tags
+    bank account owner length extended from 50 to 60 figures.
+    Restricted MobilePhoneNumber.countryCode to '49' prefix.MobilePhoneNumber. to list of valid prefix numbers
+  1.02 2010-03-02 Heiko Barthel: made "desiredDate" optional according to agreement with Ralf Taubert
+  1.03 2010-03-23 Heiko Barthel: corrected serviceProvider
+  1.04 2010-04-29 Ganesh Sikakolla: Added "ChangeLine" in orderItemType and in customerIntention elements. 
+Since 1.36:
+  1.05 2010-07-06 Joerg Winter: IT-27143 added "aoIndicator" to "backendOrder"
+  1.06 2010-07-19 Joerg Winter: IT-27143 added "Terminate" to list of "orderItemTypes"
+  1.07 2010-07-21 Joerg Winter: IT-27143 made orderItem optional (minOccurs=0)
+       2010-08-03 Hans Becker: IT-27143 new customerIntentions
+       2010-08-06 Hans Becker: IT-28260 introduced element progressNotificationContact in OrderItem
+       2010-08-10 Hans Becker: IT-27143 added clid to BackendOrder
+  1.08 2010-09-10 Hans Becker: Changed multiplicity of salesOrganization for legacy FNP orders and set default value for "waitForWrittenOrder" 
+Since 1.39:
+  1.10 2011-04-19 Hans Becker: IT-29627 Added businessInteractionRole to OrderItem
+       2011-05-30 Hans Becker: IT-29627 Added orderPattern to BackendOrder
+       2011-05-31 Hans Becker: IT-29627 Changed multiplicity of productOfferingOccurrenceToBe
+Since 1.40:
+  1.11 2011-07-26 Joerg Winter: IT-k-30724 added subOrderId to orderItem
+Since 1.41:
+  1.20 2011-09-09 Hans Becker: IT-28900 deleted progressNotificationContact
+  1.21 2012-01-31 Hans Becker: IT-31191 Added businessInteractionRole installationContact
+Since 1.44:
+  1.22 2012-11-13 Hans Becker: IT-76671 Removed choice from type BackendOrder
+Since BSS 13:
+  1.23 2014-01-08 Hans Becker: PPM-108364 Added new customerIntention and orderItemType.
+]]></xs:documentation>
+  </xs:annotation>
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" schemaLocation="SIDCOM-ProductData-001.xsd"/>
+  <!--=== Elements === -->
+  <xs:element name="backendOrder" type="BackendOrder">
+    <xs:annotation>
+      <xs:documentation>main element of a technical order</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <!--=== Technical order SID types === -->
+  <xs:complexType name="BackendOrder">
+    <xs:annotation>
+      <xs:documentation>Represents the SID type BackendOrder.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="orderId" type="common:OrderId">
+        <xs:annotation>
+          <xs:documentation>The enterprise wide unique order id aka barcode. It is expected to follow the following format: 'ARC'+10 digits, e. g. ARC9001818424</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="entryUser">
+        <xs:annotation>
+          <xs:documentation>The id of the user who entered the order. There will be no verification by COM, e.g. if the user is authenticated and authorized.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="16"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="entryRole" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The role of the user who entered the order.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="32"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="entrySystem">
+        <xs:annotation>
+          <xs:documentation>The system the order was entered.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="16"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="entryTimestamp" type="xs:dateTime"/>
+      <xs:element name="customerContactPoint">
+        <xs:annotation>
+          <xs:documentation>When a specific entry system supports more than one input or display channel, the channel the customer entered the order has to be provided here. e.g. KBA as entrySystem provides the customerContactPoints KBA (=Call Center) and KSC. ePOS will use EPS</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="3"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="referencedOrderId" type="common:OrderId" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>May be provided if this order is referencing another BackendOrder, e.g. an amend for an existing order. TODO: currently not known by SOM</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="serviceProvider" type="common:ServiceProviderCode" default="VFAI" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>maps to providerCode at orderPosition in SOM</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="waitForWrittenOrder" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:documentation>Indicates that the signature of the customer is needed.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="externalOrderId" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Optional external (e.g. service provider) order id.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="40"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="commissioning" type="Commissioning"/>
+      <xs:element name="canvassingCustomer" type="CanvassingCustomer" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>German: Kunden werben Kunden</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerInformationData" type="master:CustomerInformationData" minOccurs="0"/>
+      <xs:element name="customerNumber" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When the customerNumber is provided the customer is not new.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="kiasReference" type="master:KiasReference" minOccurs="0"/>
+      <xs:element name="clid" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Customer Link-DB ID
+Since: IT-27143 (1.36)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+              ]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ioid" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Integrated Order ID. This is a temporary order specific number used to set the entry in the link DB. ioid will not be passed on by COM.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="aoIndicator" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Indicates that the according order should be fulfilled with synchronisation with AO
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: COM to indicate whether AO has to be notified or not
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="orderItem" type="OrderItem" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="orderPattern" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: OFC requires a different notification pattern for technical orders.
+    In the so called retroactive case the initial notification to OFC must be omitted.
+    After fulfilment a createFNPOrder with an attribute indicating the retroactive case will be sent.
+Since: IT-29627 (1.39)
+Filled by: Frontend
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="aoRetroactive"></xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrderItem">
+    <xs:annotation>
+      <xs:documentation>Represents the SID type OrderItem.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="orderItemNumber">
+        <xs:annotation>
+          <xs:documentation>Unique Number to reference Order Item within Backend Order</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="orderItemType">
+        <xs:annotation>
+          <xs:documentation>To name the transaction that is triggered.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="CreateNewLine"/>
+            <xs:enumeration value="ChangeLine"/>
+            <xs:enumeration value="Terminate">
+              <xs:annotation>
+                <xs:documentation><![CDATA[
+Purpose: 
+Since: IT-27143 (1.36)
+Filled by:
+Used by:
+]]></xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ChangeCustomer">
+              <xs:annotation>
+                <xs:documentation><![CDATA[
+Since:  PPM-108364 (BSS 13)
+Filled by: Frontend
+Used by: COM
+]]></xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="customerIntention">
+        <xs:annotation>
+          <xs:documentation>The inital customer intention is stored here in case a different orderItemType needs to be triggered to fulfill the order. e.g. bandwidth change that resulted in a product change.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="CreateNewLine"/>
+            <xs:enumeration value="ChangeLine"/>
+            <xs:enumeration value="ChangeBandwidth"/>
+            <xs:enumeration value="ChangeTariff"/>
+            <xs:enumeration value="Terminate">
+              <xs:annotation>
+                <xs:documentation><![CDATA[
+Purpose: 
+Since: IT-27143 (1.36)
+Filled by:
+Used by:
+]]></xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ChangeOwnership"/>
+            <xs:enumeration value="Relocate"/>
+            <xs:enumeration value="ChangeCustomer">
+              <xs:annotation>
+                <xs:documentation><![CDATA[
+Since:  PPM-108364 (BSS 13)
+Filled by: Frontend
+Used by: COM
+]]></xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="desiredDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>German: Wunschtermin. Has to be calculated by the interface client using the business rules. For 'schnellstmöglich' the field has to be left out</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="signDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>German: Kundenunterschriftsdatum. =orderReceivedDate in CCB/SOM</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productRecipient" type="master:ProductRecipient" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>This will be the hardware delivery address. When missing the customer is used.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="subOrderId" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Order ID of frontend for product bundles.
+         This value is *not* handled by COM.
+Since: IT-k-30724 (1.40)
+Filled by: Frontend
+Used by: OMTS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productOfferingOccurrenceAsIs" type="product:ProductOfferingOccurrence" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Within a change or termination order the current products of customer must be listed here.
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productOfferingOccurrenceToBe" type="product:ProductOfferingOccurrence" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: The new products a customer ordered must be listed here. Within a change order all products unchanged need to be listed as "ToBe" and as "AsIs". Products in the "AsIs" list that are not within the "ToBe" List are terminated.
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="businessInteractionRole" type="BusinessInteractionRole" maxOccurs="unbounded" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Contains contact data, used to notify the customer about the progress of an order item
+
+Since: IT-29627 (1.39)
+Filled by: Frontend
+Used by: OutputManagement
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SalesOrganization">
+    <xs:sequence>
+      <xs:element name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="1"/>
+            <xs:enumeration value="A"/>
+            <xs:enumeration value="V"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="number" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Commissioning">
+    <xs:sequence>
+      <xs:element name="salesOrganization" type="SalesOrganization" minOccurs="1" maxOccurs="unbounded"/>
+      <xs:element name="eShopCode" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID of an affiliate eShop</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CanvassingCustomer">
+    <xs:sequence>
+      <xs:element name="canvassingCustomerNumber" type="xs:string" minOccurs="0"/>
+      <xs:element name="individual" type="master:Individual" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Only individuals are allowed here.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="address" type="master:Address" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BusinessInteractionRole">
+    <xs:choice>
+      <xs:element name="confirmationRecipient" type="master:PartyRole"></xs:element>
+      <xs:element name="progressNotificationRecipient" type="master:PartyRole">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Contains contact data, used to notify the customer about the progress of an order item
+
+Since: IT-29627 (1.39)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="installationContact" type="master:ContactPerson">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Contains contact data, used to notify the customer about the progress of an order item
+
+Since: IT-31191 (1.41)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+</xs:schema>

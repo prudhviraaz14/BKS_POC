@@ -1,0 +1,1420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/orderSchema" elementFormDefault="qualified">
+  <annotation>
+    <documentation><![CDATA[
+Part of the XML schema definition for SOM (Simple Order Model)
+WARNING:
+This XSD denotes the structure of the SOM and its elements.
+It does NOT indicate which parts are mandatory or optional in the different use cases.
+
+Change history:
+      0.1 25.11.2009 - Gregor Emmerich initial delivery COM_133.01.00.00
+      0.2 04.12.2009 - Gregor Emmerich - some reformating
+      0.3 04.12.2009 - Gregor Emmerich - oneGroupIndicator removed at serviceDeliveryContract
+      0.4 15.12.2009 - Gregor Emmerich - skeletonContractItem now optional
+        serviceDeliveryContractNodeRefID removed at serviceDeliveryContract and skeletonContract
+        serviceDeliveryContractCcbId removed at skeletonContract
+        ownerCcbId at billingAccount: type changed from nonTypedCcbId to ownerCcbId ( existing/configured)
+        bankName length extended to 60
+      0.5   organization name extended to 60, organizationSuffixName to 30
+      0.51  owner extended to 60
+      0.6 03.02.2010 - Stefan Walter - Changed every sub-element of "methodOfPayment" to optional
+                                       except "paymentMethod".
+Since 1.0:
+      2010-01-22 - Heiko Barthel - added IT-26334 features: new types MobilePhoneNumber and KiasReference;
+        added kiasReference, externalCustomerId, creditCheckPassed to customer type
+      2010-03-16 - Jadranko Mrkonjic - added creditCheckPerformed and creditCheckResult as addition to creditCheckPassed
+      to customer type.
+      2010-04-13 - Heiko Barthel - IT-27626 added 'role' to 'customerData'
+      2010-04-14 - Heiko Barthel - 'role' at 'customerData' is now of enum type 'CustomerDataRole'
+Since 3.0:
+      2010-05-05 - Heiko Barthel - IT-25992 added 'identificationCardNumber'
+                                   IT-27336 added 'championID'
+      2010-05-10 - Jadranko Mrkonjic - IT-26056 added ccbId to individual.
+      2010-05-19 - Heiko Barthel - Moved changeType and ID attribute of individual and organization to base type. Made 'contactName' optional.
+      2010-05-27 - Jadranko Mrkonjic - introduced type 'paymentMethodRD' and use it in billingAccount/methodOfPayment/paymentMethod.
+      2010-05-27 - Heiko Barthel - IT-k-28483 added 'cycleDueDate'
+      2010-05-28 - Jadranko Mrkonjic - added 'CREDIT_CARD' to enumeration paymentMethodRD
+Since 3.1:
+      2010-07-15 - Joerg Winter - made 'paymentMethod' and 'accessInformation' optional
+      2010-08-05 - Hans Becker - IT-28260 added creditCheckOrderId to customer
+      2010-08-17 - Heiko Barthel - more docu and adjusted some types, renamed 'creditCheckOrderId' to 'creditCheckTransactionId' and moved one up in sequence
+Since 3.2:
+      2010-10-06 - Joerg Winter - PN-2441 reduced 'bankName' to 58 characters (had been 60 chars)
+      2010-11-11 - Joerg Winter - IT-28713 added 'creditCheckExtendedCode' to 'customer'
+      2010-11-15 - Joerg Winter - only one customer per customerData
+                                  restricted 'salutation' in individual and organization to 30 characters as in CODB
+                                  limited 'existing' part of 'cdrStorageFormat' and 'cdrStorageFormat' to 20 characters
+                                  IT-27144 added structure 'returnToSender' with elements 'addressId', 'mailingId' and 'mailReturned' to 'individual'
+                                           added element 'updateAccessNumbersIndicator' to 'billingAccount/invoiceDelivery'
+                                           added element 'useBillCycleDateIndicator' to 'billingAccount/methodOfPayment'
+                                           added element 'spokenLanguage' to 'individual'
+                                           added element 'ccbAccessInformationId' to 'accessInformation'
+      2010-11-24 - Joerg Winter - use either 'organization' or 'individual' (enforced by choice)
+      2010-11-29 - Joerg Winter - IT-27144 moved 'useBillCycleDateIndicator' from 'billingAccount/methodOfPayment' to 'billingAccount/invoiceDelivery'
+                                           added elements 'enableStorageIndicator' and 'invoiceTemplateName' to 'billingAccount/invoiceDelivery'
+                                           added elements 'documentTemplateName' and 'additionalDocumentPattern' to 'billingAccount/mailing'
+Since 3.22:
+      2010-12-16 - Joerg Winter - IT-27144 removed element 'returnToSender'
+                                           added element 'mailReturnedIndicator' to 'individual' and 'organization'
+      2010-12-23 - Gesa Prien - IT-27144 removed 'mailReturnedIndicator' again, see new 'invalidAddressIndicator' and 'addressChangeReason' in som-common.xsd
+      2011-01-20 - Joerg Winter - PN-4016 made 'organizationType' and 'mailing/mailingName' optional; made 'mailing/additionalDocumentPattern' a list
+Since 3.3:
+      2011-02-01 - Joerg Winter - restricted all unlimited strings to 100 characters maximum
+      2011-02-11 - Hans Becker - IT-29578 added 'ccbId' to entity and 'associatedObjectReference' to 'contactRole'
+      2011-02-16 - Joerg Winter - IT-29578 added 'identificationCardType', 'identificationCardCountry'
+                                      and 'identificationCardExpirationDate' to 'individual'
+      2011-02-16 - Joerg Winter - made 'associatedObjectReference' optional
+      2011-03-01 - Joerg Winter - PN-4569 made 'associatedObjectReference' unbounded
+      2011-03-03 - Joerg Winter - IT-k-30164 added 'contactRoleRefIdList' to 'customer',
+                                      'billingAccount', 'serviceDeliveryContract' and 'skeletonContract'
+      2011-04-11 - Joerg Winter - PN-5231 added 'TECHNICIAN' to pattern list 'accessInformationType'
+Since 3.4:
+      2011-02-22 - Joerg Winter - made 'salutation' and 'name' in 'organisation' optional
+                                  made 'emailAddress' in 'accessInformation' optional
+      2011-02-24 - Joerg Winter - PN-4317 made ID attribute mandatory for 'customer'
+      2011-03-23 - Joerg Winter - IT-28575 added 'accessCcbId' and attribute 'accessNodeRefID' to 'contactRole'
+                                           added 'oneGroupId' to 'customerData'
+      2011-04-05 - Joerg Winter - IT-28575 renamed 'oneGroupId' to 'oneGroup'
+Since 3.5:
+      2011-06-16 - Joerg Winter - IT-28575 changed structure 'OneGroup'
+      2011-06-21 - Joerg Winter - IT-28575 added ID attribute to 'OneGroup'
+Since 3.6:
+      2011-10-07 - Joerg Winter - IT-28900 added 'cycleName' to 'invoiceDelivery'
+      2011-10-13 - Joerg Winter - IT-28900 restricted 'cycleName' to 30 characters
+      2011-11-08 - Joerg Winter - PN-5255 restricted element 'additionalDocumentPattern' from 100 to 30 characters
+      2011-11-15 - Joerg Winter - restricted entries in 'affinityGroup' to 30, element 'allocatedCustomerNumber' to 12,
+                                      'enableItemizedBill' to 16, and 'tariffCode' in 'tariffCodeList' to 5 characters
+Since 3.7:
+      2012-01-03 - Joerg Winter - IT-29977 added 'changeStatus' to 'entity' (base of organization and individual),
+                                               'customer', 'billingAccount', 'contactRole', 'serviceDeliveryContract',
+                                               'skeletonContract', 'skeletonContractItem' and 'OneGroup'
+      2012-04-02 - Joerg Winter - IT-31847 added to 'OneGroup': elements 'ownerCcbId' and 'skeletonContractCcbId',
+                                               and attributes 'ownerNodeRefID' and 'skeletonContractNodeRefID'
+      2012-04-26 - Joerg Winter - IT-k-31803 changed cardinality of element 'oneGroup' to unbounded
+      
+Since 4.2:
+      2013-08-02 - Prabhat Singh - IT-32632 added 'sepaBankAccountData' and 'mandate' to methodOfPayment
+Since 4.3:
+      2013-12-27 - Prabhat Singh - PPM-108364 added 'emailValidationResult' to accessInformation
+Since 4.4:
+      2014-08-01 - Prabhat Singh - PPM-108364-149382 added new enumeration value='FORCE' to element validationResult.
+Since 19.0:
+      2016-01-21 - Prabhat Singh - PPM-159238 updated documentation of contactRoleTypeRd with value 'NOTIFICATION_OM'
+Since 20.0:
+      2016-05-17 - Prabhat Singh - PPM-189902 updated documentation of contactRoleTypeRd with value 'SHIPPING_CONTACT' 
+Since 22.0:
+      2017-01-30 - Neha Khombare - PPM-196228 - Moved Type KiasReference to som-common.xsd   
+      2017-03-02 - Neha Khombare - PPM-136684_253621 - Added dunningStatus and balance to billingAccount 
+Since 23.0:        
+      2017-06-16 - Apoorva Saini - PPM-207533-250699 - added pricingInfo to type methodOfPayment
+]]></documentation>
+  </annotation>
+  <include schemaLocation="som-functions.xsd"/>
+  <complexType name="entity" abstract="true">
+    <annotation>
+      <documentation>Super type for organization and individual</documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_E" minOccurs="0"/>
+    </sequence>
+    <attribute name="ID" type="tns:ID" use="required"/>
+  </complexType>
+  <complexType name="organization">
+    <complexContent>
+      <extension base="tns:entity">
+        <sequence>
+          <element name="salutation" type="tns:ExistConfString30" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: 
+Values: 
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="name" type="tns:ExistConfString60" minOccurs="0"/>
+          <element name="organizationSuffixName" type="tns:ExistConfString30" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: 
+Values: 
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="organizationType" type="tns:ExistConfString16" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Values: one entry of "select * from general_code_item where group_code like 'ORG_TYPE%' and effective_status='ACTIVE'", default is BLANK.
+  & CO., & CO. KG, AG, AG & Co., AG & Co. KG, BLANK, E.G., E.V., GBR., GDBR, GMBH, GMBH & CO. KG, GmbH & Co, KG, KGAA, MBH, OHG, & CO. GMBH, OHG, MBH, PART
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="sector" type="tns:ExistConfString99" minOccurs="0"/>
+          <element name="incorporationNumber" type="tns:ExistConfString20" minOccurs="0"/>
+          <element name="incorporationType" type="tns:ExistConfString16" minOccurs="0"/>
+          <element name="incorporationCityName" type="tns:ExistConfString30" minOccurs="0"/>
+          <element name="address" type="tns:ExistConfAddress" minOccurs="0"/>
+          <element name="accessInformation" type="tns:ExistConfAccessInformation" minOccurs="0">
+          <annotation>
+              <documentation><![CDATA[
+Purpose: accessInformation contains data for a contact. For historical reasons subelements like contactName are often redundant to the structure it is contained in.
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfAccessInformation">
+    <sequence>
+      <element name="existing" type="tns:accessInformation" minOccurs="0"/>
+      <element name="configured" type="tns:accessInformation" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="individual">
+    <complexContent>
+      <extension base="tns:entity">
+        <sequence>
+          <element name="salutation" type="tns:ExistConfString30" minOccurs="0"/>
+          <element name="titleDescription" type="tns:ExistConfString30" minOccurs="0"/>
+          <element name="nobilityPrefixDescription" type="tns:ExistConfString30" minOccurs="0"/>
+          <element name="forename" type="tns:ExistConfString30" minOccurs="0"/>
+          <element name="surnamePrefix" type="tns:ExistConfString50" minOccurs="0"/>
+          <element name="name" type="tns:ExistConfString60" minOccurs="0"/>
+          <element name="birthDate" type="tns:ExistConfDate" minOccurs="0"/>
+          <element name="identificationCardNumber" type="tns:ExistConfString16" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: number of the id card (German: Personalausweis)
+Since: IT-25992 (since 1.35 due to agreement to use new SOM only)
+Filled by: KBA
+Used by: CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="address" type="tns:ExistConfAddress" minOccurs="0"/>
+          <element name="accessInformation" type="tns:ExistConfAccessInformation" minOccurs="0">
+          <annotation>
+              <documentation><![CDATA[
+Purpose: accessInformation contains data for a contact. For historical reasons subelements like contactName are often redundant to the structure it is contained in.
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="spokenLanguage" type="tns:ExistConfString3" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Displayed on CCM-GUI as 'Dokumentensprache', used in case of contacting the customer.
+Since: IT-27144 (1.37)
+Values:
+    GER
+    ENG (not used as of now in KBA)
+Filled by: Frontend
+Used by: CCM
+Open issue: defined as CHAR(16) in CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="identificationCardType" type="tns:ExistConfString30" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Kind of identification, mandatory if ID card number is filled;
+    required for legal purposes
+Since: IT-29578 (1.38)
+Values:
+  Personalausweis (= ID card)
+  Reisepass (= passport)
+  Führerschein (= driving licence)
+Filled by: KBA
+Used by: CCM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="identificationCardCountry" type="tns:ExistConfString2" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Mandatory if ID card number is filled, two-letter-code;
+    required for legal purposes
+Since: IT-29578 (1.38)
+Values:
+  DE
+Filled by: KBA
+Used by: CCM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="identificationCardExpirationDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Mandatory if ID card number is filled;
+    required for legal purposes
+Since: IT-29578 (1.38)
+Filled by: KBA
+Used by: CCM
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="accessInformation">
+    <sequence>
+      <element name="accessInformationType" type="tns:accessInformationType">
+        <annotation>
+          <documentation><![CDATA[
+Values:
+  STD: Standard
+  GESC: business
+  KSC: KSC
+  MOBI: mobile
+  MSISDN: VF mobile number
+  PRIV: private
+  TECHNICIAN: Technician
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="contactName" type="tns:string60" minOccurs="0"/>
+      <element name="phoneNumber" type="tns:string32" minOccurs="0"/>
+      <element name="faxNumber" type="tns:string32" minOccurs="0"/>
+      <element name="mobileNumber" type="tns:string32" minOccurs="0"/>
+      <element name="vodafoneMobileNumber" type="tns:string32" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Filled by: Frontend, BKS
+Used by: unknown: not COM, OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="emailAddress" type="tns:string64" minOccurs="0"/>
+      <element name="emailValidationResult" type="tns:EmailValidationResult" minOccurs="0"/>
+      <element name="electronicContactIndicator" type="boolean" minOccurs="0"/>
+      <element name="ccbAccessInformationId" type="tns:string20" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-27144 (1.37)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="EmailValidationResult">
+    <sequence>
+      <element name="validationResult" type="tns:ValidationResult" minOccurs="1"/>
+      <element name="validationDate" type="dateTime"/>
+      <element name="bounceReasonCode" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <simpleType name="ValidationResult">
+    <restriction base="string">
+     <enumeration value="IN_VALIDATION">
+        <annotation>
+          <documentation>Validation of the email address has been initiated. But no result is yet available.</documentation>
+        </annotation>
+      </enumeration>
+     <enumeration value="VALIDATED">
+        <annotation>
+          <documentation>The email has been validated and is valid.</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="BOUNCED">
+        <annotation>
+          <documentation>The email has been checked but the the checking email has been bounced (bounceReasonCode should be filled).</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="FORCE">
+        <annotation>
+          <documentation>The validation of the existing email address shall be forced.</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <complexType name="ExistConfAffinityGroup">
+    <sequence>
+      <element name="existing" type="tns:affinityGroup" minOccurs="0"/>
+      <element name="configured" type="tns:affinityGroup" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="customer">
+    <annotation>
+      <documentation><![CDATA[
+Provide either an existing ccbId or enough data to create a new customer in CCM.
+If customer exists already, place ccbId here: BKS will add customer details, COM will include them on OPM order for each orderPosition.
+For a new customer FIF will place the new ccbId here automatically after it has been created.
+Party details: Either "individual" or "organization", but one of the two is required!
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_C" minOccurs="0"/>
+      <element name="allocatedCustomerNumber" type="tns:ExistConfString12" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: prospective ccbId for a new customer, reserved by FIF for usage in POS-FE after customer clearing
+Since: IT 26334 - CPCOM 1a
+Filled by: FIF
+Used by: POS-FE (, OMTS, DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ownerCcbId" type="tns:ownerCcbId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+References the owning customer in a customer hierarchy, supply an existing parent customer ccbId.
+]]></documentation>
+        </annotation>
+      </element>
+      <choice minOccurs="0">
+        <element name="organization" type="tns:organization"/>
+        <element name="individual" type="tns:individual"/>
+      </choice>
+      <element name="classification" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This is a refinement of the element customerCategory. See there for details.
+    Used mainly for reporting.
+Values: VE, VC ...
+Filled by: 
+Used by: VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerCode" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: To distinguish e.g. "blue" (Arcor) and "red" (Vodafone) customers.
+Since: ?
+Values: ARCO, VFAI, ...
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="userPassword" type="tns:ExistConfString120" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The call center agent asks the customer for the userPassword, for more reliable customer identification. 
+  That implies, the password is known in the call center. It is sent to OPM but probably not used there.
+Filled by: Frontend
+Used by: CCB, KBA,
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="matchCodeId" type="tns:ExistConfString20" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Search key used by SAP during billing.
+Filled by: 
+Used by: SAP
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerGroup" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: German: SAP Kontierungsgruppe
+ POS-FE defaults:
+  Arcor PK: 03
+  Vodafone PK: 81
+  Arcor GK: 03
+  Vodafone GK: 84
+Values: "01", "02", "03", "04", "10", "12", "14", "16", "17", "18", "19", "20", "21", "34", "36", "38", "45", "47", "48", "51", "52", "53", "54", "55", "56", "58", "73", "74", "75", "76", "80", "81", "82", "83", "84", "85"
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerInternalRefNumber" type="tns:ExistConfString35" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: An additional external customer number provided and used by the customer for identification within the customer's organization. 
+  Stored in CCB. May contain the "BAN" for "red" customers or the 1&1 customer number for 1&1 customers.
+Filled by: Frontend 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCategory" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This is the main SOM element to distinguish private and corporate customers.
+    Customer category RESIDENTIAL denotes a private customer, the other categories are related to corporate
+    customers. It is NOT sufficient to check for the existence of individual or organization in the customer
+    to distinguish private and corporate customers. For example, a small corporate customer that runs a kiosk
+    may be stored in CCB as an individual.
+    The SOM element classification is a refinement of customerCategory. 
+    The SOM element salesSegment in the access configurations conforms to the customerCategory
+    (PK = Privatkunde for private customers, GK = Geschäftskunde for corporate customers).
+Values:
+    RESIDENTIAL      => Privatkunde
+    BUSINESS         => Geschäftskunde
+    SERVICE_PROVIDER => Geschäftskunde
+Filled by: Frontend, BKS
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="region" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: ?
+Values: MW, ...
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="affinityGroupList" type="tns:ExistConfAffinityGroup" minOccurs="0"/>
+      <element name="riskCategory" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Address non-payment risk.
+Values:
+    hohes Risiko (high risk)
+    mittleres Risiko (medium risk)
+    PK abgelehnt (private customer, declined)
+    (and many more...)
+Filled by: BKS
+Used by: CCM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="personalDataIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation><documentation></documentation></annotation>
+      </element>
+      <element name="marketingPhoneIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates the customer's agreement to be contacted via phone for marketing purposes.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="marketingMailIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates the customer's agreement to be contacted via mail for marketing purposes.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="marketingFaxIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates the customer's agreement to be contacted via FAX for marketing purposes.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="marketingUseDataIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates the customer's agreement to let Vodafone make use of master data / usage data.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="marketingAuthorizationDate" type="tns:ExistConfDate" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Date of the last authorization of marketing indicators granted by the customer.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cdrEgnFormat" type="tns:ExistConfString20" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Format of the bill concerning  the display of the call records. CDR stands fore call data record, EGN for Einzelgebührennachweis.
+Since: 
+Values: NO_EGN (and probably more)
+Filled by: POS
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cdrStorageFormat" type="tns:ExistConfString20" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Format of the CDRs (call data records) on the bill.
+Since: 
+Values: FULL_STORAGE (and probably more)
+Filled by: POS
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="postIdentIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Age verification flag. In TV Center context it is set to "true" if the customer meets all conditions for an 
+  adult PIN (e.g. Shop-Ident was successful, age is ok, all needed signatures done, ...). 
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0"/>
+      <element name="externalCustomerId" type="tns:string16" minOccurs="0">
+        <annotation>
+          <documentation>Optional customer id in external (e.g. service provider) system.</documentation>
+        </annotation>
+      </element>
+      <element name="creditCheckPassed" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates whether the credit check was done and the result interpreted as positive.
+  This usually means the backend does not have to perform a separate credit check.
+Since: 1.34
+Filled by: Frontend
+Used by: POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="creditCheckPerformed" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates that the credit check was already performed.
+  This should be used by other system which create a SOM and send it to COM.
+  Setting this element to true indicates that the sending system already has performed a creditCheck.
+  If this element is set to "true" the next element 'creditCheckResult' must be set too.
+Since: 1.34
+Filled by: Frontend
+Used by:
+  COM to trigger automatic credit check in WF 1 and WF 5 (contract partner change)
+  POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="creditCheckResult" type="tns:string4" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Contains the result of creditCheck.
+Values:
+    OK: Credit check positive
+    NO: Credit check negative
+    KI: no information available
+    GA: Credit check positive
+    GN: Credit check negative
+    GI: no information available
+Since: 1.34
+Filled by: Frontend
+Used by: COM for further processing of a contract partner change order in WF 1 and WF 5.
+         POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="creditCheckTransactionId" type="tns:string16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Id of the order, the credit check was performed for.
+Since: IT-28260 (1.36)
+Filled by: ePOS+
+Used by: POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="championID" type="tns:ExistConfString2" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A theme champion is the person in charge assigned to an VF OfficeNet (aka IP-Centrex) customer.
+Since: IT-27336 (1.35)
+Values: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="creditCheckExtendedCode" type="tns:string1" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This parameter is set by ePOS.
+    The information is used by POS-FE for an extended credit check, i.e. the customer already
+    has a fixed line product and must be cleared in POS-FE.
+Since: IT-28713 (1.37)
+Values:
+    0: if the customer is assumed to be a new customer
+    1: if the customer is assumed to be an existing customer (accessTechnology = LTE OR dunning = true)
+    2: if the customer is assumed to be an existing customer (accessTechnology <> LTE AND dunning = false)
+    3: if the customer is assumed to be an existing customer and could not be identified uniquely (BKS00015)
+Filled by: ePOS
+Used by: POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+    </sequence>
+    <attribute name="ID" type="tns:ID" use="required"/>
+    <attribute name="ownerNodeRefID" type="tns:stringId">
+      <annotation>
+        <documentation><![CDATA[
+Purpose: Refer billingAccount/ownerCcbId
+]]></documentation></annotation>
+    </attribute>
+  </complexType>
+  <complexType name="billingAccount">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Provide either existing ccbIds ('ccbId', 'ownerCcbId') or enough data to create new account(s) in CCM.
+   Party details: Either individual OR organization OR neither: Then the customer serves as document recipient too.
+Since: 1.32 or 1.33
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_A" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: If the billingAccount exists already, place the ccbId here: BKS will add billingAccount details, 
+   COM will include them on the OPM order for each orderPosition.
+   If the billingAccount doesn't exist already, FIF will place the new ccbId here.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ownerCcbId" type="tns:ownerCcbId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: BillingAccounts do not exist stand-alone, but only with an owning customer.
+   A Customer inside a hierarchy does not need its own BillingAccount, if it acts only as Beneficiary but not as Payer. 
+   In POS order documents: New BillingAccount linked to newly-created Customer via attribute 'ownerNodeRefID', or
+   existing Customer via element 'ownerCcbID' (value = CCB customer number)
+Values: CCB customer number
+Filled by: Frontend
+Used by: COM??, FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="organization" type="tns:organization" minOccurs="0"/>
+      <element name="individual" type="tns:individual" minOccurs="0"/>
+      <element name="mailing" type="tns:mailing" minOccurs="0"/>
+      <element name="invoiceDelivery" type="tns:invoiceDelivery" minOccurs="0"/>
+      <element name="methodOfPayment" type="tns:methodOfPayment" minOccurs="0"/>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+      <element name="dunningStatus" type="tns:ExistConfString1" minOccurs="0" >
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Dunning is the process of methodically communicating with customers to ensure the collection of accounts receivable. 
+This element will provide the dunning status for account 
+Values : possible value 0,...,5
+Since: PPM-136684_253621 (BSS-22)
+Filled by: FrontEnd / BKS
+Used by: BKS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="balance" type="float" minOccurs="0" >
+      <annotation>
+          <documentation><![CDATA[
+Purpose: This element will provide an information about the balance ammount to be receivable from customer 
+Since: PPM-136684_253621 (BSS-22)
+Filled by: FrontEnd / BKS
+Used by: BKS
+]]></documentation>
+        </annotation>
+      </element>      
+    </sequence>
+    <attribute name="ID" type="tns:ID"/>
+    <attribute name="ownerNodeRefID" type="tns:stringId">
+      <annotation>
+        <documentation><![CDATA[
+Purpose: BillingAccounts do not exist stand-alone, but only with an owning customer.
+   A Customer inside a hierarchy does not need its own BillingAccount, if it acts only as Beneficiary but not as Payer. 
+   In POS order documents: New BillingAccount linked to newly-created Customer via attribute 'ownerNodeRefID', or
+   existing Customer via element 'ownerCcbID' (value = CCB customer number)
+Since: ?
+Values: node ID in same SOM XML
+Filled by: ?
+Used by: ?
+]]></documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <complexType name="mailing">
+    <sequence>
+      <element name="mailingName" type="tns:ExistConfString60" minOccurs="0"/>
+      <element name="documentTemplateName" type="tns:ExistConfString60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: KBA's primary document pattern for this order
+Since: IT-27144
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="additionalDocumentPatternList" type="tns:ExistConfAdditionalDocumentPatternList" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: KBA allows the entry of multiple document templates, depending on the use case
+Since: IT-27144
+Filled by: KBA
+Used by: FIF, Outputmanagement?
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfAdditionalDocumentPatternList">
+    <sequence>
+      <element name="existing" type="tns:additionalDocumentPatternEntry" minOccurs="0"/>
+      <element name="configured" type="tns:additionalDocumentPatternEntry" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="additionalDocumentPatternEntry">
+    <sequence>
+      <element name="additionalDocumentPattern" type="tns:string30" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="invoiceDelivery">
+    <sequence>
+      <element name="invoiceDeliveryType" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Values:
+    WEBBILL
+    LETTER
+    EMAIL
+Filled by: ePOS, POS-FE, KBA?
+Used by: Outputmanagement
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="enableItemizedBill" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Values: "paper", "electronic", "none" ("Y", "N" are still allowed due to compatibility issues in CCB)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="maskingDigits" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+        <documentation>        040-1234***
+        Anzahl 1..20, andere...
+        </documentation>
+        </annotation>
+      </element>
+      <element name="cycleDueDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: contains the date of the next bill in the existing node, the configured node is not to be used
+Since: IT-k-28482
+Filled by: BKS
+Used by: frontend to enable it to set the desired date for an order to the next billing date
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cycleName" type="tns:ExistConfString30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Just pass it from POS-FE to FIF
+    Namen der Rechnungsläufe
+Since: IT-28900 (1.41)
+Filled by: POS-FE
+Used by: FIF, Frontend?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="updateAccessNumbersIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-27144
+Filled by: BKS
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="useBillCycleDateIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-27144
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="enableStorageIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-27144
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="invoiceTemplateName" type="tns:ExistConfString60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-27144
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfPaymentMethod">
+    <sequence>
+      <element name="existing" type="tns:paymentMethodRD" minOccurs="0"/>
+      <element name="configured" type="tns:paymentMethodRD" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <simpleType name="IBAN">
+        <restriction base="string">
+          <pattern value="[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{0,30}"/>
+        </restriction>
+  </simpleType>
+  <simpleType name="BIC">
+        <restriction base="string">
+          <pattern value="([a-zA-Z]{4}[a-zA-Z]{2}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?)"/>
+        </restriction>
+  </simpleType>
+  <complexType name="ExistConfIBAN">
+    <sequence>
+      <element name="existing" type="tns:IBAN" minOccurs="0"/>
+      <element name="configured" type="tns:IBAN" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfBIC">
+    <sequence>
+      <element name="existing" type="tns:BIC" minOccurs="0"/>
+      <element name="configured" type="tns:BIC" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="SepaAccountData">
+    <sequence>
+      <element name="iban" type="tns:ExistConfIBAN" minOccurs="1" maxOccurs="1">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: international bank account number
+Since : IT-32362 (1.47, BSS 12)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="bic" type="tns:ExistConfBIC" minOccurs="1" maxOccurs="1">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Bank Identifier Code
+Since : IT-32362 (1.47, BSS 12)
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <simpleType name="UMR">
+        <restriction base="string">
+          <maxLength value="35"/>
+        </restriction>
+  </simpleType>
+  <simpleType name="Status">
+          <restriction base="string">
+            <enumeration value="CREATED"/>
+            <enumeration value="ACTIVE"/>
+            <enumeration value="FINISHED"/>
+        </restriction>
+  </simpleType>
+  <complexType name="ExistConfMandate">
+    <sequence>
+      <element name="existing" type="tns:MandateType" minOccurs="0"/>
+      <element name="configured" type="tns:MandateType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="MandateType">
+    <sequence>
+      <element name="umr" type="tns:UMR" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Unique Mandate ReferenceNumber
+Since : IT-32362 (1.47, BSS 12)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="signatureDate" type="date" minOccurs="1" maxOccurs="1"/>
+      <element name="recurringIndicator" type="boolean" minOccurs="1" maxOccurs="1">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if a mandate is a one time authorisation (false) or a recurring authorisation for direct debit (true).
+Since : IT-32362 (1.47, BSS 12)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="status" type="tns:Status" minOccurs="0"/>
+     </sequence>
+  </complexType>
+  <complexType name="methodOfPayment">
+    <sequence>
+      <element name="paymentMethod" type="tns:ExistConfPaymentMethod" minOccurs="0"/>
+      <element name="bankCode" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: BLZ, e.g. 20070000
+Filled by: Frontend, BKS
+Used by: Frontend, CCB, ???
+]]></documentation>
+        </annotation>
+      </element>
+       <element name="bankName" type="tns:ExistConfString58" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Full name of bank (up to 58 characters allowed by German Federal Bank)
+Filled by: Frontend, BKS
+Used by: Frontend, CCB, ???
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="bankAccountNumber" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Number of bank account
+Filled by: Frontend, BKS
+Used by: Frontend, CCB, ???
+]]></documentation>
+        </annotation>
+      </element>
+       <element name="sepaBankAccountData" type="tns:SepaAccountData" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Due to legal regulation, it is necessary to implement a new way to address bank accounts
+and to allow a debit for those bank accounts. the existing bank description will be replaced by the
+SEPA description.
+Filled by: Frontend
+Since : IT-32362 (1.47, BSS 12)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="mandate" type="tns:ExistConfMandate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A mandate is the approval of a bank account owner( Authorisation for direct debit ). since the mandates are coupled to accounts,
+they are read together with the accounts. Account and mandate
+will have 1:1 relationship
+Filled by: Frontend
+Since : IT-32362 (1.47, BSS 12)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="owner" type="tns:ExistConfString60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Owner of that bank account (German: Kontoinhaber)
+Filled by: Frontend, BKS
+Used by: Frontend, CCB, ???
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="directDebitAuthorizationDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: (German: Einzugsermächtigungsdatum)
+Filled by: Frontend, BKS
+Used by: Frontend, CCB, ???
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="paymentTerm" type="tns:ExistConfInteger" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: number of days, the customer has to pay his/her invoice (German: Zahlungsziel)
+Filled by: 
+Used by: ???
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="pricingInfo" type="tns:ExistConfPricingInfo" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="contactRole">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: ContactRoles do not exist stand-alone, but only with an owning customer. A Customer does not need ContactRoles: 
+   For communication for which no ContactRole exists, Vodafone uses the regular address / access-information from the Party.
+   ContactRoles are all owned by the Customer object, but they can describe either the Customer itself or another object, 
+   e.g. the Skeleton Contract or a Service Delivery Contract. 
+   If no specific target is specified in the newly-created ContactRole, it will by default describe the owning Customer.
+   ONE SkeletonContract (SKC) exists for the entire IP-Centrex Group, so an SKC ContactRole allows specifying certain 
+   group-specific contact-data (whom to send the access-data).
+   ONE ServiceDeliveryContract (SDC) exists for each IP-Centrex Site, so an SDC-ContactRole allows specifying certain 
+   site-specific contact-data (e.g. whom to contact for changes on that site)
+Since: 
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_R" minOccurs="0"/>
+      <element name="ownerCcbId" type="tns:nonTypedCcbId" minOccurs="0">
+        <annotation><documentation>Refer billingAccount/ownerCcbId</documentation></annotation>
+      </element>
+      <element name="serviceDeliveryContractCcbId" type="tns:nonTypedCcbId" minOccurs="0"/>
+      <element name="skeletonContractCcbId" type="tns:nonTypedCcbId" minOccurs="0"/>
+      <element name="organization" type="tns:organization" minOccurs="0"/>
+      <element name="individual" type="tns:individual" minOccurs="0"/>
+      <element name="contactRoleTypeRd" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Values:
+  INSTALLATION, PREV_TENANT (WITA-TAL/IT-28900)
+  ACCESS_OWNER, ACCESS_USER, ADMIN_TECH, ARCOR, CC, CONT, EDV, EINK, FIBU, GF, 
+  INHABER, IPCTX_AIM, IPCTX_SITE, ISIS-KAM, ISIS-KPM, ISIS-MASTER, KUND, LOGISTIC,
+  MARK, NN, RECH, TECH, TECHNICIAN, VERT, NOTIFICATION_OM, SHIPPING_CONTACT
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="contactRolePositionName" type="tns:ExistConfString60" minOccurs="0"/>
+      <element name="associatedObjectReference" type="tns:associatedObjectReference" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-29578 (1.38)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="accessCcbId" type="tns:nonTypedCcbId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+SIP
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute name="ID" type="tns:ID"/>
+    <attribute name="ownerNodeRefID" type="tns:stringId">
+      <annotation><documentation>Refer billingAccount/ownerNoderefID</documentation></annotation>
+    </attribute>
+    <attribute name="serviceDeliveryContractNodeRefID" type="tns:stringId"/>
+    <attribute name="skeletonContractNodeRefID" type="tns:stringId"/>
+    <attribute name="accessNodeRefID" type="tns:stringId">
+      <annotation>
+        <documentation><![CDATA[
+SIP
+]]></documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <complexType name="associatedObjectReference">
+    <sequence>
+      <element name="ccbId" type="tns:ccbId_any"/>
+      <element name="nodeRefId" type="tns:stringId"/>
+    </sequence>
+  </complexType>
+  <complexType name="serviceDeliveryContract">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: A ServiceDeliveryContract (SDC, like a Service Provider Contract, German: Dienstleistervertrag) does not exist stand-alone,
+   but only with an owning customer. 
+   Not all Customers have SDCs.
+   A new SDC is linked to a newly created Customer via attribute 'ownerNodeRefID', or to an existing Customer via element 'ownerCcbID' 
+   (value = CCB customer number).
+   Each ONE IP-Centrex site has a Service Delivery Contract (1 per SOM orderPosition), which is governed by the Skeleton Contract (SkC).
+   Each xDSL, OfficeNet Site, or OfficeNet Seat product subscription is (SOM Contract-Function) governed by the site's SDC.
+   An SDC could also exist without a governing SkC.
+   A SkC could also govern the individual function 'contracts' (in OrderPosition) directly, with no SDC in between. 
+   A new SDC is linked to a newly-created SkC via attribute 'skeletonContractNodeRefID', 
+   or to an existing SkC via element 'skeletonContractCcbID' (value = CCB contract number).
+Since: 1.33
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_D" minOccurs="0"/>
+      <element name="ownerCcbId" type="tns:ownerCcbId" minOccurs="0">
+        <annotation><documentation>Refer billingAccount/ownerCcbId</documentation></annotation>
+      </element>
+      <element name="skeletonContractCcbId" type="tns:nonTypedCcbId" minOccurs="0"/>
+      <element name="contractName" type="tns:ExistConfString30" minOccurs="0"/>
+      <element name="language" type="tns:ExistConfString3" minOccurs="0"/>
+      <element name="letterOfIntentIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+      <element name="boardSignName" type="tns:ExistConfString50" minOccurs="0"/>
+      <element name="boardSignDate" type="tns:ExistConfDate" minOccurs="0"/>
+      <element name="primaryCustSignName" type="tns:ExistConfString50" minOccurs="0"/>
+      <element name="primaryCustSignDate" type="tns:ExistConfDate" minOccurs="0"/>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+    </sequence>
+    <attribute name="ID" type="tns:ID"/>
+    <attribute name="ownerNodeRefID" type="tns:stringId">
+      <annotation><documentation>Refer billingAccount/ownerNoderefID</documentation></annotation>
+    </attribute>
+    <attribute name="skeletonContractNodeRefID" type="tns:stringId"/>
+  </complexType>
+  <complexType name="skeletonContract">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: A SkeletonContract (SKC) does not exist stand-alone, but only with an owning customer. Not all Customers have SKCs. 
+   An SKC is linked to a newly-created Customer via attribute 'ownerNodeRefID', or to an existing Customer via element “ownerCcbID” 
+   (value = CCB customer number).
+   Each IP-Centrex group has a Skeleton Contract (1 per SOM order).
+   German: Rahmenvertrag
+Since: ?
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_K" minOccurs="0"/>
+      <element name="ownerCcbId" type="tns:ownerCcbId" minOccurs="0">
+        <annotation><documentation>Refer billingAccount/ownerCcbId</documentation></annotation>
+      </element>
+      <element name="contractName" type="tns:ExistConfString30" minOccurs="0"/>
+      <element name="oneGroupIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+      <element name="skeletonContractItem" type="tns:skeletonContractItem" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+    </sequence>
+    <attribute name="ID" type="tns:ID"/>
+    <attribute name="ownerNodeRefID" type="tns:stringId">
+      <annotation><documentation>Refer billingAccount/ownerNoderefID</documentation></annotation>
+    </attribute>
+    <attribute name="skeletonContractNodeRefID" type="tns:stringId"/>
+  </complexType>
+  <complexType name="ExistConfTariffCodeList">
+    <sequence>
+      <element name="existing" type="tns:tariffCodeList" minOccurs="0"/>
+      <element name="configured" type="tns:tariffCodeList" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="skeletonContractItem">
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="functionName" type="tns:string16"/> <!--  TODO(JW) minOccurs="0" ? -->
+      <element name="accessName" type="tns:string16" minOccurs="0"/>
+      <element name="variantName" type="tns:string16" minOccurs="0"/>
+      <element name="tariffCodeList" type="tns:ExistConfTariffCodeList"/> <!--  TODO(JW) minOccurs="0" ? -->
+    </sequence>
+  </complexType>
+  <complexType name="tariffCodeList">
+    <sequence>
+      <element name="tariffCode" type="tns:string5" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="customerData">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Use it when there is new master customer-data to create: entities(organizations/individuals), customers, accounts, 
+   skeleton contracts to create. These objects will be newly created before any of the orderPositions will be processed, 
+   so the orderPositions / accesses / functions can reference the new customer-data by node-ID. Leave out "customerData" element, 
+   if all customer/account/skeletonContract ccbIds needed inside orderPositions already exist previously.
+Since: 1.32 or 1.33
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="customer" type="tns:customer" minOccurs="0"/>
+      <element name="billingAccount" type="tns:billingAccount" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="contactRole" type="tns:contactRole" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="skeletonContract" type="tns:skeletonContract" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="serviceDeliveryContract" type="tns:serviceDeliveryContract" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="oneGroup" type="tns:OneGroup" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation><![CDATA[
+SIP
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute name="role" type="tns:CustomerDataRole"/>
+  </complexType>
+  <simpleType name="accessInformationType">
+    <restriction base="string">
+      <enumeration value="STD"/>
+      <enumeration value="GESC"/>
+      <enumeration value="KSC"/>
+      <enumeration value="MOBI"/>
+      <enumeration value="MSISDN"/>
+      <enumeration value="PRIV"/>
+      <enumeration value="TECHNICIAN"/>
+    </restriction>
+  </simpleType>
+  <complexType name="affinityGroup">
+    <annotation><documentation></documentation></annotation>
+    <sequence>
+      <element name="affinityGroup" type="tns:string30" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>  
+  <simpleType name="CustomerDataRole">
+    <annotation>
+      <documentation>A type to distinguish between different customerData objects</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="default">
+        <annotation>
+          <documentation>used for the existing customer</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="target">
+        <annotation>
+          <documentation>used for the new customer</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <simpleType name="paymentMethodRD">
+    <annotation>
+      <documentation>
+        Allowed values for the field billingAccount/methodOfPayment/paymentMethod.
+        All values from the following select should be in this enumeration.
+
+        select VALUE from GENERAL_CODE_ITEM where GROUP_CODE='PAY_METHOD';
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="DIRECT_DEBIT">
+        <annotation>
+          <documentation>German: Lastschriftverfahren</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="MANUAL">
+        <annotation>
+          <documentation>German: Ueberweisung</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="MANUAL_FEE">
+        <annotation>
+          <documentation>German: Ueberweisung (Gebuehrenpflichtig)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="CREDIT_CARD"/>
+    </restriction>
+  </simpleType>
+  <complexType name="OneGroup">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Collection of Sites that do not necessarily have to be connected in a customer hierarchy.
+    Only used in SIP-Trunk and OfficeNet.
+    The CCB-ID of the OneGroup is identical to
+    accesses/(ipCentrex|sipTrunk)/(ipCentrex|sipTrunk)Configuration/oneGroupId
+    in all <orderPositions>.
+Since: IT-30794 (1.40)
+Filled by: FIF, POS-FE
+Used by: FIF
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="changeType" type="tns:changeType" minOccurs="0"/>
+      <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_O" minOccurs="0"/>
+      <element name="ownerCcbId" type="tns:ownerCcbId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Reference to customer (in context of OfficeNet)
+Since: IT-31847 (1.42)
+Filled by: FIF
+Used by: POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="skeletonContractCcbId" type="tns:nonTypedCcbId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Reference to skeleton contract (in context of OfficeNet)
+Since: IT-31847 (1.42)
+Filled by: FIF
+Used by: POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="name" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+    </sequence>
+    <attribute name="ID" type="tns:ID"/>
+    <attribute name="ownerNodeRefID" type="tns:stringId">
+      <annotation>
+        <documentation><![CDATA[
+Purpose: Reference to customer (in context of OfficeNet)
+Since: IT-31847 (1.42)
+Filled by: FIF
+Used by: POS-FE
+]]></documentation>
+      </annotation>
+    </attribute>
+    <attribute name="skeletonContractNodeRefID" type="tns:stringId">
+      <annotation>
+        <documentation><![CDATA[
+Purpose: Reference to skeleton contract (in context of OfficeNet)
+Since: IT-31847 (1.42)
+Filled by: FIF
+Used by: POS-FE
+]]></documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+</schema>

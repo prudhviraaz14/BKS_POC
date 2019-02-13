@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by RM (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-BKS-GetCcbOpenOrder-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:jurperson="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:som="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/ccm/EPSM-BKS-GetCcbOpenOrder-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" schemaLocation="EPSM-CommonTypes-JuristischePerson-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002" schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_GetCcbOpenOrder_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+        Aenderungshistorie:
+        Version 0.1 - 09.09.2010 - Rusbe Makuie - initiale Version
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+              Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+            </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- =================================root Element============================ -->
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="GetCcbOpenOrderService">
+		<xs:annotation>
+			<xs:documentation>Type definition BKS service GetCcbOpenOrders for e.g. KBA</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="getCcbOpenOrderInput" type="GetCcbOpenOrderInput"/>
+					<xs:element name="getCcbOpenOrderOutput" type="GetCcbOpenOrderOutput">
+						<xs:annotation>
+							<xs:documentation>
+              </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetCcbOpenOrderInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="barCode" type="som:string16" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetCcbOpenOrderOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="order" type="som:order" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ================================= Services and Events ============================== -->
+	<xs:element name="getCcbOpenOrderService" type="GetCcbOpenOrderService">
+		<xs:annotation>
+			<xs:documentation>This service generates a som order for CCB legacy products.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

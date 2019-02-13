@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "PrefetchProductBundles.effonl.RetrieveAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveAddress */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX 
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0014'
+		AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 2 
+    </select>
+
+    <select id = "PrefetchProductBundles.effonl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveBundleItems */   
+        BI.SUPPORTED_OBJECT_ID,BI.BUNDLE_ITEM_TYPE_RD,BI.FUTURE_INDICATOR,SS.SERVICE_CODE
+        FROM 
+        BUNDLE_ITEM BI ,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI.BUNDLE_ID = #value#
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND BI.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID
+    </select>
+
+    <select id = "PrefetchProductBundles.effonl.RetrieveCustomerBundles" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveCustomerBundles */   
+        B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, B.CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B, ENTITY E
+        WHERE B.CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = #value#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+		AND (B.HIERARCHY_INDICATOR IS null OR  B.HIERARCHY_INDICATOR = 'N')
+		AND (B.BUNDLE_ROLE_RD IS null OR B.BUNDLE_ROLE_RD = 'DEFAULT')
+        AND EXISTS (SELECT 1 FROM BUNDLE_ITEM BI WHERE 
+                    BI.BUNDLE_ID = B.BUNDLE_ID 
+                    AND BI.EFFECTIVE_STATUS='ACTIVE'
+                    AND BI.EFFECTIVE_FLAG = 'N')
+		
+ 			
+	    Union
+
+         
+		SELECT B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, BI.DEVIATING_CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B, ENTITY E, BUNDLE_ITEM BI
+        WHERE BI.DEVIATING_CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = #value#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+                                    AND B.HIERARCHY_INDICATOR = 'Y'
+                                    AND (B.BUNDLE_ROLE_RD IS null OR B.BUNDLE_ROLE_RD = 'DEFAULT')
+        AND BI.BUNDLE_ID = B.BUNDLE_ID 
+        AND BI.EFFECTIVE_STATUS='ACTIVE'
+        AND BI.EFFECTIVE_FLAG = 'N'
+
+    </select>
+
+    <select id = "PrefetchProductBundles.effonl.RetrievePendingOrders" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrievePendingOrders */   
+        EO.ORDER_ID, EO.ORDER_POSITION_NUMBER, E.CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD
+        FROM EXTERNAL_ORDER EO, ENTITY E
+        WHERE EO.CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = #value#
+        AND EO.EFFECTIVE_FLAG = 'N'
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+        AND EO.CUSTOMER_INTENTION = 'LineCreation'
+    </select>
+    
+    <select id = "PrefetchProductBundles.effonl.RetrieveBundlesForAccNumChar" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveBundlesForAccNumChar */   
+        DISTINCT B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, B.CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B, ENTITY E, CUSTOMER C,BUNDLE_ITEM BI, CONFIG_SERVICE_CHARACTERISTIC CSC, ACCESS_NUMBER AN
+        WHERE 
+        AN.ACCESS_NUMBER = #charValue#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.BUNDLE_ID =BI.BUNDLE_ID
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND B.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+    </select>
+    
+    
+    <select id = "PrefetchProductBundles.effonl.RetrieveMainAccessNumber" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveMainAccessNumber */  
+        AN.START_RANGE_STRING,AN.ACCESS_NUMBER
+        FROM
+        ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+		AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+        AND ROWNUM &lt; 2 
+    </select>
+
+    
+    <select id = "PrefetchProductBundles.effonl.RetrieveConfiguredValue" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveConfiguredValue */   
+        CV.CONFIGURED_VALUE_STRING
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+		AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+        AND ROWNUM &lt; 2 
+    </select>
+
+    
+    <select id = "PrefetchProductBundles.effonl.RetrieveSalesPackageInfo" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* PrefetchProductBundles.effonl.RetrieveSalesPackageInfo */ 
+		SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.SALES_PACKET_NAME 
+		FROM BUNDLE B, BUNDLE_PACKET BP, SALES_PACKET SP
+		WHERE 
+		B.BUNDLE_ID = #value#
+		AND B.EFFECTIVE_FLAG = 'N'
+		AND B.EFFECTIVE_STATUS = 'ACTIVE'
+		AND B.BUNDLE_ID = BP.BUNDLE_ID
+		AND BP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_PACKET BP1
+                        		WHERE BP1.BUNDLE_ID = BP.BUNDLE_ID
+                        		AND BP1.EFFECTIVE_STATUS = 'ACTIVE'
+                        		AND BP1.EFFECTIVE_DATE &lt; SYSDATE)
+		AND BP.EFFECTIVE_STATUS = 'ACTIVE'
+		AND BP.SALES_PACKET_ID = SP.SALES_PACKET_ID
+		AND SP.EFFECTIVE_FLAG = 'N'
+		AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "PrefetchProductBundles.effonl.RetrieveBundlesForEnvelopId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveBundlesForEnvelopId */   
+        DISTINCT B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, B.CUSTOMER_NUMBER,
+        E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B , CUSTOMER_ORDER CO, ENTITY E WHERE 
+        CO.SUPER_CUSTOMER_TRACKING_ID = #value#
+        AND CO.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER        
+        AND E.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER        
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "PrefetchProductBundles.effonl.RetrieveOnenetForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.effonl.RetrieveOnenetForBundle */
+            ONENET_ID 
+        FROM ONENET_SITE OS 
+        WHERE OS.BUNDLE_ID = #value#
+        AND OS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OS.EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveAddress */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX 
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0014'
+		AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                 WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                   AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                   AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 2 
+    </select>
+
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveBundleItems */   
+        BI.SUPPORTED_OBJECT_ID,BI.BUNDLE_ITEM_TYPE_RD,BI.FUTURE_INDICATOR,SS.SERVICE_CODE
+        FROM 
+        BUNDLE_ITEM BI ,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI.BUNDLE_ID = #value#
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND BI.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID
+    </select>
+
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveCustomerBundles" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveCustomerBundles */   
+        B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, B.CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B, ENTITY E
+        WHERE B.CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = #value#
+		AND (B.HIERARCHY_INDICATOR IS null OR  B.HIERARCHY_INDICATOR = 'N')
+		AND (B.BUNDLE_ROLE_RD IS null OR B.BUNDLE_ROLE_RD = 'DEFAULT')
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND EXISTS (SELECT 1 FROM BUNDLE_ITEM BI WHERE 
+                    BI.BUNDLE_ID = B.BUNDLE_ID 
+                    AND BI.EFFECTIVE_STATUS='ACTIVE'
+                    AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                        BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                        AND BI1.EFFECTIVE_DATE &lt; SYSDATE))
+						
+		Union
+		
+		SELECT B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, BI.DEVIATING_CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B, ENTITY E, BUNDLE_ITEM BI
+        WHERE BI.DEVIATING_CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = #value#
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+                                    AND B.HIERARCHY_INDICATOR = 'Y'
+                                    AND (B.BUNDLE_ROLE_RD IS null OR B.BUNDLE_ROLE_RD = 'DEFAULT')
+        AND BI.BUNDLE_ID = B.BUNDLE_ID 
+        AND BI.EFFECTIVE_STATUS='ACTIVE'
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+		
+			     	
+    </select>
+
+    <select id = "PrefetchProductBundles.onl.RetrievePendingOrders" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrievePendingOrders */   
+        EO.ORDER_ID, EO.ORDER_POSITION_NUMBER, E.CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD
+        FROM EXTERNAL_ORDER EO, ENTITY E
+        WHERE EO.CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = #value#
+        AND EO.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM EXTERNAL_ORDER EO1 WHERE
+        EO.ORDER_ID = EO1.ORDER_ID AND 
+        EO.ORDER_POSITION_NUMBER = EO1.ORDER_POSITION_NUMBER AND 
+        EO1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+        AND EO.CUSTOMER_INTENTION = 'LineCreation'
+    </select>
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveBundlesForAccNumChar" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveBundlesForAccNumChar */   
+        DISTINCT B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, B.CUSTOMER_NUMBER, E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B, ENTITY E, CUSTOMER C,BUNDLE_ITEM BI, CONFIG_SERVICE_CHARACTERISTIC CSC, ACCESS_NUMBER AN
+        WHERE 
+        AN.ACCESS_NUMBER = #charValue#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                            WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                            AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                        BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.BUNDLE_ID =BI.BUNDLE_ID
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                        B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND B.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveMainAccessNumber" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveMainAccessNumber */  
+        AN.START_RANGE_STRING,AN.ACCESS_NUMBER
+        FROM
+        ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+		AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+        AND ROWNUM &lt; 2 
+     </select>
+
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveConfiguredValue" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveConfiguredValue */  
+        CV.CONFIGURED_VALUE_STRING
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+		AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+        AND ROWNUM &lt; 2 
+    </select>
+
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveSalesPackageInfo" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* PrefetchProductBundles.onl.RetrieveSalesPackageInfo */ 
+		SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.SALES_PACKET_NAME 
+		FROM BUNDLE B, BUNDLE_PACKET BP, SALES_PACKET SP
+		WHERE 
+		B.BUNDLE_ID = #value#
+		AND B.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1
+                        		WHERE B.BUNDLE_ID = B1.BUNDLE_ID
+                        		AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+		AND B.EFFECTIVE_STATUS = 'ACTIVE'
+		AND B.BUNDLE_ID = BP.BUNDLE_ID
+		AND BP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_PACKET BP1
+                        		WHERE BP1.BUNDLE_ID = BP.BUNDLE_ID
+                        		AND BP1.EFFECTIVE_STATUS = 'ACTIVE'
+                        		AND BP1.EFFECTIVE_DATE &lt; SYSDATE)		
+		AND BP.EFFECTIVE_STATUS = 'ACTIVE'
+		AND BP.SALES_PACKET_ID = SP.SALES_PACKET_ID
+		AND SP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SALES_PACKET SP1
+                        		WHERE SP.SALES_PACKET_ID = SP1.SALES_PACKET_ID
+                        		AND SP1.EFFECTIVE_DATE &lt; SYSDATE)
+		AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "PrefetchProductBundles.onl.RetrieveBundlesForEnvelopId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveBundlesForEnvelopId */   
+        DISTINCT B.BUNDLE_ID, B.BUNDLE_TYPE_RD, B.FUTURE_BUNDLE_TYPE, B.CUSTOMER_NUMBER,
+        E.FORENAME, E.NAME, E.ORGANIZATION_TYPE_RD,B.AOSTATUS
+        FROM BUNDLE B , CUSTOMER_ORDER CO, ENTITY E WHERE 
+        CO.SUPER_CUSTOMER_TRACKING_ID = #value#
+        AND CO.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER        
+        AND E.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER        
+        AND B.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1
+                                WHERE B.BUNDLE_ID = B1.BUNDLE_ID
+                                AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "PrefetchProductBundles.onl.RetrieveOnenetForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchProductBundles.onl.RetrieveOnenetForBundle */
+            ONENET_ID 
+        FROM ONENET_SITE OS 
+        WHERE OS.BUNDLE_ID = #value#
+        AND OS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OS.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ONENET_SITE OS1 WHERE 
+                                 OS.SITE_ID = OS1.SITE_ID 
+                                 AND OS1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+    
+</sqlMap>
+                                    

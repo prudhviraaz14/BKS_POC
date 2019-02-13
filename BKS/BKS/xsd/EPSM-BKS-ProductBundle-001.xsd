@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-BKS-ProductBundle-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:jurperson="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:som="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/ccm/EPSM-BKS-ProductBundle-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" schemaLocation="EPSM-CommonTypes-JuristischePerson-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002" schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_ProductBundle_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+        Aenderungshistorie:
+        Version 0.1 - 22.07.2009 - Alexander Borho - initiale Version
+        Version 1.0 - 29.07.2009 - Alexander Borho - Mit KBA abgestimmte, vorläufig finale Version
+        Version 1.2 - 12.08.2009 - Alexander Borho - More changes:
+        * "addressId" now part of "LocationAddress", not a separate element anymore
+        * "customerNumber" now optional for "fetchProductBundleInput"
+        * In "skeletonContractItem", renamed "function" into "functionName" and access into "accessName" to avoid confusion with complex types
+        * In "ContractFunction", made changes to minimum-duration period data
+        * In "Function", renamed "payerXYZCharges" to more generic "payer" with type="XYZ"
+        Version 1.3 - 12.08.2009 - Rusbe Makuie - More changes: made
+        * technicalAccessServiceIdentifer, productBundleData Optional.
+        * Additional information to output.
+        Version 1.4 - 10.11.2009 - Gregor Emmerich - now using som types
+        Version 1.5 - 02.12.2009 - Rusbe Makuie - Added LineCreation, LineChange and Termination to the output
+        * Added orderId and OrderPositionNumber to the input.
+        Version 1.5 - 02.12.2009 - Rusbe Makuie - Added serviceSubscriptionId to the input.
+        Version 1.6 21.12.2011 - Thomas Schneider:   IT 30257 duplicated prefetch and fetchProductBundle to *FKP
+        Version 1.7 30.01.2012 - Thomas Schneider:  IT 30257 added chunking for FKP services
+        Version 1.8 31.01.2012 - Thomas Schneider:  IT 30257 moved chunking from baseType to this schema and added chunking for prefetchProductBundle as well
+                                                                           added barcode to prefetchProductBundle and fetchproductBundle
+        Version 1.9 07.11.2013 - Rusbe Makuie:  IT 31530 resellerId added to FetchProductBundleFKPInput
+        Version 1.10 28.05.2015 - Rusbe Makuie:  PPM-116590  OneNetId added to  ProductBundlePreview
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+              Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+            </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- =================================root Element============================ -->
+	<!-- ================================endpoint specific simple types================= -->
+	<xs:simpleType name="AccessNumber">
+		<xs:annotation>
+			<xs:documentation>Identificator, 3-20 numeric digits, starting digit not 0</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{3,20}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ================================endpoint specific complex types================= -->
+	<xs:complexType name="ProductBundlePreview">
+		<xs:annotation>
+			<xs:documentation>Prefetch result: 1 particular product-bundle preview</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="orderId" type="som:string16"/>
+					<xs:element name="orderPositionNumber" type="som:orderPositionNumber"/>
+					<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="ccbId" type="som:ccbId_B"/>
+					<xs:element name="productBundleType" type="som:ProductBundleType"/>
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="customerNumber" type="common:Kundennummer"/>
+			<xs:element name="customerName" type="person:Nachname" minOccurs="0"/>
+			<xs:element name="customerForename" type="person:Vorname" minOccurs="0"/>
+			<xs:element name="organizationType" type="jurperson:Rechtsform" minOccurs="0"/>
+			<xs:element name="locationAddress" type="som:address" minOccurs="0"/>
+			<xs:element name="salesPacketId" type="xs:string" minOccurs="0"/>
+			<xs:element name="salesPacketName" type="xs:string" minOccurs="0"/>
+			<xs:element name="salesPacketBasePrice" type="xs:string" minOccurs="0"/>
+			<xs:element name="oneGroupId" type="som:ONEGroupId" minOccurs="0"/>
+			<xs:element name="oneNetId" type="som:string100" minOccurs="0"/>
+			<xs:element name="siteId" type="som:string100" minOccurs="0"/>
+			<xs:element name="mainAccessNumber" type="AccessNumber" minOccurs="0"/>
+			<xs:element name="dialInAccountName" type="som:UserAccountId" minOccurs="0"/>
+			<xs:element name="technicalAccessServiceId" type="som:UserAccountId" minOccurs="0"/>
+			<xs:element name="siteType" type="xs:string" minOccurs="0"/>
+			<xs:element name="futureIndicator" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="aoMastered" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProductBundlePreviewList">
+		<xs:annotation>
+			<xs:documentation>Prefetch result: List of product-bundle previews</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="productBundlePreview" type="ProductBundlePreview" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="PrefetchProductBundlesService">
+		<xs:annotation>
+			<xs:documentation>Type definition BKS service PrefetchProductBundles for e.g. KBA</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="prefetchProductBundlesInput" type="PrefetchProductBundlesInput"/>
+					<xs:element name="prefetchProductBundlesOutput" type="PrefetchProductBundlesOutput">
+						<xs:annotation>
+							<xs:documentation>
+              </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PrefetchProductBundlesInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:choice>
+						<xs:element name="customerNumber" type="common:Kundennummer"/>
+						<xs:element name="oneGroupId" type="som:ONEGroupId"/>
+						<xs:element name="superCustomerTrackingId" type="som:string100"/>
+					    <xs:element name="siteId" type="som:string100"/>
+					</xs:choice>
+					<xs:element name="chunkSize" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of rows requested per chunk</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of chunck to be returnd. To take full benefit of caching this should always  start with 1 and then be increased by 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PrefetchProductBundlesOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="productBundlePreviewList" type="ProductBundlePreviewList" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>This is the number of chunk returned. Starting with 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="lastChunk" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>true indicates that there is no more chunk to the requested data</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchProductBundleService">
+		<xs:annotation>
+			<xs:documentation>Type definition BKS service FetchProductBundles for e.g. KBA</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="fetchProductBundleInput" type="FetchProductBundleInput"/>
+					<xs:element name="fetchProductBundleOutput" type="FetchProductBundleOutput">
+						<xs:annotation>
+							<xs:documentation>
+              </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchProductBundleInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:choice>
+						<xs:sequence>
+							<xs:element name="orderId" type="som:string16" minOccurs="0"/>
+							<xs:element name="orderPositionNumber" type="som:orderPositionNumber" minOccurs="0"/>
+						</xs:sequence>
+						<xs:sequence>
+							<xs:element name="ccbId" type="som:ccbId_B"/>
+							<xs:element name="futureIndicator" type="xs:boolean" minOccurs="0"/>
+						</xs:sequence>
+						<xs:element name="serviceSubscriptionId" type="som:ccbId_S"/>
+						<xs:element name="tasi" type="common:Tasi"/>
+					</xs:choice>
+					<xs:element name="disableCache" type="xs:boolean" minOccurs="0"/>
+					<xs:element name="chunkSize" type="xs:integer" minOccurs="0"/>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0"/>
+					<xs:element name="filterList" type="filterList" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="filterList">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="filter" type="keyValue" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="keyValue">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="key" type="xs:string"/>
+			<xs:element name="value" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="lineCreationPacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="lineCreation" type="som:lineCreation"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="lineChangePacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="lineChange" type="som:lineChange"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="terminationPacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="termination" type="som:termination"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="relocationPacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="relocation" type="som:relocation"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="contractPartnerChangePacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="contractPartnerChange" type="som:providerChange"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FetchProductBundleOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="customerData" type="som:customerData" minOccurs="0"/>
+					<xs:element name="productBundleData" type="som:productBundle" minOccurs="0"/>
+					<xs:element name="lineCreation" type="lineCreationPacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lineChange" type="lineChangePacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="termination" type="terminationPacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="relocation" type="relocationPacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contractPartnerChange" type="contractPartnerChangePacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0"/>
+					<xs:element name="lastChunk" type="xs:boolean" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ================================ FKP services=====================-->
+	<xs:complexType name="PrefetchProductBundlesFKPService">
+		<xs:annotation>
+			<xs:documentation>PrefetchProductBundlesFKP this service is implemented for IT 30257 for the component order and contract managment for project enterprice excellence. It is called  by the FKP Frontend (FirmenKundenPortal) </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="prefetchProductBundlesFKPInput" type="PrefetchProductBundlesFKPInput"/>
+					<xs:element name="prefetchProductBundlesFKPOutput" type="PrefetchProductBundlesFKPOutput">
+						<xs:annotation>
+							<xs:documentation>
+              </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PrefetchProductBundlesFKPInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:choice>
+						<xs:element name="customerNumber" type="common:Kundennummer"/>
+						<xs:element name="oneGroupId" type="som:ONEGroupId"/>
+						<xs:element name="superCustomerTrackingId" type="som:string100"/>
+					</xs:choice>
+					<xs:element name="chunkSize" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of rows requested per chunk</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of chunck to be returnd. To take full benefit of caching this should always  start with 1 and then be increased by 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="customerHierarchyNumber" type="common:Kundennummer">
+						<xs:annotation>
+							<xs:documentation>FKP requirement to enforce user account rights. FKP will always provide the root level customer_number of an hierarchy and BKS will double check whether the queried customer_number (kundennummer) is part of that hierarchry.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PrefetchProductBundlesFKPOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="productBundlePreviewList" type="ProductBundlePreviewList" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>This is the number of chunk returned. Starting with 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="lastChunk" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>true indicates that there is no more chunk to the requested data</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchProductBundleFKPService">
+		<xs:annotation>
+			<xs:documentation>FetchProductBundleFKP this service is implemented for IT 30257 for the component order and contract managment for project enterprice excellence. It is called  by the FKP Frontend (FirmenKundenPortal)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="fetchProductBundleFKPInput" type="FetchProductBundleFKPInput"/>
+					<xs:element name="fetchProductBundleFKPOutput" type="FetchProductBundleFKPOutput">
+						<xs:annotation>
+							<xs:documentation>
+              </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchProductBundleFKPInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:choice>
+						<xs:sequence>
+							<xs:element name="orderId" type="som:string16" minOccurs="0"/>
+							<xs:element name="orderPositionNumber" type="som:orderPositionNumber" minOccurs="0"/>
+						</xs:sequence>
+						<xs:sequence>
+							<xs:element name="ccbId" type="som:ccbId_B"/>
+							<xs:element name="futureIndicator" type="xs:boolean" minOccurs="0"/>
+						</xs:sequence>
+						<xs:element name="serviceSubscriptionId" type="som:ccbId_S"/>
+					</xs:choice>
+					<xs:element name="disableCache" type="xs:boolean" minOccurs="0"/>
+					<xs:element name="chunkSize" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of rows requested per chunk</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of chunck to be returnd. To take full benefit of caching this should always  start with 1 and then be increased by 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="customerHierarchyNumber" type="common:Kundennummer">
+						<xs:annotation>
+							<xs:documentation>FKP requirement to enforce user account rights. FKP will always provide the root level customer_number of an hierarchy and BKS will double check whether the queried customer_number (kundennummer) is part of that hierarchry.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="resellerId" type="som:string16" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchProductBundleFKPOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="customerData" type="som:customerData" minOccurs="0"/>
+					<xs:element name="productBundleData" type="som:productBundle" minOccurs="0"/>
+					<xs:element name="lineCreation" type="lineCreationPacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="lineChange" type="lineChangePacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="termination" type="terminationPacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="relocation" type="relocationPacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="contractPartnerChange" type="contractPartnerChangePacket" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>This is the number of chunk returned. Starting with 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="lastChunk" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>true indicates that there is no more chunk to the requested data</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

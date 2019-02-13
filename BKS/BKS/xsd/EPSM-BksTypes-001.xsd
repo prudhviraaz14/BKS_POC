@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:sbuscommon="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:address="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:company="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" targetNamespace="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002" schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" schemaLocation="EPSM-CommonTypes-JuristischePerson-002.xsd"/>
+	<xs:element name="LinkDB_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>
+				Änderungshistorie
+				0.1	28.01.2010 	Rusbe Makuie			- Initial version. 
+				0.2	02.02.2010	Reto Renner				- update
+				0.3	19.03.2010	Reto Renner				- structure CompanyDataQueueryInput added
+				0.4  	22.03.2010  	Thomas Schneider     - userPassword, conpanySuffixName and several comments added.
+				0.5	23.03.2010	Reto Renner				- simple type Kundenkennwort added
+				0.6 24.03.2010 Thomas Schneider - simple type Kundenkennwort set to max length 120. Changed the mandatory and non mandatory flags on the DataQuery objects according to the request
+				0.7 08.04.2010 Thomas Schneider change choice as companyRegisterNumber is no longer mandatory. type added to companySuffixName
+				0.8 28.06.2010 Thomas Schneider:SPN-BKS-000100055-O familyName, zipCode, street und dateOfBirth set to optional
+				0.8.1 30.06.2010 Thomas Schneider:SPN-BKS-000100055-O change for personData  incorparated for companyData as well
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ================ Endpoint Specific Simple Types =================================== -->
+	<xs:simpleType name="ArcorCustomerOrigin">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="V"/>
+			<xs:enumeration value="A"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Kundenkennwort">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="120"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ================ Endpoint Specific Complex Types ================================= -->
+	<xs:complexType name="Address">
+		<xs:annotation>
+			<xs:documentation>CCM customer address</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="zipCode" type="address:Postleitzahl" minOccurs="0"/>
+			<xs:element name="city" type="address:Ort" minOccurs="0"/>
+			<xs:element name="citySuffix" type="address:Ortszusatz" minOccurs="0"/>
+			<xs:element name="country" type="address:Land" minOccurs="0"/>
+			<xs:element name="street" type="address:Strasse" minOccurs="0"/>
+			<xs:element name="housenumber" type="address:Hausnummer" minOccurs="0"/>
+			<xs:element name="housenumberSuffix" type="address:Hausnummerzusatz" minOccurs="0"/>
+			<xs:element name="postbox" type="address:Postfach" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonDataQueryInput">
+		<xs:annotation>
+			<xs:documentation>Input data for search by person</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="familyName" type="person:Nachname" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zipCode" type="address:Postleitzahl" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>postalCode</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="street" type="address:Strasse" nillable="false" minOccurs="0"/>
+			<xs:element name="firstName" type="person:Vorname" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>forename</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateOfBirth" type="xs:date" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>birthDate</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="housenumber" type="address:Hausnummer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>streetNumber</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="housenumberSuffix" type="address:Hausnummerzusatz" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>streetNumberSuffix</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="userPassword" type="Kundenkennwort" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>user password</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CompanyDataQueryInput">
+		<xs:annotation>
+			<xs:documentation>Input data for search by company</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="companyName" type="company:Firmenname" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>organizationName (Firmenname 1)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="companySuffixName" type="company:Namenszusatz" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>organizationSuffixName (Firmenname 2)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="zipCode" type="address:Postleitzahl" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>postalCode</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="street" type="address:Strasse" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>street name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="housenumber" type="address:Hausnummer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>streetNumber</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="housenumberSuffix" type="address:Hausnummerzusatz" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>streetNumberSuffix</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>if no comercialRegisterNumber is passed BKS checks that no RegisterNumber is stored as well. Contact is only passed for SOHO customers, to store the birth date</xs:documentation>
+				</xs:annotation>
+				<xs:element name="commercialRegisterNumber" type="company:Registernummer">
+					<xs:annotation>
+						<xs:documentation>incorporationNumber (Registernumber) needs to be provided for corporate (non SOHO) customers</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="contact" type="Contact"/>
+			</xs:choice>
+			<xs:element name="userPassword" type="Kundenkennwort" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerData">
+		<xs:annotation>
+			<xs:documentation>customer data of Arcor</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="company" type="Company" minOccurs="0"/>
+				<xs:element name="person" type="Person" minOccurs="0"/>
+			</xs:choice>
+			<xs:element name="address" type="Address" minOccurs="0"/>
+			<xs:element name="phoneNumber" type="common:ComplexPhoneNumber" minOccurs="0"/>
+			<xs:element name="customerNumber" type="sbuscommon:Kundennummer"/>
+			<xs:element name="arcorCustomerOrigin" type="ArcorCustomerOrigin"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Person">
+		<xs:annotation>
+			<xs:documentation>personal data of private customer</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="familyName" type="person:Nachname" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="firstName" type="person:Vorname" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>forename</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="salutation" type="person:Anrede" minOccurs="0"/>
+			<xs:element name="title" type="person:Titel" minOccurs="0"/>
+			<xs:element name="nameSuffix" type="person:Namenszusatz" minOccurs="0"/>
+			<xs:element name="titleOfNobility" type="person:Adelstitel" minOccurs="0"/>
+			<xs:element name="dateOfBirth" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>birthDate of SOHO customer, needs to be provided for SOHO search</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Contact">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Person">
+				<xs:sequence>
+					<xs:element name="position" type="person:Position" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Company">
+		<xs:annotation>
+			<xs:documentation>company data of business customer</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="companyName" type="company:Firmenname" minOccurs="0"/>
+			<xs:element name="legalForm" type="company:Rechtsform" minOccurs="0"/>
+			<xs:element name="commercialRegister" type="CommercialRegister" minOccurs="0"/>
+			<xs:element name="contact" type="Contact" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CommercialRegister">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="commercialRegisterNumber" type="company:Registernummer" minOccurs="0"/>
+			<xs:element name="commercialRegisterCity" type="company:Registereintragsort" minOccurs="0"/>
+			<xs:element name="kindOfCommerRegister" type="company:Registerart" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ================================== Definition of Arcor Customer Data =================================== -->
+	<xs:complexType name="BaseMessageType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="carrier" type="Carrier"/>
+		</xs:sequence>
+		<xs:attribute name="schemaVersion" type="xs:string" default="0.1.0"/>
+	</xs:complexType>
+	<xs:simpleType name="Carrier">
+		<xs:annotation>
+			<xs:documentation>attribute if customer of Arcor or Vodafone</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Vodafone"/>
+			<xs:enumeration value="Arcor"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    <select id = "GetFNPCustomerSomData.effonl.RetrieveAccountsForBundle" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* GetFNPCustomerSomData.effonl.RetrieveAccountsForBundle */  
+           A.ACCOUNT_NUMBER 
+        FROM
+         GUIDING_RULE GR ,BUNDLE_ITEM BI, ACCOUNT A
+        WHERE 
+        BI.BUNDLE_ID = #bundleId#
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND GR.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        AND GR.CHARGE_TYPE_RD = 'PRIMARY'
+        AND GR.EFFECTIVE_FLAG = 'N'
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND GR.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER
+        AND A.EFFECTIVE_FLAG = 'N'
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetFNPCustomerSomData.onl.RetrieveAccountsForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPCustomerSomData.onl.RetrieveAccountsForBundle */  
+           A.ACCOUNT_NUMBER 
+        FROM
+         GUIDING_RULE GR ,BUNDLE_ITEM BI, ACCOUNT A
+        WHERE 
+        BI.BUNDLE_ID = #bundleId#
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND GR.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        AND GR.CHARGE_TYPE_RD = 'PRIMARY'
+        AND GR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM GUIDING_RULE GR1 
+                                 WHERE GR.SERVICE_SUBSCRIPTION_ID = GR1.SERVICE_SUBSCRIPTION_ID  
+                                 AND GR.CHARGE_TYPE_RD = GR1.CHARGE_TYPE_RD  
+                                 AND GR1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND GR.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER
+        AND A.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AC1 
+                        WHERE A.ACCOUNT_NUMBER = AC1.ACCOUNT_NUMBER 
+                        AND AC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+     
+</sqlMap>
+                                    

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <settings cacheModelsEnabled="true"/>
+    <typeHandler callback="org.springframework.orm.ibatis.support.ClobStringTypeHandler" javaType="string" jdbcType="CLOB"/>
+
+    <sqlMap resource="config/General.xml" />
+    <sqlMap resource="etc/ErmittleKundenArt.xml" />
+    <sqlMap resource="config/PruefeBestandskunde.xml" /> 
+    <sqlMap resource="etc/PruefeBestandskundenRanger.xml" />
+    <sqlMap resource="etc/ErmittleVertriebspacketWert.xml" />
+    <sqlMap resource="etc/PruefeServiceProviderNeukunde.xml" />
+    <sqlMap resource="etc/GetCustomerDataCCM.xml" />
+    <sqlMap resource="etc/GetCodbPrerequisiteData.xml" />
+    <sqlMap resource="etc/GetDetailsForAddedFunction.xml" />
+    <sqlMap resource="etc/GetCcbId.xml" />
+    <sqlMap resource="etc/GetCcbOpenOrder.xml" />
+    <sqlMap resource="etc/ConsolidateSubscriptionData.xml" />
+    <sqlMap resource="etc/GetServiceInformation.xml" />
+    <sqlMap resource="etc/HoleVertriebspaketDetails.xml" />
+    <sqlMap resource="etc/PrefetchVertriebspaketDetails.xml" />
+    <sqlMap resource="etc/PrefetchProductBundles.xml" />
+    <sqlMap resource="etc/FetchProductBundle.xml" />
+    <sqlMap resource="etc/GetSomMasterData.xml" />
+    <sqlMap resource="etc/FetchFunctionDetails.xml" />
+    <sqlMap resource="config/GetFNPCustomerData.xml" />
+    <sqlMap resource="etc/GetFNPCustomerSomData.xml" />
+    <sqlMap resource="config/GetFNPCustomerNGCSData.xml" />
+    <sqlMap resource="etc/GetFNPCustomerRecoData.xml" />
+    <sqlMap resource="etc/GetFNPAddressById.xml" />
+    <sqlMap resource="etc/GetSOMCustomerHierarchyDataFKP.xml" />
+    <sqlMap resource="etc/GetFNPCustomerHierarchyNGCSData.xml" />
+    <sqlMap resource="etc/WbciCustomerInfoForPorting.xml" />
+    <sqlMap resource="etc/WbciGetDtagContractNumber.xml" />
+</sqlMapConfig>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    
+    <!-- Queue configuration -->
+    <bean id="messageListenerContainer"
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="concurrentConsumers" value="1"/> 
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="listenQueue"/>
+        <property name="sessionTransacted" value="true"/>
+        <property name="messageListener" ref="requestReplyWorker"/>
+    </bean> 
+        
+    <!-- ======================================================================================== -->
+    <!-- Special service handler configurations for each service handler                          --> 
+    <!-- ======================================================================================== -->    
+    <bean id="requestReplyWorker" init-method="init"
+        destroy-method="closeSenderQueues" class="net.arcor.mcf.jms.wf.WorkflowRequestReplyWorker">
+        <property name="listenQueue" ref="listenQueue"/>      
+        <property name="outQueue" ref="outQueue"/>        
+        <property name="jmsExpiration" value="3600000"/>
+        <property name="backoutTreshold" value="5"/>        
+        <property name="handlerConfig">
+            <ref bean="ServiceHandlerConfig"/>
+        </property>        
+        <property name="headerHandler">
+            <ref bean="HeaderHandler"/>
+        </property>        
+        <property name="serviceResolver">
+            <ref bean="ServiceResolver"/>
+        </property>    
+        <property name="useJaxbJavaPackage" value="false"/>    
+        <property name="requestContextName"  value="net.arcor.ccm.epsm_ccm_001" />
+        <property name="requestSchemaName"   value="EPSM-CCM-001.xsd"/>        
+        <property name="responseContextName"  value="net.arcor.ccm.epsm_ccm_001" />
+        <property name="responseSchemaName"   value="EPSM-CCM-001.xsd"/>        
+        <property name="fatalResponseContextName"  value="net.arcor.sbus.epsm_sbus_001" />
+        <property name="fatalResponseSchemaName"   value="EPSM-SBUS-001.xsd"/>
+        <property name="mcfExceptionExitHandler"     ref="mcfExceptionExitHandler"/>
+        
+    </bean>
+    
+    <bean id="mcfExceptionExitHandler" class="net.arcor.mcf.jms.SbusExceptionExitHandler">
+    </bean>
+    
+    <bean id="pruefeBestandskundeServiceConfig"
+        class="net.arcor.mcf.config.ServiceHandlerConfigBean">
+        <property name="serviceName" value="net.arcor.ccm.epsm_ccm_pruefebestandskunde_001.PruefeBestandskundeService"/>
+        <property name="handler">
+            <bean class="net.arcor.bks.requesthandler.BksServiceHandler"/>
+        </property>
+        <property name="hasReply" value="true"/>
+    </bean> 
+        
+    <bean id="ServiceHandlerConfig"
+        class="net.arcor.mcf.config.ServiceHandlerConfigSimple" init-method="init" >
+        <property name="configBeanList">
+            <list>
+                <ref bean="pruefeBestandskundeServiceConfig"/>
+            </list>
+        </property>
+    </bean>
+     
+    <bean id="HeaderHandler" class="net.arcor.mcf.jms.HeaderHandlerCopy">
+        <property name="headerConfig">
+            <bean class="net.arcor.mcf.config.HeaderHandlerConfigSimple"/>
+        </property>
+        <property name="endpointName" value="FIF"/>
+    </bean>
+    
+    <bean id="ServiceResolver" class="net.arcor.mcf.jms.ServiceResolverXml"/>
+    
+    <bean id="connectionFactory" class="com.ibm.mq.jms.MQQueueConnectionFactory">
+        <property name="transportType" value="1" />
+        <property name="queueManager" value="CCBSVR3E" />
+        <property name="hostName" value="ks05t03" />
+        <property name="port" value="5011" />
+        <property name="channel" value="CLIENT.CCBSVR3E" />
+    </bean>
+    
+    <bean id="listenQueue" class="com.ibm.mq.jms.MQQueue">
+        <constructor-arg index="0" value="CCBSVR3E" />
+        <constructor-arg index="1" value="CCMDEV5" />
+    </bean>
+    
+    <bean id="outQueue" class="com.ibm.mq.jms.MQQueue">
+        <constructor-arg index="0" value="CCBSVR3E" />
+        <constructor-arg index="1" value="CCMDEV4" />
+    </bean>
+        
+</beans>

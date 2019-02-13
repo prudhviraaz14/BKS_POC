@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.arcor.net/auftragsmodell/metainformationen-002" xmlns:mi="http://www.arcor.net/auftragsmodell/metainformationen-002" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<element name="metainformationen_Dokument_Information">
+		<annotation>
+			<documentation><![CDATA[
+				Änderungshistorie
+				1	26.03.2007	Wolff		Initiale Version
+				2	27.03.2007	Wolff		Meta-Modell-Klasse entfernt, Fehler geändert
+				3	26.04.2007	Wolff		Fehler erbt jetzt vom Base Types Fehler
+                4   07.08.2007  Jaeger  	Fehler wurde ueberarbeitet, Meta-Informationen
+                                        	muessen noch fuer 1.25 ueberarbeitet werden
+                5  22.10.2007 	Himstedt	Komplette Überarbeitung gem. Workshops Metainformation und draus folgendem Papier
+                6  10.01.2008 	Bode 		Komplette Überarbeitung nach Meeting zur Definition der Aggregation von Metainformationen, AskGruppe und Felder "nichtEnthaltene" sind nicht mehr notwendig
+                7  14.01.2008 	Fuhrmann 	Schreibfehler berichtig
+                8  12.03.2008 	Fuhrmann 	WertInterpretation entfernt und minOccurs von AskDefinition unter Metainformationen auf 1 gesetzt
+                9  13.08.2008   Bode		AttributDefinition um Element 'defaultBoolean' und Wertebereich um Element 'wertBoolean' ergänzt
+				]]></documentation>
+		</annotation>
+	</element>
+	<complexType name="Meldung">
+		<sequence>
+			<element name="typ" type="mi:MeldungsTypen">
+				<annotation>
+					<documentation>Klassifiziert die Meldung als Fehler, Warnung oder Hinweis.</documentation>
+				</annotation>
+			</element>
+			<element name="code" type="string">
+				<annotation>
+					<documentation>
+            			Der Fehlercode ist der Schluessel auf einen Fehler der AAW. Anhand des Schluessels kann ueber den
+            			Referenzdatenservice unter anderem der kanalspezifische Fehlertext und Anzeigetext ermittelt werden.
+          			</documentation>
+				</annotation>
+			</element>
+			<element name="standardtext" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+            			Der Standardfehlertext wird durch die MDTS definiert. Er wird ueber den Referenzdatenservice mit dem code
+            			ermittelt und dient im Auftrag dazu, die verschiedenen Support Ebenen (First Level, Second Level) in der
+            			Fehleranalyse zu unterstuetzen. Hinweis: Im MDTS Export lautet das Feld für diesen Text
+            			"defaultHinweisText".
+          			</documentation>
+				</annotation>
+			</element>
+			<element name="standardanzeigetext" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+            			Der Standardanzeigefehlertext wird ebenfalls durch die MDTS definiert. Er wird ueber den
+            			Referenzdatenservice mit dem code ermittelt und dient im Auftrag dazu, die verschiedenen Support Ebenen
+            			(First Level, Second Level) in der Fehleranalyse zu unterstuetzen. Hinweis: Im MDTS Export lautet das Feld
+            			für diesen Text "defaultAnzeigeText".
+          			</documentation>
+				</annotation>
+			</element>
+			<element name="textparameter" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+            			Mit Fehlertextparametern werden parametrisierbare Fehlertexte aufgefuellt.
+          			</documentation>
+				</annotation>
+			</element>
+			<element name="technischertext" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+            			Technischer Fehlertext der Komponente. Dieser Fehlertext kann von der Komponente frei vergeben werden.
+            			Dieser Fehlertext darf nicht ausserhalb der Arcor weitergegeben werden, da er eventuell Informationen ueber
+            			die Systeme der Arcor enthaelt. Er dient der Fehleranalyse auf Entwicklungsebene. Beispiel: Fehlertext einer
+            			Exception.
+          			</documentation>
+				</annotation>
+			</element>
+			<element name="zeitstempel" type="dateTime">
+				<annotation>
+					<documentation>
+            			Zeitstempel, zu welchem Zeitpunkt ein Fehler aufgetreten ist. Dieser Zeitstempel wird bei der Instanzierung
+            			des Fehlers mit der Systemzeit der Komponente befuellt.
+          			</documentation>
+				</annotation>
+			</element>
+			<element name="ort" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Lokalisierung des Fehlers im Auftragsmodell.</documentation>
+				</annotation>
+				<complexType>
+					<sequence>
+						<element name="pfad" type="mi:AskPfad">
+							<annotation>
+								<documentation>
+                 	 				Der Pfad verweist auf das Attribut oder das Element innerhalb des
+                  					Auftragsmodells, an dem der Fehler erkannt wurde.
+                				</documentation>
+							</annotation>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+	<complexType name="MetainformationsGruppe">
+		<sequence>
+			<element name="metainformation" type="mi:Metainformation" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="typ" type="string" use="required" />
+	</complexType>
+	<simpleType name="MeldungsTypen">
+		<restriction base="string">
+			<enumeration value="hinweis">
+				<annotation>
+					<documentation>Unspezifischer Hinweis.</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="aenderungshinweis">
+				<annotation>
+					<documentation>
+						Im Verlauf der Prüfung sind Werte verändert oder auf gesetzt worden, auf welche 
+						der Kunde/Nutzer hingewiesen werden soll.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="prueffehler">
+				<annotation>
+					<documentation>
+						Im Verlauf der Prüfung sind Fehler aufgetreten, welche den Abschluss des Einfassungsprozesses verhindern.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="fehler">
+				<annotation>
+					<documentation>Andere fachliche Fehler.</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="StatusWerte">
+		<restriction base="string">
+			<enumeration value="verboten" />
+			<enumeration value="optional" />
+			<enumeration value="notwendig" />
+		</restriction>
+	</simpleType>
+	<complexType name="Metainformation">
+		<sequence>
+			<element name="apeNummerAuftragsposition" type="nonNegativeInteger" />
+			<element name="askDefinition" type="mi:AskDefinition" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="name" type="string" use="required" />
+		<attribute name="ordnungsZahl" type="integer" />
+	</complexType>
+	<complexType name="AskDefinition">
+		<sequence>
+			<element name="attributDefinition" type="mi:AttributDefinition" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="askPfad" type="string" use="required" />
+		<attribute name="status" type="mi:StatusWerte" />
+	</complexType>
+	<complexType name="AttributDefinition">
+		<sequence>
+			<element name="wertebereich" type="mi:Wertebereich" minOccurs="0" />
+			<choice minOccurs="0">
+				<element name="defaultZeichenkette" type="string" />
+				<element name="defaultNummer" type="integer" />
+				<element name="defaultZahl" type="decimal" />
+				<element name="defaultDatum" type="date" />
+				<element name="defaultBoolean" type="boolean" />
+			</choice>
+		</sequence>
+		<attribute name="attributName" type="string" use="required" />
+		<attribute name="status" type="mi:StatusWerte" />
+	</complexType>
+	<complexType name="Wertebereich">
+		<choice>
+			<element name="wertZeichenkette" type="string" maxOccurs="unbounded" />
+			<element name="wertNummer" type="integer" maxOccurs="unbounded" />
+			<element name="wertZahl" type="decimal" maxOccurs="unbounded" />
+			<element name="wertDatum" type="date" maxOccurs="unbounded" />
+			<element name="wertBoolean" type="boolean" maxOccurs="unbounded" />
+			<element name="grenzenNummer">
+				<complexType>
+					<sequence>
+						<element name="untere" type="integer" minOccurs="0" />
+						<element name="obere" type="integer" minOccurs="0" />
+					</sequence>
+				</complexType>
+			</element>
+			<element name="grenzenZahl">
+				<complexType>
+					<sequence>
+						<element name="untere" type="decimal" minOccurs="0" />
+						<element name="obere" type="decimal" minOccurs="0" />
+					</sequence>
+				</complexType>
+			</element>
+			<element name="grenzenDatum">
+				<complexType>
+					<sequence>
+						<element name="untere" type="date" minOccurs="0" />
+						<element name="obere" type="date" minOccurs="0" />
+					</sequence>
+				</complexType>
+			</element>
+		</choice>
+	</complexType>
+	<complexType name="AskPfad">
+		<simpleContent>
+			<extension base="string" />
+		</simpleContent>
+	</complexType>
+</schema>

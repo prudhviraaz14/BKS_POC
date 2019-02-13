@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:st="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-VF-SimpleTypes-001" xmlns:fp="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-VF-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-VF-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation>XML schema definition for endpoint BKS-WBCI
+History of Changes:
+Vers.	Date						Author				Comment
+====	==========		==========	===================================================
+0.1 		2013-07-09			Reto Renner		Initial version based on wbciCustimerInfoPorting(3).xsd from M.Abraham
+1.0		2013-08-13			Marco Abraham	Final version including type defintion
+1.1		2013-08-16	        M.El Hilali	        including sbus name sapces
+1.2		2013-09-06			Marco Abraham	added internal VF namspace
+1.3		2013-10-23			Rusbe Makuie	Added a type definition for nachname
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-VF-SimpleTypes-001" schemaLocation="BKS-WBCI-VF-SimpleTypes-001.xsd"/>
+	<!-- ================ Endpoint Specific Simple Types =================================== -->
+	<!-- ================ Endpoint Specific Complex Types ================================= -->
+	<!-- ================ Endpoint Specific Operations =====================================-->
+	<xsd:element name="WbciCustomerInfoForPortingRequest">
+		<xsd:annotation>
+			<xsd:documentation>Description of input document</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Endkunde">
+					<xsd:complexType>
+						<xsd:choice>
+							<xsd:element name="person">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="anrede" type="xsd:string"/>
+										<xsd:element name="vorname" type="xsd:string" minOccurs="0"/>
+										<xsd:element name="nachname" type="xsd:string"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="firma">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="anrede" type="xsd:string"/>
+										<xsd:element name="firmenname" type="xsd:string"/>
+										<xsd:element name="firmennameZweiterTeil" type="xsd:string" minOccurs="0"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:choice>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="WeitereAnschlussinhaber" minOccurs="0" maxOccurs="2">
+					<xsd:complexType>
+						<xsd:choice>
+							<xsd:element name="person">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="anrede" type="xsd:string"/>
+										<xsd:element name="vorname" type="xsd:string" minOccurs="0"/>
+										<xsd:element name="nachname" type="xsd:string" />
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="firma">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="anrede" type="xsd:string"/>
+										<xsd:element name="firmenname" type="xsd:string"/>
+										<xsd:element name="firmennameZweiterTeil" type="xsd:string" minOccurs="0"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:choice>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Standort" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="postleitzahl" type="st:PostleitzahlType"/>
+							<xsd:element name="ort" type="st:OrtType"/>
+							<xsd:element name="strasse">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="strassenname" type="st:StrassennameType"/>
+										<xsd:element name="hausnummer" type="st:HausnummerType"/>
+										<xsd:element name="hausnummernzusatz" type="st:HausnummernzusatzType" minOccurs="0"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Rufnummernportierung" minOccurs="0">
+					<xsd:complexType>
+						<xsd:choice>
+							<xsd:element name="einzelanschluss">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="rufnummernliste">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element name="zuPortierendeOnkzRnr" maxOccurs="10">
+														<xsd:complexType>
+															<xsd:sequence>
+																<xsd:element name="ONKZ" type="st:OnkzType"/>
+																<xsd:element name="Rufnummer" type="st:RufnummerType"/>
+															</xsd:sequence>
+														</xsd:complexType>
+													</xsd:element>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="anlagenanschluss">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="onkzDurchwahlAbfragestelle">
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element name="ONKZ" type="st:OnkzType"/>
+													<xsd:element name="durchwahlnummer" type="st:DurchwahlnummerType"/>
+													<xsd:element name="abfragestelle" type="st:AbfragestelleType"/>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="zuPortierenderRufnummernblock" maxOccurs="5">
+											<xsd:annotation>
+												<xsd:documentation>Auflistung der zu portierenden Rufnummernblöcke</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:sequence>
+													<xsd:element name="rnrBlockVon" type="st:rnrBlockVonType">
+														<xsd:annotation>
+															<xsd:documentation>Untergrenze innerhalb des zu portierenden Rufnummernblocks</xsd:documentation>
+														</xsd:annotation>
+													</xsd:element>
+													<xsd:element name="rnrBlockBis" type="st:rnrBlockBisType">
+														<xsd:annotation>
+															<xsd:documentation>Obergrenze innerhalb des zu portierenden Rufnummernblocks</xsd:documentation>
+														</xsd:annotation>
+													</xsd:element>
+												</xsd:sequence>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:choice>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="WbciCustomerInfoForPortingResponse">
+		<xsd:annotation>
+			<xsd:documentation>Description of output document</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="SucessIndicator" type="xsd:boolean"/>
+				<xsd:element name="ErrorCode" minOccurs="0"/>
+				<xsd:element name="ErrorText" minOccurs="0"/>
+				<xsd:element name="Kundendaten" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Kundennummer" type="st:KundennummerType"/>
+							<xsd:element name="ProviderCode" type="st:ServiceProviderCodeType"/>
+							<xsd:element name="TASI" type="st:TasiType" minOccurs="0"/>
+							<xsd:element name="DtagVertragsnummer" type="st:DtagVertragsnummerType" minOccurs="0"/>
+							<xsd:element name="Technologie" type="st:TechnologieType"/>
+							<xsd:element name="ServiceSubscriptionId" type="st:ServiceSubscriptionIdType"/>
+							<xsd:element name="CCMContractNumber" type="st:CCMContractNumberType"/>
+							<xsd:element name="ExternerAuftrag" minOccurs="0">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="CustomerIntention" type="st:CustomerIntentionType"/>
+										<xsd:element name="Barcode" type="st:BarcodeType"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="Eigenkuendigung" type="xsd:boolean" minOccurs="0"/>
+							<xsd:element name="Kuendigungsdatum" type="st:KuendigungsdatumType" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="NamensVergleich" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Success" type="xsd:boolean"/>
+							<xsd:element name="NameKorrekt" type="xsd:boolean"/>
+							<xsd:element name="VornameKorrekt" type="xsd:boolean" minOccurs="0"/>
+							<xsd:element name="WAIKorrekt" type="xsd:boolean" minOccurs="0"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Adressvergleich" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Success" type="xsd:boolean"/>
+							<xsd:element name="StrassennameKorrekt" type="xsd:boolean"/>
+							<xsd:element name="HausnummerKorrekt" type="xsd:boolean"/>
+							<xsd:element name="PlzKorrekt" type="xsd:boolean"/>
+							<xsd:element name="OrtKorrekt" type="xsd:boolean"/>
+							<xsd:element name="AdresseAbweichend" minOccurs="0">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="postleitzahl" type="st:PostleitzahlType"/>
+										<xsd:element name="ort" type="st:OrtType"/>
+										<xsd:element name="strassenname" type="st:StrassennameType"/>
+										<xsd:element name="hausnummer" type="st:HausnummerResponseType"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="Rufnummernvergleich" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="Success" type="xsd:boolean"/>
+							<xsd:choice>
+								<xsd:element name="Einzelrufnummern">
+									<xsd:complexType>
+										<xsd:sequence>
+											<xsd:element name="Rufnummern" maxOccurs="10">
+												<xsd:complexType>
+													<xsd:sequence>
+														<xsd:element name="ONKZ" type="st:OnkzType"/>
+														<xsd:element name="Rufnummer" type="st:RufnummerType"/>
+													</xsd:sequence>
+												</xsd:complexType>
+											</xsd:element>
+										</xsd:sequence>
+									</xsd:complexType>
+								</xsd:element>
+								<xsd:element name="Anlagenanschluss"/>
+							</xsd:choice>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

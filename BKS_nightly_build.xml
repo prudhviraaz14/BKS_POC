@@ -1,0 +1,228 @@
+<!--
+	ANT Build file for the BKS project
+
+	HEADER       : $Header:   //CMI_PROJECTS/archives/projects/NightlyBuild/BKS_nightly_build.xml-arc   1.15   Jun 06 2017 11:04:50   sindhu.kundapur  $
+	REVISION     : $Revision:   1.15  $
+	MODULENAME   : $Workfile:   BKS_nightly_build.xml  $
+	Last Change  : $Date:   Jun 06 2017 11:04:50  $
+	AUTHOR       : N.Dortmann (CETEQ)
+	DESCRIPTION  : Nightly Buildfile for Ant (BKS)
+	HISTORY      : $Log:   //CMI_PROJECTS/archives/projects/NightlyBuild/BKS_nightly_build.xml-arc  $
+
+   Rev 1.15   Jun 06 2017 11:04:50   sindhu.kundapur
+1.15 revision
+
+   Rev 1.14   Jul 15 2016 12:00:20   subitsha.u
+1.14
+
+   Rev 1.13   22 Jun 2015 12:41:54   samir-kumar.pradhan
+with EAI
+
+   Rev 1.11   24 Feb 2014 09:50:16   bala.nandam
+1.10 not udpated correctly. 1.11 updates with correct details for WBCI phase 2.
+
+   Rev 1.10   24 Feb 2014 08:23:38   bala.nandam
+WBCI phase 2
+
+   Rev 1.9   11 Nov 2013 05:38:22   bala.nandam
+Addeded WBCI comp
+
+   Rev 1.7   Jul 06 2012 11:25:12   nikolai.dortmann
+Add build on
+
+   Rev 1.6   Jun 12 2012 16:57:22   nikolai.dortmann
+Jenkins Version
+
+   Rev 1.5   Feb 24 2012 09:32:44   nikolai.dortmann
+Add changes from build.xml 1.17
+
+   Rev 1.4   Oct 28 2011 16:29:46   nikolai.dortmann
+Add changes from build.xml 1.16
+
+   Rev 1.3   Oct 25 2011 09:47:42   nikolai.dortmann
+Add changes from build.xml 1.15
+
+   Rev 1.2   Aug 25 2011 11:00:26   nikolai.dortmann
+Delete old cksum files
+
+   Rev 1.1   Jul 14 2011 17:17:00   nikolai.dortmann
+Bug fix
+
+   Rev 1.0   Jul 13 2011 14:46:12   nikolai.dortmann
+Initial revision.
+
+-->
+<project name="BKS" default="nightlybuild" basedir=".">
+	<description>
+		ANT build file for the BKS project
+	</description>
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+	<!--******************
+		*** PROPERTIES ***
+		******************-->
+	<property environment="env" />
+
+	<tstamp />
+	<property name="buildname" value="BKS_${env.BUILD_ID}"/>
+
+	<property name="generatedsrc" location="${basedir}/BKS/BKS/generated" />
+	<property name="src" location="${basedir}/BKS/BKS/src" />
+	<property name="bin" location="${basedir}/BKS/BKS/WEB-INF/classes" />
+	<property name="lib" location="${basedir}/BKS/BKS/WEB-INF/lib" />
+	<property name="xsd" location="${basedir}/BKS/BKS/xsd" />
+	<property name="doc" location="${basedir}/BKS/BKS/doc" />
+
+	<!--*****************
+		*** INFO TASK ***
+		*****************-->
+	<target name="EnvInfo">
+    	<echo message="*****************************************" />
+		<echo message="os.name             : ${os.name}"/>
+    	<echo message="ant.file            : ${ant.file}"/>
+    	<echo message="ant.project.name    : ${ant.project.name}" />
+    	<echo message="ant.java.version    : ${ant.java.version}" />
+    	<echo message="java.version        : ${java.version}" />
+		<echo message="java.home           : ${java.home}" />
+		<echo message="-----------------------------------------" />
+		<echo message="build on            : ${env.NODE_NAME}" />
+		<echo message="devbuild            : ${env.DEV_NAME}" />
+		<echo message="buildname           : ${buildname}" />
+		<echo message="workspace           : ${env.WORKSPACE}" />
+		<echo message="*****************************************" />
+  	</target>
+
+	<!--*****************
+		*** INIT TASK ***
+		*****************-->
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${bin}" />
+		<mkdir dir="${doc}" />
+		<mkdir dir="${generatedsrc}" />
+		<mkdir dir="${env.cmi_warcksum_dir}" />
+	</target>
+
+	<!--*****************************
+		*** COMPILE JAR XJC TASKS ***
+		*****************************-->
+	<target name="XjcCompileJar" depends="SetXJC, compile_epsm_ccm, delete_duplicates" />
+
+	<target name="SetXJC">
+		<path id="classpath">
+			<!--for use with bundled ant -->
+			<fileset dir="${lib}" includes="*.jar" />
+		</path>
+
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath refid="classpath" />
+		</taskdef>
+	</target>
+
+	<!--compile Java source files-->
+	<target name="compile_epsm_ccm" description="Compile all Java source files">
+	    <xjc binding="${xsd}/binding-003.xjb" extension="true" schema="${xsd}/basic.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-002.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-003.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-004.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-005.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-006.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKSReco-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-WBCI-VF-002.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-WBCI-VF-KIAS-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-WBCI-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-001.xjb" extension="true" schema="${xsd}/EPSM-CCM-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/EPSM-BKS-GetCcbOpenOrder-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>		
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/EPSM-CCM-ConsolidateSubscriptionData-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/GetFNPCustomerRecoDataCallback-004.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>		
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/COM-PROV-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>		
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/VFZHCustomer-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>		
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/SIDCOM-FNPOrder-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-OSF-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
+		<delete dir="${generatedsrc}/de/arcor/aaw/auftragsmodell" />
+		<delete includeemptydirs="true">
+			<fileset dir="${generatedsrc}/net">
+				<exclude name="**/orderschema/*" />
+				<exclude name="**/epsm_bks_getccbopenorder_001/*" />
+				<exclude name="**/epsm_ccm_consolidatesubscriptiondata_001/*"/>
+			</fileset>
+		</delete>
+		<javac srcdir="${generatedsrc}" destdir="${bin}" debug="on">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<!-- workaround for exist classes in aawSprache.jar -->
+	<target name="delete_duplicates" description="Deletes classes">
+		<delete dir="${bin}/de/arcor/aaw/auftragsmodell" />
+		<delete dir="${generatedsrc}/de/arcor/aaw/auftragsmodell" />
+	</target>
+
+	<!--***************************
+		*** GLOBAL COMPILE TASK ***
+		***************************-->
+	<target name="compile" description="Compiles all source files">
+		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true">
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<!--***********************
+		*** MOVE WORKAROUND ***
+		***********************-->
+	<target name="moveWorkaround">
+		<!-- move log4j.dtd from etc to classes -->
+		<move file="${basedir}/BKS/BKS/WEB-INF/etc/log4j.dtd" tofile="${basedir}/BKS/BKS/WEB-INF/classes/log4j.dtd" />
+
+		<!-- move ehcache.xsd from etc to classes/schema -->
+		<move file="${basedir}/BKS/BKS/WEB-INF/etc/ehcache.xsd" tofile="${basedir}/BKS/BKS/WEB-INF/classes/schema/ehcache.xsd" />
+
+		<!-- move etc to classes/etc -->
+		<move todir="${basedir}/BKS/BKS/WEB-INF/classes/etc">
+			<fileset dir="${basedir}/BKS/BKS/WEB-INF/etc" />
+		</move>
+
+		<!-- move xsd to classes/schema -->
+		<move todir="${basedir}/BKS/BKS/WEB-INF/classes/schema">
+			<fileset dir="${basedir}/BKS/BKS/xsd" />
+		</move>
+	</target>
+
+	<!--**********************
+		*** CREATE BKS.WAR ***
+		**********************-->
+	<target name="create_war_package" depends="compile, moveWorkaround, cmi_warfile_cksum" description="Assemble the tested application code and resources into a distributable archive.">
+		<delete includeemptydirs="true">
+			<fileset dir="${basedir}/BKS/BKS/doc" />
+			<fileset dir="${basedir}/BKS/BKS/etc" />
+			<fileset dir="${basedir}/BKS/BKS/WEB-INF/lib/backup" />
+		</delete>
+
+		<war warfile="BKS/BKS/BKS.war" basedir="BKS/BKS/" webxml="BKS/BKS/WEB-INF/web.xml" excludes="**/web.xml,**/WEB-INF/lib/servlet-api.jar" />
+	</target>
+
+	<!--*********************
+		*** CREATE CKSUMS ***
+		*********************-->
+	<target name="cmi_warfile_cksum">
+		<delete>
+			<fileset dir="${env.cmi_warcksum_dir}" includes="*.cksum" />
+		</delete> 
+		<java jar="${env.WORKSPACE}/CMITools.jar" fork="true" output="${env.cmi_warcksum_dir}/${buildname}_WAR.cksum">
+			<arg value="-cksum" />
+			<arg value="${basedir}/BKS/BKS" />
+		</java>
+		<replace file="${env.cmi_warcksum_dir}/${buildname}_WAR.cksum" token="${basedir}\BKS" value="." />
+		<replace file="${env.cmi_warcksum_dir}/${buildname}_WAR.cksum" token="\" value="/" />
+	</target>
+	
+	<target name="nightlybuild" depends="EnvInfo, init, XjcCompileJar, create_war_package" />
+
+</project>

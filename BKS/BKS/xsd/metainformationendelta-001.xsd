@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.arcor.net/auftragsmodell/metainformtionendelta-001"
+	xmlns="http://www.arcor.net/auftragsmodell/metainformtionendelta-001"
+	xmlns:mi="http://www.arcor.net/auftragsmodell/metainformationen-002"
+	elementFormDefault="qualified">
+
+	<xs:import
+		namespace="http://www.arcor.net/auftragsmodell/metainformationen-002"
+		schemaLocation="metainformationen-002.xsd" />
+
+	<xs:element name="metaInformationenDelta"
+		type="MetaInformationenDelta" />
+	<xs:complexType name="MetaInformationenDelta">
+		<xs:sequence>
+			<xs:element name="basisVersion" type="xs:long" />
+			<xs:element name="quelle" type="xs:string" />
+			<xs:element name="metainformationendeltaelement"
+				type="MetainformationenDeltaElement" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="metainformationenDeltaElement"
+		type="MetainformationenDeltaElement" />
+	<xs:complexType name="MetainformationenDeltaElement"
+		abstract="true">
+		<xs:sequence>
+			<xs:element name="elementPfad" type="xs:string" />
+			<xs:element name="meldung" type="mi:Meldung" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="attributDefinitionAendern"
+		type="AttributDefinitionAendern" />
+	<xs:complexType name="AttributDefinitionAendern" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="MetainformationenDeltaElement">
+				<xs:sequence>
+					<xs:element name="attributname" type="xs:string" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="attributDefinitionEinfuegen"
+		type="AttributDefinitionEinfuegen" />
+	<xs:complexType name="AttributDefinitionEinfuegen">
+		<xs:complexContent>
+			<xs:extension base="AttributDefinitionAendern">
+				<xs:sequence />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="attributDefinitionLoeschen"
+		type="AttributDefinitionLoeschen" />
+	<xs:complexType name="AttributDefinitionLoeschen">
+		<xs:complexContent>
+			<xs:extension base="AttributDefinitionAendern">
+				<xs:sequence />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="elementDefinitionEinfuegen"
+		type="ElementDefinitionEinfuegen" />
+	<xs:complexType name="ElementDefinitionEinfuegen">
+		<xs:complexContent>
+			<xs:extension base="MetainformationenDeltaElement">
+				<xs:sequence>
+					<xs:element name="typ" type="xs:string"
+						minOccurs="0" maxOccurs="1" />
+					<xs:element name="metaModellKlasse" type="xs:string"
+						minOccurs="0" maxOccurs="1" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="elementDefinitionLoeschen"
+		type="ElementDefinitionLoeschen" />
+	<xs:complexType name="ElementDefinitionLoeschen">
+		<xs:complexContent>
+			<xs:extension base="MetainformationenDeltaElement">
+				<xs:sequence />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="referenzdatumDefinitionEinfuegen"
+		type="ReferenzdatumDefinitionEinfuegen" />
+	<xs:complexType name="ReferenzdatumDefinitionEinfuegen">
+		<xs:complexContent>
+			<xs:extension base="AttributDefinitionAendern">
+				<xs:sequence>
+					<xs:element name="bezeichnung" type="xs:string" />
+					<xs:element name="id" minOccurs="0"
+						maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AttributDefinitionNameAendern">
+		<xs:complexContent>
+			<xs:extension base="AttributDefinitionAendern">
+				<xs:sequence>
+					<xs:element name="neuerName" type="xs:string" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

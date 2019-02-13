@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapjms="http://www.w3.org/2008/07/soap/bindings/JMS/" xmlns:wsdlbase="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" xmlns:com="http://www.vodafone.de/ESB/Service/SBUS/COM/COM-001" xmlns:comprov="http://www.vodafone.de/ESB/Service/SBUS/COM/COM-PROV-001" xmlns:tns="http://www.vodafone.de/ESB/Service/SBUS/COM-001.wsdl" xmlns:ns="http://www.vodafone.de/ESB/Schema/Common/BaseTypes-ESB-001" xmlns:ns1="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/COM-001.wsdl">
+  <wsdl:import namespace="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" location="BaseAbstract-001.wsdl"/>
+  <wsoap12:annotation>
+    <wsoap12:documentation>
+      History of Changes:
+      0.4 15.06.2010 Reto Renner Initial version for CPCOM V1 Phase 2
+      0.5 12.07.2010 Reto Renner new operation GenerateNewMicRequest added
+      0.6 06.08.2010 Reto Renner JMS binding deleted, HTTP binding inserted (according Andre Genser)
+      0.7 12.01.2011 Reto Renner GetCurrentSomRequest added
+    </wsoap12:documentation>
+  </wsoap12:annotation>
+  <wsdl:types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <import namespace="http://www.vodafone.de/ESB/Service/SBUS/COM/COM-001" schemaLocation="COM-001.xsd"/>
+      <import namespace="http://www.vodafone.de/ESB/Service/SBUS/COM/COM-PROV-001" schemaLocation="COM-PROV-001.xsd"/>
+    </schema>
+  </wsdl:types>
+  <wsdl:message name="CreateFNPOrderRequest">
+    <wsdl:part name="CreateFNPOrderRequest" element="com:CreateFNPOrderRequest"/>
+  </wsdl:message>
+  <wsdl:message name="CreateFNPOrderResponse">
+    <wsdl:part name="CreateFNPOrderResponse" element="com:CreateFNPOrderResponse"/>
+  </wsdl:message>
+  <wsdl:message name="OnOrderStatusChangeToFinalRequest">
+    <wsdl:part name="OnOrderStatusChangeToFinalRequest" element="com:OnOrderStatusChangeToFinalRequest"/>
+  </wsdl:message>
+  <wsdl:message name="OnOrderStatusChangeRequest">
+    <wsdl:part name="OnOrderStatusChangeRequest" element="com:OnOrderStatusChangeRequest"/>
+  </wsdl:message>
+  <wsdl:message name="IdentifyFNPCustomerRequest">
+    <wsdl:part name="IdentifyFNPCustomerRequest" element="com:IdentifyFNPCustomerRequest"/>
+  </wsdl:message>
+  <wsdl:message name="DeactivateFNPCustomerRequest">
+    <wsdl:part name="DeactivateFNPCustomerRequest" element="com:DeactivateFNPCustomerRequest"/>
+  </wsdl:message>
+  <wsdl:message name="CreateLegacyFNPOrderRequest">
+    <wsdl:part name="CreateLegacyFNPOrderRequest" element="com:CreateLegacyFNPOrderRequest"/>
+  </wsdl:message>
+  <wsdl:message name="GetOrderDetailsRequest">
+    <wsdl:part name="GetOrderDetailsRequest" element="comprov:GetOrderDetailsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="GetOrderDetailsResponse">
+    <wsdl:part name="GetOrderDetailsResponse" element="comprov:GetOrderDetailsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GenerateNewMicRequest">
+    <wsdl:part name="GenerateNewMicRequest" element="comprov:GenerateNewMicRequest"/>
+  </wsdl:message>
+  <wsdl:message name="GenerateNewMicResponse">
+    <wsdl:part name="GenerateNewMicResponse" element="comprov:GenerateNewMicResponse"/>
+  </wsdl:message>
+  <wsdl:message name="GetCurrentSomRequest">
+    <wsdl:part name="GetCurrentSomRequest" element="comprov:GetCurrentSomRequest"/>
+  </wsdl:message>
+  <wsdl:message name="GetCurrentSomResponse">
+    <wsdl:part name="GetCurrentSomResponse" element="comprov:GetCurrentSomResponse"/>
+  </wsdl:message>
+  <wsdl:message name="SomOrderByBarcodeRequest">
+    <wsdl:part name="SomOrderByBarcodeRequest" element="comprov:SomOrderByBarcodeRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SomOrderByBarcodeResponse">
+    <wsdl:part name="SomOrderByBarcodeResponse" element="comprov:SomOrderByBarcodeResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CheckOrderEnrichedRequest">
+    <wsdl:part name="CheckOrderEnrichedRequest" element="comprov:CheckOrderEnrichedRequest"/>
+  </wsdl:message>
+  <wsdl:message name="CheckOrderEnrichedResponse">
+    <wsdl:part name="CheckOrderEnrichedResponse" element="comprov:CheckOrderEnrichedResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="COMPortType">
+    <wsdl:operation name="CreateFNPOrder">
+      <wsdl:input name="CreateFNPOrderRequest" message="tns:CreateFNPOrderRequest"/>
+      <wsdl:output name="CreateFNPOrderResponse" message="tns:CreateFNPOrderResponse"/>
+      <wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+      <wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetOrderDetails">
+      <wsdl:input name="GetOrderDetailsRequest" message="tns:GetOrderDetailsRequest"/>
+      <wsdl:output name="GetOrderDetailsResponse" message="tns:GetOrderDetailsResponse"/>
+      <wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+      <wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+    </wsdl:operation>
+    <wsdl:operation name="OnOrderStatusChangeToFinal">
+      <wsdl:input name="OnOrderStatusChangeToFinalRequest" message="tns:OnOrderStatusChangeToFinalRequest"/>
+    </wsdl:operation>
+    <wsdl:operation name="OnOrderStatusChange">
+      <wsdl:input name="OnOrderStatusChangeRequest" message="tns:OnOrderStatusChangeRequest"/>
+    </wsdl:operation>
+    <wsdl:operation name="IdentifyFNPCustomer">
+      <wsdl:input name="IdentifyFNPCustomerRequest" message="tns:IdentifyFNPCustomerRequest"/>
+    </wsdl:operation>
+    <wsdl:operation name="DeactivateFNPCustomer">
+      <wsdl:input name="DeactivateFNPCustomerRequest" message="tns:DeactivateFNPCustomerRequest"/>
+    </wsdl:operation>
+    <wsdl:operation name="CreateLegacyFNPOrder">
+      <wsdl:input name="CreateLegacyFNPOrderRequest" message="tns:CreateLegacyFNPOrderRequest"/>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNewMic">
+      <wsdl:input name="GenerateNewMicRequest" message="tns:GenerateNewMicRequest"/>
+      <wsdl:output name="GenerateNewMicResponse" message="tns:GenerateNewMicResponse"/>
+      <wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+      <wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetCurrentSom">
+      <wsdl:input name="GetCurrentSomRequest" message="tns:GetCurrentSomRequest"/>
+      <wsdl:output name="GetCurrentSomResponse" message="tns:GetCurrentSomResponse"/>
+      <wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+      <wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+    </wsdl:operation>
+    <wsdl:operation name="SomOrderByBarcode">
+      <wsdl:input name="SomOrderByBarcodeRequest" message="tns:SomOrderByBarcodeRequest"></wsdl:input>
+      <wsdl:output name="SomOrderByBarcodeResponse" message="tns:SomOrderByBarcodeResponse"></wsdl:output>
+      <wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+      <wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+    </wsdl:operation>
+    <wsdl:operation name="CheckOrderEnriched">
+      <wsdl:input name="CheckOrderEnrichedRequest" message="tns:CheckOrderEnrichedRequest"/>
+      <wsdl:output name="CheckOrderEnrichedResponse" message="tns:CheckOrderEnrichedResponse"/>
+      <wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+      <wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="COMJMSBinding" type="tns:COMPortType">
+    <wsoap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <!--<wsoap12:binding style="document" transport="http://www.w3.org/2008/07/soap/bindings/JMS/"/>-->
+    <wsdl:operation name="CreateFNPOrder">
+      <wsoap12:operation soapAction="/COM-001/CreateFNPOrder" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="CreateFNPOrderRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body parts="CreateFNPOrderResponse" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="functionalESBException">
+        <wsoap12:fault name="functionalESBException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="technicalESBException">
+        <wsoap12:fault name="technicalESBException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="OnOrderStatusChangeToFinal">
+      <wsoap12:operation soapAction="/COM-001/OnOrderStatusChangeToFinal" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="OnOrderStatusChangeToFinalRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="OnOrderStatusChange">
+      <wsoap12:operation soapAction="/COM-001/OnOrderStatusChange" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="OnOrderStatusChangeRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="IdentifyFNPCustomer">
+      <wsoap12:operation soapAction="/COM-001/IdentifyFNPCustomer" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="IdentifyFNPCustomerRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="CreateLegacyFNPOrder">
+      <wsoap12:operation soapAction="/COM-001/CreateLegacyFNPOrder" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="CreateLegacyFNPOrderRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="DeactivateFNPCustomer">
+      <wsoap12:operation soapAction="/COM-001/DeactivateFNPCustomer" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="DeactivateFNPCustomerRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="GenerateNewMic">
+      <wsoap12:operation soapAction="/COM-001/GenerateNewMic" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="GenerateNewMicRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body parts="GenerateNewMicResponse" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="functionalESBException">
+        <wsoap12:fault name="functionalESBException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="technicalESBException">
+        <wsoap12:fault name="technicalESBException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetOrderDetails">
+      <wsoap12:operation soapAction="/COM-001/GetOrderDetails" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="GetOrderDetailsRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body parts="GetOrderDetailsResponse" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="functionalESBException">
+        <wsoap12:fault name="functionalESBException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="technicalESBException">
+        <wsoap12:fault name="technicalESBException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCurrentSom">
+      <wsoap12:operation soapAction="/COM-001/GetCurrentSom" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="GetCurrentSomRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body parts="GetCurrentSomResponse" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="functionalESBException">
+        <wsoap12:fault name="functionalESBException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="technicalESBException">
+        <wsoap12:fault name="technicalESBException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="SomOrderByBarcode">
+      <wsoap12:operation soapAction="/COM-001/SomOrderByBarcode" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="SomOrderByBarcodeRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body parts="SomOrderByBarcodeResponse" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="functionalESBException">
+        <wsoap12:fault name="functionalESBException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="technicalESBException">
+        <wsoap12:fault name="technicalESBException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CheckOrderEnriched">
+      <wsoap12:operation soapAction="/COM-001/CheckOrderEnriched" soapActionRequired="true" style="document"/>
+      <soapjms:targetService>COM</soapjms:targetService>
+      <wsdl:input>
+        <wsoap12:body parts="CheckOrderEnrichedRequest" use="literal"/>
+        <wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body parts="CheckOrderEnrichedResponse" use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="functionalESBException">
+        <wsoap12:fault name="functionalESBException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="technicalESBException">
+        <wsoap12:fault name="technicalESBException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="COMService">
+    <wsdl:port name="COMServiceJMSEndpoint" binding="tns:COMJMSBinding">
+      <wsoap12:address location="jms:queue:endpointQeue"/>
+      <!-- optional: replaces "wsoap12:address": -->
+      <!--
+        <jms:address destinationStyle="queue" jndiDestinationName="endpointQeue" jndiConnectionFactoryName="jmsFactory">
+        </jms:address>
+      -->
+    </wsdl:port>
+  </wsdl:service>
+  <!-- xmlns:jms="http://cxf.apache.org/transports/jms" -->
+</wsdl:definitions>

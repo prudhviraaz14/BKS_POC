@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fp="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>		
+		Vers.	Date					Autor			Comment
+		====	==========	            		===================================================
+        0.1 		2013-07-26		M.El Hilali      Initial version
+        1.0		2013-08-13		M.Abraham	Final version 
+        1.1		2013-08-15		M.Abraham Add simple tpyes for WbciGetDtagContractNumber
+          </xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="string4">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="string5">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="string15">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="string16">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="string30">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+		<xs:simpleType name="string100">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="pkiType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="D009"/>
+			<xs:enumeration value="D056"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="KundennummerType">
+		<xs:annotation>
+			<xs:documentation>Kundennummer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ServiceProviderCodeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TasiType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="14"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DtagVertragsnummerType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TechnologieType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="25"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ServiceSubscriptionIdType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CCMContractNumberType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="12"/>
+			<xs:maxLength value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CustomerIntentionType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BarcodeType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="KuendigungsdatumType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:date"/>
+	</xs:simpleType>
+	<xs:simpleType name="PostleitzahlType">
+		<xs:annotation>
+			<xs:documentation>Postleitzahl</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OrtType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StrassennameType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HausnummerType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HausnummerResponseType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HausnummernzusatzType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OnkzType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RufnummerType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DurchwahlnummerType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AbfragestelleType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="rnrBlockVonType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="rnrBlockBisType">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

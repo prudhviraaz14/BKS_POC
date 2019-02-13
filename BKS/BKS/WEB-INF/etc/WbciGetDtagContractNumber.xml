@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveDataByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveDataByAccessNumber */  
+			AN.CUSTOMER_NUMBER, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, C.CLASSIFICATION_RD
+        FROM CUSTOMER C,ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS
+        WHERE  AN.START_RANGE_STRING = #value#
+        AND AN.TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED')
+    </select>
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveDataByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveDataByAccessNumber */  
+        	AN.CUSTOMER_NUMBER, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, C.CLASSIFICATION_RD
+        FROM CUSTOMER C,ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC,SERVICE_SUBSCRIPTION SS
+        WHERE  AN.START_RANGE_STRING = #value#
+        AND AN.TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+        AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+                                WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)	   
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED')        
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveDataByTasi" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveDataByTasi */  
+			AN.CUSTOMER_NUMBER, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, C.CLASSIFICATION_RD
+        FROM CUSTOMER C,ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED')
+    </select>
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveDataByTasi" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveDataByTasi */  
+        	AN.CUSTOMER_NUMBER, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, C.CLASSIFICATION_RD
+        FROM CUSTOMER C,ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC,SERVICE_SUBSCRIPTION SS
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+        AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+                                WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)	   
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED')        
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveDeactRecByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveDeactRecByAccessNumber */  
+			AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND NOT EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC WHERE
+				        AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+				        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+				        AND CSC.EFFECTIVE_FLAG = 'N' )
+    </select>
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveDeactRecByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveDeactRecByAccessNumber */  
+			AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND NOT EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC WHERE
+				        AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+				        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+				        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                        		CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ))
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveConfigValueForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveConfigValueForSerSu */   
+            CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+            CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveConfigValueForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveConfigValueForSerSu */   
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                    CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveAccNumForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveAccNumForSerSu */   
+            AN.ACCESS_NUMBER,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+            ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveAccNumForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveAccNumForSerSu */   
+        AN.ACCESS_NUMBER,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                    CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveRootCustomer */  
+        CUSTOMER_NUMBER AS ROOT_CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_FLAG = 'N'  
+                AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveRootCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveRootCustomer */  CUSTOMER_NUMBER AS ROOT_CUSTOMER_NUMBER ,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_DATE =  
+                (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                    WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                    AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                )  
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveBundleData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveBundleData */   
+            SS.SERVICE_SUBSCRIPTION_ID, SS.SERVICE_CODE
+        FROM 
+            BUNDLE_ITEM BI, BUNDLE_ITEM BI2, SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI2.SUPPORTED_OBJECT_ID = #value#
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.EFFECTIVE_FLAG = 'N'
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveBundleData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ rule WbciGetDtagContractNumber.onl.RetrieveBundleData */   
+            SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE_ITEM BI2,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI2.SUPPORTED_OBJECT_ID = #value#
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                 BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                 AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI3 WHERE
+                                BI2.BUNDLE_ITEM_ID = BI3.BUNDLE_ITEM_ID 
+                                AND BI3.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+
+    <select id = "WbciGetDtagContractNumber.effonl.RetrieveChildService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.effonl.RetrieveChildService */  
+        SS.SERVICE_CODE 
+        FROM SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SD
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+        AND SS.STATE_RD IN ('SUBSCRIBED') 
+    </select>
+    <select id = "WbciGetDtagContractNumber.onl.RetrieveChildService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciGetDtagContractNumber.onl.RetrieveChildService */  
+        SS.SERVICE_CODE 
+        FROM SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SD
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+        AND SS.STATE_RD IN ('SUBSCRIBED') 
+    </select>
+    
+</sqlMap>

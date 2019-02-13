@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "effonl.RetrieveAccessNumberRanger" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveAccessNumberRanger */  AN.CUSTOMER_NUMBER, AN.CONFIG_SERVICE_CHAR_ID FROM 
+         ACCESS_NUMBER  AN, 
+         CONFIG_SERVICE_CHARACTERISTIC csc 
+        WHERE TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM') AND 
+        (AN.START_RANGE_STRING >  #shortnumber#  AND AN.START_RANGE_STRING &lt;= #accessnumber# 
+        AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        and AN.CONFIG_SERVICE_CHAR_ID = csc.CONFIG_SERVICE_CHAR_ID 
+        and csc.effective_flag ='N' and csc.effective_status = 'ACTIVE' 
+         AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+    </select>
+
+    <select id = "effonl.RetrieveCustomerRanger" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveCustomerRanger */  C.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE , C.CATEGORY_RD 
+                , C.CLASSIFICATION_RD FROM CONFIG_SERVICE_CHARACTERISTIC CSC, 
+                ENTITY E, SERVICE_SUBSCRIPTION SS, CUSTOMER C WHERE 
+        CSC.CONFIG_SERVICE_CHAR_ID IN (select * from THE (select (string2Row(#cscIdList#)) as string_To_Row_Type from dual)) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND (soundex(E.NAME) = soundex( #lastName# ) OR #lastName# is null)
+        AND (SOUNDEX(E.FORENAME) = soundex(#firstName#) or E.FORENAME is null or #firstName#  is null) 
+        AND E.CUSTOMER_NUMBER IN (select * from THE (select (string2Row(#custNumList#)) as string_To_Row_Type from dual)) 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 3 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND SS.STATE_RD in ('SUBSCRIBED','SUSPENDED')
+    </select>
+
+    <select id = "effonl.RetrieveRootCustomerRanger" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveRootCustomerRanger */  CUSTOMER_NUMBER, NULL ASSOCIATED_CUSTOMER_NUMBER  FROM 
+        (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C 
+           WHERE C.EFFECTIVE_FLAG = 'N' 
+           AND C.EFFECTIVE_STATUS = 'ACTIVE' 
+        ) 
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL 
+        START WITH CUSTOMER_NUMBER = #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+                
+    <select id = "effonl.RetrieveOFContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveOFContractData */   PC.PRODUCT_CODE,  
+              PC.PRODUCT_VERSION_CODE,  
+                 PC.PRICING_STRUCTURE_CODE, 
+                 PC.CONTRACT_NUMBER,  
+                  CI.CIO_DATA  
+        FROM 
+               SERVICE_SUBSCRIPTION ss,
+               PRODUCT_SUBSCRIPTION PS, 
+               ORDER_FORM_PRODUCT_COMMIT PC,  
+               COMMISSIONING_INFORMATION CI  
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N' AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_FLAG = 'N' AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+        AND CI.SUPPORTED_OBJECT_ID = PC.CONTRACT_NUMBER 
+        AND CI.SUPPORTED_OBJECT_TYPE_RD = 'O' 
+        AND CI.EFFECTIVE_FLAG = 'N' AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CI.CIO_TYPE_RD = 'Initial CIO'
+    </select>
+                
+    <select id = "effonl.RetrieveSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveSDContractData */   PC.PRODUCT_CODE,  
+                PC.PRODUCT_VERSION_CODE,  
+                PC.PRICING_STRUCTURE_CODE, 
+                PC.PRODUCT_COMMITMENT_NUMBER,  
+                CI.CIO_DATA  
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC,  
+                COMMISSIONING_INFORMATION CI  
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N' AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_FLAG = 'N' AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+        AND CI.SUPPORTED_OBJECT_ID = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND CI.SUPPORTED_OBJECT_TYPE_RD = 'S' 
+        AND CI.EFFECTIVE_FLAG = 'N' AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CI.CIO_TYPE_RD = 'Initial CIO'
+    </select>
+                
+    <select id = "effonl.RetrieveBundledService" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveBundledService */  DISTINCT SS.SERVICE_CODE ,SS.SERVICE_SUBSCRIPTION_ID  
+        FROM BUNDLE_ITEM BI1,
+                BUNDLE_ITEM BI2,
+                SERVICE_SUBSCRIPTION SS 
+        WHERE 
+        BI1.SUPPORTED_OBJECT_ID = #servSubId# 
+        AND BI1.EFFECTIVE_FLAG = 'N' AND BI1.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI1.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI1.BUNDLE_ID = BI2.BUNDLE_ID 
+        AND BI2.SUPPORTED_OBJECT_ID != BI1.SUPPORTED_OBJECT_ID 
+        AND BI2.EFFECTIVE_FLAG = 'N' AND BI2.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI2.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+        AND SS.SERVICE_CODE IN (select * from THE (select (string2Row(#serviceCodes#)) as string_To_Row_Type from dual))
+    </select>
+                
+    <parameterMap id="contractDateMap" class="java.util.Map">
+       <parameter property="result" jdbcType="DATE" javaType="java.sql.Date" mode="OUT"/>
+       <parameter property="contractNumber" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+    </parameterMap>
+
+    <procedure id="effonl.GetEndDate_OF" parameterMap="contractDateMap">
+        {? = call CCM_GET_END_DATE_OF(?)}
+    </procedure>
+                
+    <procedure id="effonl.GetEndDate_SD" parameterMap="contractDateMap">
+        {? = call CCM_GET_END_DATE_SDCPC(?)}
+    </procedure>
+
+    <select id = "onl.RetrieveAccessNumberRanger" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveAccessNumberRanger */  AN.CUSTOMER_NUMBER, AN.CONFIG_SERVICE_CHAR_ID FROM 
+         ACCESS_NUMBER  AN, 
+         CONFIG_SERVICE_CHARACTERISTIC csc 
+        WHERE TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM') AND 
+        (AN.START_RANGE_STRING >  #shortnumber#  AND AN.START_RANGE_STRING &lt;= #accessnumber# 
+        AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        and AN.CONFIG_SERVICE_CHAR_ID = csc.CONFIG_SERVICE_CHAR_ID 
+        and csc.effective_status = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                       WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                         AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+    </select>
+
+    <select id = "onl.RetrieveCustomerRanger" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveCustomerRanger */  C.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE , C.CATEGORY_RD 
+                , C.CLASSIFICATION_RD FROM CONFIG_SERVICE_CHARACTERISTIC CSC, 
+                ENTITY E, SERVICE_SUBSCRIPTION SS, CUSTOMER C WHERE 
+        CSC.CONFIG_SERVICE_CHAR_ID IN (select * from THE (select (string2Row(#cscIdList#)) as string_To_Row_Type from dual)) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                     WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND (soundex(E.NAME) = soundex( #lastName# ) OR #lastName# is null)
+        AND (SOUNDEX(E.FORENAME) = soundex(#firstName#) or E.FORENAME is null or #firstName#  is null) 
+        AND E.CUSTOMER_NUMBER IN (select * from THE (select (string2Row(#custNumList#)) as string_To_Row_Type from dual)) 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                                WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                                  AND C2.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 3 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND SS.STATE_RD in ('SUBSCRIBED','SUSPENDED')
+    </select>
+
+    <select id = "onl.RetrieveRootCustomerRanger" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveRootCustomerRanger */  CUSTOMER_NUMBER, NULL ASSOCIATED_CUSTOMER_NUMBER  FROM 
+        (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C 
+           WHERE C.EFFECTIVE_DATE =  
+                    (SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2 
+                        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER 
+                          AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE) 
+                    ) 
+             AND C.EFFECTIVE_STATUS = 'ACTIVE' 
+        ) 
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL 
+        START WITH CUSTOMER_NUMBER = #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+                
+    <select id = "onl.RetrieveOFContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveOFContractData */   PC.PRODUCT_CODE,  
+                PC.PRODUCT_VERSION_CODE,  
+                PC.PRICING_STRUCTURE_CODE, 
+                PC.CONTRACT_NUMBER,  
+                CI.CIO_DATA  
+        FROM 
+               SERVICE_SUBSCRIPTION ss,
+               PRODUCT_SUBSCRIPTION PS, 
+               ORDER_FORM_PRODUCT_COMMIT PC,  
+               COMMISSIONING_INFORMATION CI  
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID  
+                        ) 
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                         PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                         PC.STATE_RD = 'SIGNED') 
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+        AND CI.SUPPORTED_OBJECT_ID = PC.CONTRACT_NUMBER 
+        AND CI.SUPPORTED_OBJECT_TYPE_RD = 'O' 
+        AND CI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM COMMISSIONING_INFORMATION CI2 WHERE 
+                         CI.SUPPORTED_OBJECT_ID = CI2.SUPPORTED_OBJECT_ID  
+                         AND CI2.EFFECTIVE_DATE &lt;= SYSDATE                      
+                        AND CI.CIO_TYPE_RD = 'Initial CIO') 
+        AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CI.CIO_TYPE_RD = 'Initial CIO'
+    </select>
+                
+    <select id = "onl.RetrieveSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveSDContractData */   PC.PRODUCT_CODE,  
+                PC.PRODUCT_VERSION_CODE,  
+                PC.PRICING_STRUCTURE_CODE, 
+                PC.PRODUCT_COMMITMENT_NUMBER,  
+                CI.CIO_DATA  
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC,  
+                COMMISSIONING_INFORMATION CI  
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID  
+                        ) 
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                         PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                         PC.STATE_RD = 'SIGNED') 
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+        AND CI.SUPPORTED_OBJECT_ID = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND CI.SUPPORTED_OBJECT_TYPE_RD = 'S' 
+        AND CI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM COMMISSIONING_INFORMATION CI2 WHERE 
+                         CI.SUPPORTED_OBJECT_ID = CI2.SUPPORTED_OBJECT_ID  
+                         AND CI2.EFFECTIVE_DATE &lt;= SYSDATE                      
+                         AND CI.CIO_TYPE_RD = 'Initial CIO') 
+        AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CI.CIO_TYPE_RD = 'Initial CIO'
+    </select>
+                
+    <select id = "onl.RetrieveBundledService" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveBundledService */  DISTINCT SS.SERVICE_CODE ,SS.SERVICE_SUBSCRIPTION_ID  
+        FROM BUNDLE_ITEM BI1,
+                BUNDLE_ITEM BI2,
+                SERVICE_SUBSCRIPTION SS 
+        WHERE 
+        BI1.SUPPORTED_OBJECT_ID = #servSubId# 
+        AND BI1.EFFECTIVE_DATE = (select MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI11 WHERE 
+                                                  BI11.SUPPORTED_OBJECT_ID = BI1.SUPPORTED_OBJECT_ID 
+                                                  AND BI11.EFFECTIVE_DATE &lt;= sysdate)
+        AND BI1.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI1.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI1.BUNDLE_ID = BI2.BUNDLE_ID 
+        AND BI2.SUPPORTED_OBJECT_ID != BI1.SUPPORTED_OBJECT_ID 
+        AND BI2.EFFECTIVE_DATE = (select MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI21 WHERE 
+                                                  BI21.SUPPORTED_OBJECT_ID = BI2.SUPPORTED_OBJECT_ID 
+                                                  AND BI21.EFFECTIVE_DATE &lt;= sysdate) 
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI2.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+        AND SS.SERVICE_CODE IN (select * from THE (select (string2Row(#serviceCodes#)) as string_To_Row_Type from dual))
+    </select>
+                
+    <procedure id="onl.GetEndDate_OF" parameterMap="contractDateMap">
+        {? = call CCM_GET_END_DATE_OF(?)}
+    </procedure>
+                
+    <procedure id="onl.GetEndDate_SD" parameterMap="contractDateMap">
+        {? = call CCM_GET_END_DATE_SDCPC(?)}
+    </procedure>
+
+</sqlMap>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 bearbeitet (http://www.altova.com) von Servicebus (Arcor AG & Co. KG) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bks="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:bkstypes="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" xmlns:sbuscommon="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:sidcom="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" xmlns:sidmd="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" xmlns:ns1="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<import namespace="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" schemaLocation="EPSM-BksTypes-001.xsd"/>
+	<import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" schemaLocation="SIDCOM-GetCustomerInfo-001.xsd"/>
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+	<annotation>
+		<documentation>XML schema definition for endpoint BKSRECO
+History of Changes:
+Vers.	Date					Author					Comment
+====	==========	=============	=========================================
+0.1		2011-05-20		Thomas Schneider  SPN-BKS-000111999 seperate endpoint for reconcialtion BKS
+                                                          derived from BKS-004.xsd V 0.4
+0.2		2011-06-08		Reto Renner			Namespaces changed
+			</documentation>
+	</annotation>
+	<!-- ================ Data type Definitions===== =====================================-->
+	<complexType name="queryDateIntervalType">
+		<annotation>
+			<documentation>BKS returms all assigned products  with a change in the defined time span. Creation is treaded as change.</documentation>
+		</annotation>
+		<sequence>
+			<element name="startDate" type="sbuscommon:Datum">
+				<annotation>
+					<documentation>All products with an audit update change starting with this day ate returned.</documentation>
+				</annotation>
+			</element>
+			<element name="endDate" type="sbuscommon:Datum">
+				<annotation>
+					<documentation>All products with an audit update change ending with this day are returned.</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- ================ Endpoint Specific Operations =====================================-->
+	<element name="GetFNPCustomerRecoDataRequest">
+		<annotation>
+			<documentation>special reconsoldiation service Request</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="requestType" default="RCO">
+					<annotation>
+						<documentation>type of request that is send. "RCO" - special BKS version provided for reconsolidation purposes</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="RCO"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<choice>
+					<element name="serialNumber" type="string" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>bundleID</documentation>
+						</annotation>
+					</element>
+					<element name="customerNumber" type="sbuscommon:Kundennummer" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>CCM customer number</documentation>
+						</annotation>
+					</element>
+					<element name="queryDateInterval" type="bks:queryDateIntervalType" minOccurs="0">
+						<annotation>
+							<documentation>BKS returms all assigned products  with a change in the defined time span. Creation is treaded as change.</documentation>
+						</annotation>
+					</element>
+				</choice>
+			</sequence>
+		</complexType>
+	</element>
+	<!-- 20.05.2011 Thomas Schneider removed type definition: type="common:ResultDetailsObject" -->
+	<element name="GetFNPCustomerRecoDataResponse">
+		<annotation>
+			<documentation>Reconsolidation Response.  only status is used. If Status is not equal SUCCESS than excpetions in SOAP Header will be set.</documentation>
+		</annotation>
+		<!-- 20.05.2011 Thomas Schneider added here as complex type type="common:ResultDetailsObject" -->
+		<complexType>
+			<complexContent>
+				<extension base="common:ResultDetailsObject"/>
+			</complexContent>
+		</complexType>
+	</element>
+</schema>

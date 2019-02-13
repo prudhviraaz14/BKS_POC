@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    <select id = "GetFNPCustomerHierarchyNGCSData.effonl.RetrieveChildCustomers" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetSOMCustomerHierarchyDataFKP.effonl.RetrieveChildCustomers */  
+        CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM  
+                (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_FLAG = 'N'
+                AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+                )  
+        <dynamic prepend="WHERE ">
+            1=1
+            <isNotEmpty property="nestingLevel">
+                AND LEVEL&lt;=#nestingLevel#
+            </isNotEmpty>
+        </dynamic>
+        START WITH ASSOCIATED_CUSTOMER_NUMBER  = #customerNumber# 
+        CONNECT BY ASSOCIATED_CUSTOMER_NUMBER = PRIOR CUSTOMER_NUMBER
+        UNION
+        SELECT CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C1
+        WHERE C1.CUSTOMER_NUMBER  = #customerNumber# 
+            AND C1.EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "GetFNPCustomerHierarchyNGCSData.effonl.RetrievePrimaryAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPCustomerHierarchyNGCSData.effonl.RetrievePrimaryAddress */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX 
+        FROM ENTITY E, ADDRESS AD 
+        WHERE E.CUSTOMER_NUMBER = #value#
+        AND E.PRIMARY_ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetFNPCustomerHierarchyNGCSData.onl.RetrieveChildCustomers" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetSOMCustomerHierarchyDataFKP.onl.RetrieveChildCustomers */  
+             CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_DATE =  
+                (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                   WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                   AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                )  
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            ) 
+        <dynamic prepend="WHERE ">
+            1=1
+            <isNotEmpty property="nestingLevel">
+                AND LEVEL&lt;=#nestingLevel#
+            </isNotEmpty>
+        </dynamic>
+        START WITH ASSOCIATED_CUSTOMER_NUMBER  = #customerNumber#  
+        CONNECT BY ASSOCIATED_CUSTOMER_NUMBER = PRIOR CUSTOMER_NUMBER
+        UNION
+        SELECT CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C1
+        WHERE C1.CUSTOMER_NUMBER  = #customerNumber# 
+            AND C1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C3  
+                                WHERE C3.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                AND C3.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)) 
+    </select>
+     
+    <select id = "GetFNPCustomerHierarchyNGCSData.onl.RetrievePrimaryAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPCustomerHierarchyNGCSData.onl.RetrievePrimaryAddress */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX 
+        FROM ENTITY E, ADDRESS AD 
+        WHERE E.CUSTOMER_NUMBER = #value#
+        AND E.PRIMARY_ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+</sqlMap>
+                                    

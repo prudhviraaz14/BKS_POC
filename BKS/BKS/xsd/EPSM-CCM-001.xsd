@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:bks="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskunde-001" xmlns:rbkp="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskundenRanger-001" xmlns:pw="http://www.arcor.net/ccm/EPSM-CCM-ErmittleVertriebspacketWert-001" xmlns:pspn="http://www.arcor.net/ccm/EPSM-CCM-PruefeServiceProviderNeukunde-001" xmlns:hvd="http://www.arcor.net/ccm/EPSM-CCM-HoleVertriebspaketDetails-001" xmlns:eka="http://www.arcor.net/ccm/EPSM-CCM-ErmittleKundenArt-001" xmlns:ipc="http://www.arcor.net/ccm/EPSM-CCM-GetSomMasterData-001" xmlns:ffd="http://www.arcor.net/ccm/EPSM-CCM-FetchFunctionDetails-001" xmlns:gcd="http://www.arcor.net/ccm/EPSM-CCM-GetCustomerDataCCM-001" xmlns:gcpd="http://www.arcor.net/ccm/EPSM-CCM-GetCodbPrerequisiteData-001" xmlns:grd="http://www.arcor.net/ccm/EPSM-CCM-GetDetailsForAddedFunction-001" xmlns:gci="http://www.arcor.net/ccm/EPSM-CCM-GetCcbId-001" xmlns:gsi="http://www.arcor.net/ccm/EPSM-CCM-GetServiceInformation-001" xmlns:hvpd="http://www.arcor.net/ccm/EPSM-CCM-HoleVertriebspaketDetails-001" xmlns:pvpd="http://www.arcor.net/ccm/EPSM-CCM-PrefetchVertriebspaketDetails-001" xmlns:pb="http://www.arcor.net/ccm/EPSM-BKS-ProductBundle-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskunde-001" schemaLocation="EPSM-CCM-PruefeBestandskunde-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskundenRanger-001" schemaLocation="EPSM-CCM-PruefeBestandskundenRanger-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-ErmittleVertriebspacketWert-001" schemaLocation="EPSM-CCM-ErmittleVertriebspacketWert-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-PruefeServiceProviderNeukunde-001" schemaLocation="EPSM-CCM-PruefeServiceProviderNeukunde-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-ErmittleKundenArt-001" schemaLocation="EPSM-CCM-ErmittleKundenArt-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetSomMasterData-001" schemaLocation="EPSM-CCM-GetSomMasterData-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-FetchFunctionDetails-001" schemaLocation="EPSM-CCM-FetchFunctionDetails-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetCustomerDataCCM-001" schemaLocation="EPSM-CCM-GetCustomerDataCCM-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetCodbPrerequisiteData-001" schemaLocation="EPSM-CCM-GetCodbPrerequisiteData-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetDetailsForAddedFunction-001" schemaLocation="EPSM-CCM-GetDetailsForAddedFunction-001.xsd"/>
+    <xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetCcbId-001" schemaLocation="EPSM-CCM-GetCcbId-001.xsd"/>
+    <xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetServiceInformation-001" schemaLocation="EPSM-CCM-GetServiceInformation-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-HoleVertriebspaketDetails-001" schemaLocation="EPSM-CCM-HoleVertriebspaketDetails-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-PrefetchVertriebspaketDetails-001" schemaLocation="EPSM-CCM-PrefetchVertriebspaketDetails-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-BKS-ProductBundle-001" schemaLocation="EPSM-BKS-ProductBundle-001.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>XML schema definition for CCM ASBO and services Status des Dokument:
+				Status des Dokument: Entwurf
+				Aenderungshistorie:
+				Version 0.1 - 23.07.2007 - Reto Renner	- initiale Version
+				Version 0.2 - 23.10.2007 - Rusbe Makuie	- Additional services added for 1.25
+				Version 0.3 - 10.04.2008 - Rusbe Makuie	- neue Services zugefügt
+														 - Reto Renner 	- Servicename muss mit Kleinbuchstabe beginnen 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>Dieses Dokument basiert auf und referenziert folgende Dokumente:</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>Diese Schnittstelle wird durch den CCM realisiert</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================= Services and Events ============================== -->
+	<xs:element name="pruefeBestandskundeService" type="bks:PruefeBestandskundeService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="pruefeBestandskundenRangerService" type="rbkp:PruefeBestandskundenRangerService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ermittleVertriebspacketWertService" type="pw:ErmittleVertriebspacketWertService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="pruefeServiceProviderNeukundeService" type="pspn:PruefeServiceProviderNeukundeService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ermittleKundenArtService" type="eka:ErmittleKundenArtService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="getSomMasterDataService" type="ipc:GetSomMasterDataService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="getSomMasterDataFKPService" type="ipc:GetSomMasterDataFKPService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="getSOMCustomerHierarchyDataFKPService" type="ipc:GetSOMCustomerHierarchyDataFKPService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fetchFunctionDetailsService" type="ffd:FetchFunctionDetailsService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="getCustomerDataCCMService" type="gcd:GetCustomerDataCCMService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="getCodbPrerequisiteDataService" type="gcpd:GetCodbPrerequisiteDataService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+    <xs:element name="getDetailsForAddedFunctionService" type="grd:GetDetailsForAddedFunctionService">
+        <xs:annotation>
+            <xs:documentation>Dieser Service ...</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="getCcbIdService" type="gci:GetCcbIdService">
+        <xs:annotation>
+            <xs:documentation>Dieser Service ...</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="getServiceInformationService" type="gsi:GetServiceInformationService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="holeVertriebspaketDetailsService" type="hvpd:HoleVertriebspaketDetailsService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="prefetchVertriebspaketDetailsService" type="pvpd:PrefetchVertriebspaketDetailsService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="prefetchProductBundlesService" type="pb:PrefetchProductBundlesService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fetchProductBundleService" type="pb:FetchProductBundleService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="prefetchProductBundlesFKPService" type="pb:PrefetchProductBundlesFKPService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="fetchProductBundleFKPService" type="pb:FetchProductBundleFKPService">
+		<xs:annotation>
+			<xs:documentation>Dieser Service ...</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- =================================root Element============================ -->
+	<xs:element name="_Endpunkt_Diensterbringer_CCM">
+		<xs:annotation>
+			<xs:documentation>Services des Endpunktes CCM </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="pruefeBestandskundeService"/>
+				<xs:element ref="pruefeBestandskundenRangerService"/>
+				<xs:element ref="ermittleVertriebspacketWertService"/>
+				<xs:element ref="pruefeServiceProviderNeukundeService"/>
+				<xs:element ref="ermittleKundenArtService"/>
+				<xs:element ref="getSomMasterDataService"/>
+				<xs:element ref="getSomMasterDataFKPService"/>
+				<xs:element ref="getSOMCustomerHierarchyDataFKPService"/>
+				<xs:element ref="fetchFunctionDetailsService"/>
+				<xs:element ref="getCustomerDataCCMService"/>
+				<xs:element ref="getCodbPrerequisiteDataService"/>
+				<xs:element ref="getDetailsForAddedFunctionService"/>
+			    <xs:element ref="getCcbIdService"/>
+			    <xs:element ref="holeVertriebspaketDetailsService"/>
+				<xs:element ref="prefetchVertriebspaketDetailsService"/>
+				<xs:element ref="prefetchProductBundlesService"/>
+				<xs:element ref="fetchProductBundleService"/>
+				<xs:element ref="prefetchProductBundlesFKPService"/>
+				<xs:element ref="fetchProductBundleFKPService"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

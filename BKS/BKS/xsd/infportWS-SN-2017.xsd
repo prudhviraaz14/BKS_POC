@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.dialogika.de/infport/schema/sn/r2017" elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sn17="http://www.dialogika.de/infport/schema/sn/r2017" xmlns:basic="http://www.dialogika.de/infport/schema/basic/v1"
+	xmlns:com="http://www.dialogika.de/infport/schema/common/v1">
+
+	<import namespace="http://www.dialogika.de/infport/schema/basic/v1" schemaLocation="basic.xsd" />
+	<import namespace="http://www.dialogika.de/infport/schema/common/v1" schemaLocation="common.xsd" />
+
+	<!-- Simple Types for SN -->
+
+	<simpleType name="stAllocationCode">
+		<restriction base="string">
+			<maxLength value="10"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stCarrierId">
+		<restriction base="string">
+			<maxLength value="5"></maxLength>
+		</restriction>
+	</simpleType>
+
+
+
+	<!-- Enumerations -->
+
+	<simpleType name="stPubState" final="#all">
+		<restriction base="string">
+			<enumeration value="UNKNOWN" />
+			<enumeration value="PREPARED" />
+			<enumeration value="PUBLISH" />
+			<enumeration value="PUBLISHED" />
+			<enumeration value="COMMITED_A" />
+			<enumeration value="COMMITED" />
+			<enumeration value="EXPORTED" />
+			<enumeration value="VERIFIED" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stMsgType" final="#all">
+		<restriction base="string">
+			<enumeration value="ALLOCATION" />
+			<enumeration value="ACTIVATION" />
+			<enumeration value="EXPORT" />
+			<enumeration value="IMPORT" />
+			<enumeration value="DEACTIVATION" />
+			<enumeration value="DEALLOCATION" />
+			<enumeration value="CORRECTION" />
+		</restriction>
+	</simpleType>
+
+	<!-- Complex Types -->
+	<complexType name="ctSnNumber">
+		<sequence>
+			<element name="prefix" type="com:stPrefix" maxOccurs="1" minOccurs="1"></element>
+			<element name="startNumber" type="com:stPhoneNr" maxOccurs="1" minOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="ctBasicSnEntry">
+		<sequence>
+			<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+			<element name="info" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensions" type="com:ctExtensionSet" maxOccurs="1" minOccurs="0"></element>
+			<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="ctBasicSnRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+					<element name="info" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="extensions" type="com:ctExtensionSet" maxOccurs="1" minOccurs="0"></element>
+					<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="ctSnEntry">
+		<complexContent>
+			<extension base="sn17:ctBasicSnEntry">
+				<sequence>
+					<element name="portDate" type="date" maxOccurs="1" minOccurs="1" />
+					<element name="pubCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="1"></element>
+					<element name="rcvCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="1"></element>
+					<element name="rlsCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="1"></element>
+					<element name="pubState" type="sn17:stPubState" maxOccurs="1" minOccurs="1"></element>
+					<element name="pendingAction" type="boolean" maxOccurs="1" minOccurs="1"></element>
+					<element name="pendingError" type="boolean" maxOccurs="1" minOccurs="1"></element>
+					<element name="pubDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="msgType" type="sn17:stMsgType" maxOccurs="1" minOccurs="1"></element>
+					<element name="verifiedDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="allocDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="deallocDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="blockDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="histState" type="com:stHistState" maxOccurs="1" minOccurs="1"></element>
+					<element name="fileName" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="client" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="tableType" type="com:stTableType" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ctSnPoolEntry">
+		<complexContent>
+			<extension base="sn17:ctBasicSnEntry">
+				<sequence>
+					<element name="histState" type="com:stHistState" maxOccurs="1" minOccurs="1"></element>
+					<element name="useState" type="com:stUseState" maxOccurs="1" minOccurs="1"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="validUntil" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="0"></element>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtActivateNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="allocationCode" type="sn17:stAllocationCode" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtUpdatePoolNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtUpdateVerifiedRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCurrentRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCurrentResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetPoolNumberRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetPoolNumberResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snPoolEntry" type="sn17:ctSnPoolEntry" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtAddToPoolRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtRemoveFromPoolRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtDeactivateNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="portDate" type="date" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtConfirmActivationRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtExportNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="rcvCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtImportNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="rlsCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="1"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="allocationCode" type="sn17:stAllocationCode" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtUpdateOpenRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="rcvCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="0"></element>
+					<element name="rlsCarrier" type="sn17:stCarrierId" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtActivatePoolNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtReservePoolNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtReservePoolNumberResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="1"></element>
+					<element name="reservedUntil" type="date" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtFreePoolNumberReservationRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtSetPoolNumberReservationRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="1"></element>
+					<element name="validUntil" type="date" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtFreePoolNumberQuarantineRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtSetPoolNumberQuarantineRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="validUntil" type="date" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtDeactivatePoolNumberRequest">
+		<complexContent>
+			<extension base="sn17:ctBasicSnRequest">
+				<sequence>
+					<element name="actionDate" type="date" maxOccurs="1" minOccurs="0" />
+					<element name="validUntil" type="date" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetPortingHistoryRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetPortingHistoryResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" minOccurs="0" maxOccurs="unbounded" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetGlobalRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetGlobalResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetOwnIntentRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="sn17:ctSnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetOwnIntentResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetIncompletePortingsRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="lastQueried" type="date" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetIncompletePortingsResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<!--  
+	<complexType name="mtGetNewAllocatedNumbersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="lastQueried" type="date" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	
+	<complexType name="mtGetNewAllocatedNumbersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	-->
+
+	<complexType name="mtGetErrorsRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="lastQueried" type="date" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetErrorsResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="snEntry" type="sn17:ctSnEntry" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ctSnEventDetail">
+		<sequence>
+			<choice>
+				<element name="snEntry" type="sn17:ctSnEntry"></element>
+				<element name="snPoolEntry" type="sn17:ctSnPoolEntry"></element>
+			</choice>
+		</sequence>
+	</complexType>
+
+</schema>

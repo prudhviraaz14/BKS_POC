@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveCustomerDataForBarcode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveCustomerDataForBarcode */ 
+            C.CUSTOMER_NUMBER, AC.ACCOUNT_NUMBER
+        FROM 
+            CUSTOMER C , ACCOUNT AC , CUSTOMER_ORDER CO 
+        WHERE 
+            CO.CUSTOMER_TRACKING_ID = #value#
+            AND CO.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+            AND C.EFFECTIVE_FLAG = 'N'
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'
+            AND AC.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+            AND AC.EFFECTIVE_FLAG = 'N'
+            AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetCcbOpenOrder.effonl.RetrieveMainAccessService" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveMainAccessService */  
+            SS2.SERVICE_SUBSCRIPTION_ID,SS2.SERVICE_CODE
+        FROM 
+            SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION SS2, SERVICE S 
+        WHERE 
+            SS.SERVICE_SUBSCRIPTION_ID = #value#
+            AND SS.PRODUCT_SUBSCRIPTION_ID = SS2.PRODUCT_SUBSCRIPTION_ID
+            AND SS2.SERVICE_CODE = S.SERVICE_CODE
+            AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+            AND S.EFFECTIVE_STATUS = 'ACTIVE'
+            AND S.SERVICE_VERSION_CODE = (SELECT MAX(SERVICE_VERSION_CODE) FROM SERVICE S1 WHERE
+                                    S.SERVICE_CODE = S1.SERVICE_CODE 
+                                    AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+
+    <select id = "GetCcbOpenOrder.effonl.RetrieveOpenOrdersForBarcode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveOpenOrdersForBarcode */   
+            CO.CUSTOMER_ORDER_ID
+        FROM 
+            CUSTOMER_ORDER CO 
+        WHERE 
+            CO.CUSTOMER_TRACKING_ID = #value#
+            AND CO.STATE_RD != 'CANCELED'
+    </select>
+    
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveProviderLog" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveProviderLog */
+        REASON_RD, ACT_CUSTOMER_ORDER_ID
+        FROM
+        PROVIDER_CHANGE_LOG
+        WHERE TERM_CUSTOMER_ORDER_ID = #value#
+    </select>
+    
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveContractData */  
+            OF1.NOTICE_PERIOD_DUR_UNIT_RD,OF1.NOTICE_PERIOD_DUR_VALUE,OF1.TERMINATION_RESTRICTION_RD,
+            OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,
+            OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,
+            PC.PRODUCT_CODE,OF1.BOARD_SIGN_NAME,OF1.BOARD_SIGN_DATE,OF1.PRIMARY_CUST_SIGN_NAME,
+            OF1.PRIMARY_CUST_SIGN_DATE,PS.VIS_TRACKING_POSITION,PC.PRODUCT_COMMITMENT_NUMBER,
+            PC.PRICING_STRUCTURE_CODE,OF1.CONTRACT_NUMBER,OF1.SPECIAL_TERMINATION_RIGHT_RD,
+            OF1.ASSOC_SKELETON_CONTRACT_NUMBER,SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,
+            PC.PRODUCT_VERSION_CODE,PROD.BILLING_NAME_2 AS PRODUCT_NAME,
+            PRICING.NAME AS PRICING_STRUCTURE_NAME
+        FROM  
+            SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC,
+            PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+            SS.SERVICE_SUBSCRIPTION_ID = #value# 
+            AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+            AND PS.EFFECTIVE_FLAG = 'N'
+            AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+            AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+            AND PC.STATE_RD = 'SIGNED'
+            AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+            AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD = 'SIGNED')
+            AND OF1.STATE_RD = 'SIGNED'
+            AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+            AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+            AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+            AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+            AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>			
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveServiceTickets" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveServiceTickets */ 
+        STP.REASON_RD,STP.USAGE_MODE_VALUE_RD,STP.SERVICE_SUBSCRIPTION_ID,
+        STP.SERVICE_TICKET_POSITION_ID,SS.SERVICE_CODE,S.SERVICE_TYPE
+        FROM 
+        SERVICE_TICKET_POSITION STP, SERVICE_SUBSCRIPTION SS, SERVICE S 
+        WHERE 
+        STP.CUSTOMER_ORDER_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND STP.STATE_RD != 'CANCELED'
+        AND STP.SERVICE_SUBSCRIPTION_ID = SS.SERVICE_SUBSCRIPTION_ID
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.SERVICE_VERSION_CODE = (SELECT MAX(SERVICE_VERSION_CODE) FROM SERVICE S1 WHERE
+                                    S.SERVICE_CODE = S1.SERVICE_CODE 
+                                    AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+        ORDER BY DECODE(S.SERVICE_CODE, 'V0010','A', 'V0011','B', 'V0003','C', 'I1210','D', 'I1213','E', 'V8000','F', 
+                                        'I104A','G', 'I1043','H', 'VI201','I', 'V0001','J', 'V0002','K', 'V0004','L',
+                                        'I1040','M', 'VI002','N', 'VI003','N', 'VI006','O', 'VI009','O', 'I1305','P', 'Z')
+    </select>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveSalesOrgNumber" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveSalesOrgNumber */ 
+        CI.CIO_TYPE_RD,CI.CIO_DATA
+        FROM 
+        COMMISSIONING_INFORMATION CI
+        WHERE 
+        CI.SUPPORTED_OBJECT_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CI.SUPPORTED_OBJECT_TYPE_RD = 'O'
+        AND CI.CIO_TYPE_RD IN ('Initial CIO','VODAFONE')
+        AND CI.EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveBundleItems */ 
+        SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,STP.USAGE_MODE_VALUE_RD,
+        BI2.BUNDLE_ITEM_TYPE_RD,BI2.SUPPORTED_OBJECT_ID,BI2.BUNDLE_ID
+        FROM 
+         SERVICE_SUBSCRIPTION SS, BUNDLE_ITEM BI , BUNDLE_ITEM BI2, SERVICE_TICKET_POSITION STP
+        WHERE 
+        BI.SUPPORTED_OBJECT_ID = #value#
+        AND BI.BUNDLE_ID = BI2.BUNDLE_ID
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID
+        AND BI2.EffECTIVE_FLAG = 'N'
+        AND BI2.EffECTIVE_STATUS = 'ACTIVE'
+        AND STP.SERVICE_SUBSCRIPTION_ID = SS.SERVICE_SUBSCRIPTION_ID
+        AND STP.DESIRED_DATE = ( SELECT MAX(DESIRED_DATE) FROM SERVICE_TICKET_POSITION STP1
+                            WHERE STP.SERVICE_SUBSCRIPTION_ID = STP1.SERVICE_SUBSCRIPTION_ID
+                            AND STP1.DESIRED_DATE &lt;= SYSDATE)
+    </select>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveConfiguredValues" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveConfiguredValues */ 
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_TICKET_POSITION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveTerminatedConfigValues" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveTerminatedConfigValues */ 
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'DEACT'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveAccessNumbers" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveAccessNumbers */ 
+        AN.ACCESS_NUMBER,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_TICKET_POSITION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "GetCcbOpenOrder.effonl.RetrieveAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.effonl.RetrieveAddress */ 
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX ,
+        CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        ADDRESS AD, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_TICKET_POSITION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AD.ADDRESS_ID = CSC.ADDRESS_ID
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveCustomerDataForBarcode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveCustomerDataForBarcode */ 
+            C.CUSTOMER_NUMBER, AC.ACCOUNT_NUMBER
+        FROM 
+            CUSTOMER C , ACCOUNT AC , CUSTOMER_ORDER CO 
+        WHERE 
+            CO.CUSTOMER_TRACKING_ID = #value#
+            AND CO.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+            AND C.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 WHERE 
+                                    C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER
+                                    AND C1.EFFECTIVE_DATE &lt;= SYSDATE)
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'
+            AND AC.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+            AND AC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AC1 WHERE 
+                                    AC.ACCOUNT_NUMBER = AC1.ACCOUNT_NUMBER
+                                    AND AC1.EFFECTIVE_DATE &lt;= SYSDATE)
+            AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveMainAccessService" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveMainAccessService */  
+            SS2.SERVICE_SUBSCRIPTION_ID,SS2.SERVICE_CODE
+        FROM 
+            SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION SS2, SERVICE S 
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = SS2.PRODUCT_SUBSCRIPTION_ID
+        AND SS2.SERVICE_CODE = S.SERVICE_CODE
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.SERVICE_VERSION_CODE = (SELECT MAX(SERVICE_VERSION_CODE) FROM SERVICE S1 WHERE
+                                    S.SERVICE_CODE = S1.SERVICE_CODE 
+                                    AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveOpenOrdersForBarcode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveOpenOrdersForBarcode */   
+        CO.CUSTOMER_ORDER_ID
+        FROM 
+        CUSTOMER_ORDER CO 
+        WHERE 
+        CO.CUSTOMER_TRACKING_ID = #value#
+        AND CO.STATE_RD != 'CANCELED'
+    </select>
+    
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveProviderLog" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveProviderLog */   
+        REASON_RD, ACT_CUSTOMER_ORDER_ID
+        FROM
+        PROVIDER_CHANGE_LOG
+        WHERE TERM_CUSTOMER_ORDER_ID = #value#
+    </select>
+    
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveContractData */  
+            OF1.NOTICE_PERIOD_DUR_UNIT_RD,OF1.NOTICE_PERIOD_DUR_VALUE,OF1.TERMINATION_RESTRICTION_RD,
+            OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,
+            OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,
+            PC.PRODUCT_CODE,OF1.BOARD_SIGN_NAME,OF1.BOARD_SIGN_DATE,OF1.PRIMARY_CUST_SIGN_NAME,
+            OF1.PRIMARY_CUST_SIGN_DATE,PS.VIS_TRACKING_POSITION,PC.PRODUCT_COMMITMENT_NUMBER,
+            PC.PRICING_STRUCTURE_CODE,OF1.CONTRACT_NUMBER,OF1.SPECIAL_TERMINATION_RIGHT_RD,
+            OF1.ASSOC_SKELETON_CONTRACT_NUMBER,SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,
+            PC.PRODUCT_VERSION_CODE,PROD.BILLING_NAME_2 AS PRODUCT_NAME,
+            PRICING.NAME AS PRICING_STRUCTURE_NAME
+        FROM  
+            SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC,
+            PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+            SS.SERVICE_SUBSCRIPTION_ID = #value# 
+            AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+            AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+            AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+            AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+            AND PC.STATE_RD = 'SIGNED'
+            AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+            AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD = 'SIGNED')
+            AND OF1.STATE_RD = 'SIGNED'
+            AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+            AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+            AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+            AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+            AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>			
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveServiceTickets" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveServiceTickets */ 
+        STP.REASON_RD,STP.USAGE_MODE_VALUE_RD,STP.SERVICE_SUBSCRIPTION_ID,
+        STP.SERVICE_TICKET_POSITION_ID,SS.SERVICE_CODE,S.SERVICE_TYPE
+        FROM 
+        SERVICE_TICKET_POSITION STP, SERVICE_SUBSCRIPTION SS, SERVICE S 
+        WHERE 
+        STP.CUSTOMER_ORDER_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND STP.STATE_RD != 'CANCELED'
+        AND STP.SERVICE_SUBSCRIPTION_ID = SS.SERVICE_SUBSCRIPTION_ID
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.SERVICE_VERSION_CODE = (SELECT MAX(SERVICE_VERSION_CODE) FROM SERVICE S1 WHERE
+                                    S.SERVICE_CODE = S1.SERVICE_CODE 
+                                    AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+        ORDER BY DECODE(S.SERVICE_CODE, 'V0010','A', 'V0011','B', 'V0003','C', 'I1210','D', 'I1213','E', 'V8000','F', 
+                                        'I104A','G', 'I1043','H', 'VI201','I', 'V0001','J', 'V0002','K', 'V0004','L',
+                                        'I1040','M', 'VI002','N', 'VI003','N', 'VI006','O', 'VI009','O', 'I1305','P', 'Z')
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveSalesOrgNumber" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveSalesOrgNumber */ 
+        CI.CIO_TYPE_RD,CI.CIO_DATA
+        FROM 
+        COMMISSIONING_INFORMATION CI
+        WHERE 
+        CI.SUPPORTED_OBJECT_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CI.SUPPORTED_OBJECT_TYPE_RD = 'O'
+        AND CI.CIO_TYPE_RD IN ('Initial CIO','VODAFONE')
+        AND CI.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM COMMISSIONING_INFORMATION CI2 WHERE
+                CI.SUPPORTED_OBJECT_ID = CI2.SUPPORTED_OBJECT_ID
+                AND CI.SUPPORTED_OBJECT_TYPE_RD = CI2.SUPPORTED_OBJECT_TYPE_RD
+                AND CI.CIO_TYPE_RD = CI2.CIO_TYPE_RD
+                AND CI2.EFFECTIVE_DATE &lt;= SYSDATE )
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveBundleItems */ 
+        SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,STP.USAGE_MODE_VALUE_RD,
+        BI2.BUNDLE_ITEM_TYPE_RD,BI2.SUPPORTED_OBJECT_ID,BI2.BUNDLE_ID
+        FROM 
+        SERVICE_SUBSCRIPTION SS, BUNDLE_ITEM BI , BUNDLE_ITEM BI2, SERVICE_TICKET_POSITION STP
+        WHERE 
+        BI.SUPPORTED_OBJECT_ID = #value#
+        AND BI.BUNDLE_ID = BI2.BUNDLE_ID
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID
+        AND BI2.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI3 WHERE
+                BI2.BUNDLE_ITEM_ID = BI3.BUNDLE_ITEM_ID AND BI3.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI2.EffECTIVE_STATUS = 'ACTIVE'
+        AND STP.SERVICE_SUBSCRIPTION_ID = SS.SERVICE_SUBSCRIPTION_ID
+        AND STP.DESIRED_DATE = ( SELECT MAX(DESIRED_DATE) FROM SERVICE_TICKET_POSITION STP1
+                                WHERE STP.SERVICE_SUBSCRIPTION_ID = STP1.SERVICE_SUBSCRIPTION_ID
+                                AND STP1.DESIRED_DATE &lt;= SYSDATE)
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveConfiguredValues" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveConfiguredValues */ 
+            CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+            CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_TICKET_POSITION_ID = #value#
+            AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                        WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+            AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+            AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveTerminatedConfigValues" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveTerminatedConfigValues */ 
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'DEACT'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveAccessNumbers" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveAccessNumbers */ 
+        AN.ACCESS_NUMBER,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_TICKET_POSITION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                        WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "GetCcbOpenOrder.onl.RetrieveAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetCcbOpenOrder.onl.RetrieveAddress */ 
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX ,
+        CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        ADDRESS AD, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_TICKET_POSITION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                            WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                            AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AD.ADDRESS_ID = CSC.ADDRESS_ID
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    
+</sqlMap>

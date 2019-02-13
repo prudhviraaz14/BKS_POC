@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-HoleVertriebspaketDetails-001" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:bm="http://www.arcor.net/auftragsmodell-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-HoleVertriebspaketDetails-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/auftragsmodell-001" schemaLocation="auftragsmodell-001.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_HoleVertriebspaketDetails_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+Aenderungshistorie:
+10.04.2008 - Rusbe Makuie	- initiale Version
+28.11.2008 - Reto Renner		- Inputparameter Kundennummer (opt.) zugefügt
+</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="HoleVertriebspaketDetailsService">
+		<xs:annotation>
+			<xs:documentation>Typdefinition Dienst HoleVertriebspaketDetails</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="HoleVertriebspaketDetailsInput" type="HoleVertriebspaketDetailsInput"/>
+					<xs:element name="HoleVertriebspaketDetailsOutput" type="HoleVertriebspaketDetailsOutput">
+						<xs:annotation>
+							<xs:documentation>
+							This service retrieves the complete data for supported functions of a sales package / Vertriebspaket, if the underlying CCB-contract contains a supported PSM-product.
+                            Additionally the complete master data is retrieved.
+                            The following function types are supported:
+                            •	Sprache
+                            •	Internet
+                            •	IP-TV
+                            •	SpracheMobil
+                            •	Hardware
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="HoleVertriebspaketDetailsInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="rufnummer" type="rufnummer:Kontaktrufnummer" minOccurs="0"/>
+					<xs:element name="VertriebspaketenutzungsID" type="xs:string" minOccurs="0"/>
+					<xs:element name="vertragsnummer" type="common:Vertragsnummer" minOccurs="0"/>
+					<xs:element name="kundennummer" type="common:Kundennummer" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="HoleVertriebspaketDetailsOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="auftragsmodell" type="bm:Auftragsmodell" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

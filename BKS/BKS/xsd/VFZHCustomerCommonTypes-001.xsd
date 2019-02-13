@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Andre (Vodafone D2 GmbH) -->
+<xs:schema xmlns="http://www.vodafone.de/ESB/Service/EAI/Customer/Customer/VFZHCustomer/VFZHCustomerCommonTypes-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ctesb="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:comeai="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-EAI-001" xmlns:ns1="http://www.vodafone.de/ESB/Service/EAI/Customer/Customer/VFZHCustomer/VFZHCustomerCommonTypes-001" xmlns:ns2="http://www.vodafone.de/ESB/Schema/Common/PrimitiveBaseTypes-ESB-001" targetNamespace="http://www.vodafone.de/ESB/Service/EAI/Customer/Customer/VFZHCustomer/VFZHCustomerCommonTypes-001" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:annotation>
+		<xs:documentation>
+
+        CVS : $Id: CommonTypes-001.xsd,v 1.12 2010/07/22 12:12:20 tredicke Exp $		
+		
+		</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/PrimitiveBaseTypes-ESB-001" schemaLocation="PrimitiveBaseTypes-ESB-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-EAI-001" schemaLocation="CommonTypes-EAI-001.xsd"/>
+	<xs:complexType name="LegalNameType">
+		<xs:sequence>
+			<xs:element name="nameFormat" type="ns2:String1" minOccurs="0"/>
+			<xs:element name="salutation" type="ns2:String1" minOccurs="0"/>
+			<xs:element name="title" type="ns2:StringMax30" minOccurs="0"/>
+			<xs:element name="firstname" type="ns2:StringMax32" minOccurs="0"/>
+			<xs:element name="lastBusinessName1" type="ns2:StringMax30" minOccurs="0"/>
+			<xs:element name="lastBusinessName2" type="ns2:StringMax30" minOccurs="0"/>
+			<xs:element name="lastBusinessName3" type="ns2:StringMax30" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element name="streetName" type="ns2:StringMax40" minOccurs="0"/>
+			<xs:element name="houseNumber" type="ns2:StringMax9" minOccurs="0"/>
+			<xs:element name="city" type="ns2:StringMax40" minOccurs="0"/>
+			<xs:element name="zip" type="ns2:StringMax9" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FnnType">
+		<xs:sequence>
+			<xs:element name="lac" type="ns2:StringMax6"/>
+			<xs:element name="tn" type="ns2:StringMax14"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FnnListType">
+		<xs:sequence>
+			<xs:element name="fnn" type="FnnType" maxOccurs="10"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerDetailsType">
+		<xs:sequence>
+			<xs:element name="firstName1"/>
+			<xs:element name="lastName1"/>
+			<xs:element name="firstName2"/>
+			<xs:element name="lastName2"/>
+			<xs:element name="firstName3"/>
+			<xs:element name="lastName3"/>
+			<xs:element name="firstName4"/>
+			<xs:element name="lastName4"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FnnDetailedInfoType">
+		<xs:sequence>
+			<xs:element name="ban" type="ctesb:Ban" minOccurs="0"/>
+			<xs:element name="subscriberNumber" type="comeai:SubscriberNumberType" minOccurs="0"/>
+			<xs:element name="accountType" type="ns2:String1" minOccurs="0"/>
+			<xs:element name="accountSubType" type="ns2:StringMax2" minOccurs="0"/>
+			<xs:element name="nextPossibleCancellationDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="futureCanceDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="isFnnActive" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="allowEarlyOutport" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="existsFNIOrder" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="foundIndicator" type="xs:boolean"/>
+			<xs:element name="wirelessOfficeIndicator" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="skeletonContractIndicator" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="legalName" type="ns1:LegalNameType" minOccurs="0"/>
+			<xs:element name="homeAreaAddress" type="ns1:AddressType" minOccurs="0"/>
+			<xs:element name="fnnList" type="ns1:FnnListType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

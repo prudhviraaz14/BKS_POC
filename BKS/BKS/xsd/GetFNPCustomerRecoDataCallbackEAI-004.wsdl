@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+History of Changes:
+Vers.    Date              Author             Comment
+====    =========  ===========  ===================================================
+0.1 		2011.03.03	Reto Renner      Initial version
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapjms="http://www.w3.org/2008/07/soap/bindings/JMS/" xmlns:wsdlbase="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" xmlns:reco="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback-004" 
+
+xmlns:tns="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback.wsdl" 
+
+xmlns:ns="http://www.vodafone.de/ESB/Schema/Common/BaseTypes-ESB-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback.wsdl">
+	<wsdl:import namespace="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" location="BaseAbstract-001.wsdl"/>
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback-004" schemaLocation="GetFNPCustomerRecoDataCallback-004.xsd"/>
+		</schema>
+	</wsdl:types>
+	<wsdl:message name="GetFNPCustomerRecoDataCallbackRequest">
+		<wsdl:part name="GetFNPCustomerRecoDataCallbackRequest" element="reco:GetFNPCustomerRecoDataCallbackRequest"/>
+	</wsdl:message>
+	<wsdl:portType name="EVENTFORMPortType">
+		<wsdl:operation name="GetFNPCustomerRecoDataCallback">
+			<wsdl:input name="GetFNPCustomerRecoDataCallbackRequest" message="tns:GetFNPCustomerRecoDataCallbackRequest"/>
+			<wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+			<wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="EVENTFORMJMSBinding" type="tns:EVENTFORMPortType">
+		<wsoap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!-- <wsoap12:binding style="document" transport="http://www.w3.org/2008/07/soap/bindings/JMS/"/>-->
+		<wsdl:operation name="GetFNPCustomerRecoDataCallback">
+			<wsoap12:operation soapAction="/GetFNPCustomerRecoDataCallback-004/GetFNPCustomerRecoDataCallbackEAI" soapActionRequired="true" style="document"/>
+			<soapjms:targetService>CALLBACK</soapjms:targetService>
+			<wsdl:input>
+				<wsoap12:body parts="GetFNPCustomerRecoDataCallbackRequest" use="literal"/>
+				<wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+			</wsdl:input>
+			<wsdl:fault name="functionalESBException">
+				<wsoap12:fault name="functionalESBException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="technicalESBException">
+				<wsoap12:fault name="technicalESBException" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="EVENTFORMService">
+		<wsdl:port name="EVENTFORMServiceJMSEndpoint" binding="tns:EVENTFORMJMSBinding">
+			<wsoap12:address location="jms:queue:endpointQeue"/>
+			<!-- optional: replaces "wsoap12:address": -->
+			<!--
+            <jms:address
+                destinationStyle="queue"
+                jndiDestinationName="endpointQeue"
+                jndiConnectionFactoryName="jmsFactory">
+            </jms:address>
+            -->
+		</wsdl:port>
+	</wsdl:service>
+	<!-- xmlns:jms="http://cxf.apache.org/transports/jms" -->
+</wsdl:definitions>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" 
+		xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" 
+		xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001"
+		xmlns:fax="http://www.arcor.net/EPSM-CommonTypes-Fax-001"
+		targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Fax-001" 
+		elementFormDefault="qualified" 
+		attributeFormDefault="unqualified">
+<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+<xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EPSM_Fax_Dokument_Information ">
+	<xs:annotation>
+		<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 20.08.2007  11:06</xs:documentation>
+	</xs:annotation>
+</xs:element>
+<xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Fax">
+	<xs:annotation>
+		<xs:documentation></xs:documentation>
+	</xs:annotation>
+	<xs:complexContent>
+		<xs:extension base="ape:AuftragsPositionsElement">
+			<xs:sequence>
+				<xs:element name="faxVorwahl" type="common:NationaleVorwahl" minOccurs="0"/>
+				<xs:element name="faxNummer" type="common:Rufnummer" minOccurs="0"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+</xs:schema>

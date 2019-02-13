@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "GetDetailsForAddedFunction.effonl.RetrieveProductInfo" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetDetailsForAddedFunction.effonl.RetrieveProductInfo */   
+        PF.PRODUCT_CODE, PF.SERVICE_CODE,PROD.BILLING_NAME_2 AS PRODUCT_NAME,
+        PROD.ALT_BILLING_NAME_2 AS ALT_PRODUCT_NAME, PRICING.PRODUCT_VERSION_CODE,
+        PRICING.NAME AS PRICING_STRUCTURE_NAME 
+        FROM 
+        PRODUCT_FUNCTION_MAP PF, 
+        PRODUCT_VERSION PROD, 
+        PRICING_STRUCTURE PRICING
+        <dynamic prepend="WHERE ">    
+            PF.FUNCTION_NAME = #functionName#
+            AND PF.ACCESS_NAME = #accessName# 
+            AND PF.FUNCTION_VARIANT = #variantName#     
+            <isNotEmpty property="phoneSysType">
+                AND PF.PHONE_SYSTEM_TYPE = #phoneSysType#
+            </isNotEmpty>
+            AND PROD.PRODUCT_CODE = PF.PRODUCT_CODE 
+            AND PRICING.EFFECTIVE_DATE = (SELECT max(EFFECTIVE_DATE) FROM  PRICING_STRUCTURE PRICING1
+                                        WHERE PRICING.PRODUCT_CODE = PRICING1.PRODUCT_CODE
+                                        AND PRICING.PRICING_STRUCTURE_CODE = PRICING1.PRICING_STRUCTURE_CODE
+                                        AND PRICING1.EFFECTIVE_DATE &lt;= SYSDATE)
+            AND PRICING.PRICING_STRUCTURE_CODE = #tariffCode#
+            AND PRICING.PRODUCT_CODE = PF.PRODUCT_CODE
+            AND PRICING.PRODUCT_VERSION_CODE = PROD.PRODUCT_VERSION_CODE 
+            AND PROD.EFFECTIVE_DATE = (SELECT max(EFFECTIVE_DATE) FROM  PRODUCT_VERSION PROD1
+                                        WHERE PROD.PRODUCT_CODE = PROD1.PRODUCT_CODE
+                                        AND PROD1.EFFECTIVE_DATE &lt;= SYSDATE)
+            AND PROD.EFFECTIVE_STATUS = 'ACTIVE'
+        </dynamic>
+    </select>
+
+    <select id = "GetDetailsForAddedFunction.effonl.RetrieveTariffOptions" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetDetailsForAddedFunction.effonl.RetrieveTariffOptions */    S.NAME,S.BILLING_NAME_2
+        FROM 
+            SERVICE S
+        WHERE  
+        S.SERVICE_CODE = #value# 
+        AND (S.SERVICE_TYPE IN ('TARIFF_OPTION','TVC_ADDON','VOLUME_CAP') OR
+             S.SERVICE_CODE IN ('I1351','I1354'))
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)        
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetDetailsForAddedFunction.effonl.RetrieveSalesPackageInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetDetailsForAddedFunction.effonl.RetrieveSalesPackageInfo */ 
+        SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.BILLING_NAME_1 AS NAME 
+        FROM  SALES_PACKET SP
+        WHERE 
+        SP.SALES_PACKET_CODE = #value#
+        AND SP.EFFECTIVE_FLAG = 'N'
+        AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetDetailsForAddedFunction.onl.RetrieveProductInfo" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetDetailsForAddedFunction.onl.RetrieveProductInfo */   
+        PF.PRODUCT_CODE, PF.SERVICE_CODE,PROD.BILLING_NAME_2 AS PRODUCT_NAME,
+        PROD.ALT_BILLING_NAME_2 AS ALT_PRODUCT_NAME, PRICING.PRODUCT_VERSION_CODE,
+        PRICING.NAME AS PRICING_STRUCTURE_NAME 
+        FROM 
+        PRODUCT_FUNCTION_MAP PF, 
+        PRODUCT_VERSION PROD, 
+        PRICING_STRUCTURE PRICING
+        <dynamic prepend="WHERE ">    
+            PF.FUNCTION_NAME = #functionName#
+            AND PF.ACCESS_NAME = #accessName# 
+            AND PF.FUNCTION_VARIANT = #variantName#     
+            <isNotEmpty property="phoneSysType">
+                AND PF.PHONE_SYSTEM_TYPE = #phoneSysType#
+            </isNotEmpty>
+            AND PROD.PRODUCT_CODE = PF.PRODUCT_CODE 
+            AND PRICING.EFFECTIVE_DATE = (SELECT max(EFFECTIVE_DATE) FROM  PRICING_STRUCTURE PRICING1
+                                        WHERE PRICING.PRODUCT_CODE = PRICING1.PRODUCT_CODE
+                                        AND PRICING.PRICING_STRUCTURE_CODE = PRICING1.PRICING_STRUCTURE_CODE
+                                        AND PRICING1.EFFECTIVE_DATE &lt;= SYSDATE)
+            AND PRICING.PRICING_STRUCTURE_CODE = #tariffCode#
+            AND PRICING.PRODUCT_CODE = PF.PRODUCT_CODE
+            AND PRICING.PRODUCT_VERSION_CODE = PROD.PRODUCT_VERSION_CODE 
+            AND PROD.EFFECTIVE_DATE = (SELECT max(EFFECTIVE_DATE) FROM  PRODUCT_VERSION PROD1
+                                        WHERE PROD.PRODUCT_CODE = PROD1.PRODUCT_CODE
+                                        AND PROD1.EFFECTIVE_DATE &lt;= SYSDATE)
+            AND PROD.EFFECTIVE_STATUS = 'ACTIVE'
+        </dynamic>
+    </select>
+
+
+    <select id = "GetDetailsForAddedFunction.onl.RetrieveTariffOptions" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetDetailsForAddedFunction.onl.RetrieveTariffOptions */   S.NAME,S.BILLING_NAME_2
+        FROM 
+            SERVICE S
+        WHERE  
+        S.SERVICE_CODE = #value# 
+        AND (S.SERVICE_TYPE IN ('TARIFF_OPTION','TVC_ADDON','VOLUME_CAP') OR
+             S.SERVICE_CODE IN ('I1351','I1354'))
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetDetailsForAddedFunction.onl.RetrieveSalesPackageInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetDetailsForAddedFunction.onl.RetrieveSalesPackageInfo */ 
+        SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.BILLING_NAME_1 AS NAME
+        FROM  SALES_PACKET SP
+        WHERE 
+        SP.SALES_PACKET_CODE = #value#
+		AND SP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SALES_PACKET SP1
+		                          WHERE SP.SALES_PACKET_ID = SP1.SALES_PACKET_ID
+								  AND SP1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+</sqlMap>
+                                    

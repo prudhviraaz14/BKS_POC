@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:master="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" xmlns:product="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" xmlns:status="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" targetNamespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" schemaLocation="SIDCOM-ProductData-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" schemaLocation="SIDCOM-StatusData-001.xsd"/>
+	<!--
+Author: Thomas Schneider
+History (version number references to SOW version):
+v0.1 (2010-02-09) Initial version derived from SIDCOM-FNPOrder-001.xsd
+v0.1.1 (2010-02-26) productBundle is no longer madatory as non supported products are not returned
+v0.2 (2010-03-22) added sequence of productOfferingOccerences
+v0.3 (2010-03-24) altered confusing "productBundle" name under customerInformation to bundleOccurrence
+v0.4 (2010-03-31) according to review comments; bundleOccurrence removed. now productOffering level, named productOfferingSubscription. openOrders moved to top level. all productOfferings with openOrders are listed underneath openOrders not under productOfferingSubscription. status renamed to customerInfromationStatus. productOffering has a new attribute contractDurationEnd and signDate
+v0.5 (2010-04-01) productOfferingSubscription is 0 to unbound, productOfferingToBe is unbound. openOrders renamed to openOrder
+v0.6 (2010-05-17) targetnamespace corrected
+v0.7 (2010-06-16) changes for CPCOM v2: PPM 25429 IT 27143, added new requestTypes, some Elements are set to optional
+-->
+	<!--=== Elements ===-->
+	<xs:element name="customerInformation" type="CustomerInformation">
+		<xs:annotation>
+			<xs:documentation>main element of customer data information</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!--=== Technical order SID types ===-->
+	<xs:complexType name="CustomerInformation">
+		<xs:annotation>
+			<xs:documentation>customer information root</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="customerInformationData" type="master:CustomerInformationData" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>all static customer data as within the createOrder</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="customerInformationStatus" type="status:CustomerInformationStatus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Status and type information of customer and billing account </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="customerNumber" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> customer number </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="openOrder" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>a list of orders that are not in a final status.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="orderItemType">
+							<xs:annotation>
+								<xs:documentation>What type of order is it</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="Create"/>
+									<xs:enumeration value="Change"/>
+									<xs:enumeration value="Terminate"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="orderId" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Barcode</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="customerOrderId">
+							<xs:annotation>
+								<xs:documentation>unique order ID of CCB customer_order_id</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:length value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="productOfferingToBe" type="product:ProductOfferingOccurrence" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>all productOfferings in a non final status are listed here</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="productOfferingSubscription" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>same Level as productOfferingOccurrenceAsIs in the createFNPOrder</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="product:ProductOfferingOccurrence">
+							<xs:sequence>
+								<xs:element name="contractDurationEnd" type="xs:date">
+									<xs:annotation>
+										<xs:documentation>This is the day the contract period ends. Will be filled by the result of the existing PL/SQL proocedure. It is equal to the termination date</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="signDate" type="xs:date">
+									<xs:annotation>
+										<xs:documentation>This is the latest contract sign date.</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

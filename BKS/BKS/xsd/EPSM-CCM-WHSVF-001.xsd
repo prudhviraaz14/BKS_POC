@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-WHSVF-001" xmlns:whsvf="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" xmlns:gcdccm="http://www.arcor.net/ccm/EPSM-CCM-GetCustomerDataCCM-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-WHSVF-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" schemaLocation="EPSM-WHSVF-WSDL-Services.xsd"/>
+	<xs:import namespace="http://www.arcor.net/ccm/EPSM-CCM-GetCustomerDataCCM-001" schemaLocation="EPSM-CCM-GetCustomerDataCCM-001.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="CCM-WHSVF_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+Aenderungshistorie:
+0.1	25.09.2008 	Reto Renner	- Initiale Version
+</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>Dieses Dokument basiert auf und referenziert folgende Dokumente:
+
+</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>Diese Schnittstelle wird durch das CCM realisiert</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================= Services and Events ============================== -->
+	<xs:element name="getCustomerDataCCMService" type="gcdccm:GetCustomerDataCCMService">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+	</xs:element>
+	<!-- =================================root Element============================ -->
+	<xs:element name="_Endpunkt_Diensterbringer_CCM-WHSVF">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="getCustomerDataCCMService"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

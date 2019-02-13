@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Rusbe Makuie (Arcor AG & Co. KG) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fp="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<include schemaLocation="bks-wbci-type-simple.xsd"/>
+	<annotation>
+		<documentation>XML schema definition for endpoint BKS-WBCI
+History of Changes:
+Vers.	Date						Author				Comment
+====	==========		==========	===================================================
+0.1 		2013-07-09			Reto Renner		Initial version based on wbciCustimerInfoPorting(3).xsd from M.Abraham
+1.0		2013-08-13			Marco Abraham	Final version including type defintion
+1.1		2013-08-15			Marco Abraham	Add WbciGetDtagContractNumber
+1.2		2013-09-06			Marco Abraham	delete OPM service
+
+			</documentation>
+	</annotation>
+	<!-- ================ Endpoint Specific Simple Types =================================== -->
+	<!-- ================ Endpoint Specific Complex Types ================================= -->
+	<complexType name="accessNumberType">
+		<sequence>
+			<element name="countryCode" type="fp:string4"/>
+			<element name="localAreaCode" type="fp:string5"/>
+			<element name="pilotNumber" type="fp:string15" minOccurs="0"/>
+			<element name="startRange" type="fp:string30" minOccurs="0"/>
+			<element name="endRange" type="fp:string30" minOccurs="0"/>
+			<element name="centralExtention" type="fp:string16" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<element name="WbciGetDtagContractNumberRequest">
+		<annotation>
+			<documentation>Description of input document</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<choice>
+					<element name="AccessNumber" type="fp:accessNumberType"/>
+					<element name="Tasi" type="fp:string16"/>
+				</choice>
+				<element name="ResellerId" type="fp:string16"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="WbciGetDtagContractNumberResponse">
+		<annotation>
+			<documentation>Description of output document</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="SuccessIndicator" type="boolean"/>
+				<element name="ErrorCode" minOccurs="0"/>
+				<element name="ErrorText" minOccurs="0"/>
+				<element name="DtagContractNumber" type="fp:string100" minOccurs="0"/>
+				<element name="ExistingTechnology" type="string" minOccurs="0"/>
+				<element name="Pki" type="fp:pkiType" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

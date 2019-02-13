@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "effonl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveExactAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "effonl.RetrieveAccessNumberPW" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveAccessNumberPW */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND (AN.START_RANGE_STRING > #shortnumber# AND AN.START_RANGE_STRING &lt;= #accessnumber#  
+                AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "effonl.RetrieveServiceSubscription" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveServiceSubscription */  PS.CUSTOMER_NUMBER, SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE , SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS WHERE 
+        PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.EFFECTIVE_FLAG = 'N' 
+        AND PS.PRODUCT_SUBSCRIPTION_ID = SS.PRODUCT_SUBSCRIPTION_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = #value#
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "effonl.RetrieveOFContractDataPW" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveOFContractDataPW */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE
+        FROM 
+        	SERVICE_SUBSCRIPTION ss,
+        	PRODUCT_SUBSCRIPTION PS,
+		ORDER_FORM_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N' AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_FLAG = 'N' AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "effonl.RetrieveSDContractDataPW" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveSDContractDataPW */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE
+        FROM 
+        	SERVICE_SUBSCRIPTION ss,
+        	PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N' AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_FLAG = 'N' AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "effonl.RetrieveSignedOFContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveSignedOFContractData */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                ORDER_FORM_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED') 
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "effonl.RetrieveSignedSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveSignedSDContractData */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE 
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                         PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND PC2.STATE_RD = 'SIGNED')
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "ErmittleVertriebspacketWert.effonl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ErmittleVertriebspacketWert.effonl.RetrieveBundleItems */   DISTINCT SS.SERVICE_CODE ,SS.SERVICE_SUBSCRIPTION_ID, SS.PRODUCT_SUBSCRIPTION_ID   
+        FROM BUNDLE_ITEM BI1,
+        BUNDLE_ITEM BI2, 
+        SERVICE_SUBSCRIPTION SS 
+        WHERE 
+        BI1.SUPPORTED_OBJECT_ID = #value# 
+        AND BI1.EFFECTIVE_FLAG = 'N' 
+        AND BI1.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI1.BUNDLE_ID = BI2.BUNDLE_ID 
+        AND BI1.SUPPORTED_OBJECT_ID != BI2.SUPPORTED_OBJECT_ID
+        AND BI2.EFFECTIVE_FLAG = 'N' 
+        AND BI2.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+    </select>
+    
+    <select id = "effonl.RetrieveBandwidthService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveBandwidthService */  S.SERVICE_CODE  
+        FROM     SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE IN ('V0115','V0116','V0117','V0118','V0133','V0174',
+                           'V0175','V0176','V0177','V0178','V0179','V0180',
+                           'V018A','V018B','V018C','V018D','V018G','V018H',
+                           'I1220','I1221','V018N','V017E','V017J','V017K',
+                           'V017L','V017M','V018J','V018O','V018P','V018Q',
+                           'V018R') 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND s.state_rd in ('SUBSCRIBED', 'SUSPENDED') 
+    </select>
+
+    <select id = "effonl.RetrieveMainAccessService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveMainAccessService */  S.SERVICE_SUBSCRIPTION_ID  
+        FROM     SERVICE_SUBSCRIPTION S 
+        WHERE  
+         S.PRODUCT_SUBSCRIPTION_ID IN (SELECT PRODUCT_SUBSCRIPTION_ID 
+                                FROM     SERVICE_SUBSCRIPTION WHERE 
+                                SERVICE_SUBSCRIPTION_ID = #value#) 
+        and S.SERVICE_SUBSCRIPTION_ID != #value# 
+        and S.STATE_RD IN ('SUBSCRIBED', 'SUSPENDED') 
+        and S.SERVICE_CODE in ( SELECT SERVICE_CODE FROM SERVICE WHERE SERVICE_TYPE = 'MAIN_ACCESS')
+    </select>
+
+    <select id = "effonl.RetrieveCondition" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveCondition */  CV.CONFIGURED_VALUE_STRING  
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+                SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE = 'V0046' 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND S.STATE_RD In ('SUBSCRIBED','SUSPENDED') 
+        AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        AND CSC.EFFECTIVE_FLAG = 'N' AND csc.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0096' 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+    </select>
+
+    <select id = "effonl.RetrieveHardwareCharacteristic" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveHardwareCharacteristic */  CV.CONFIGURED_VALUE_STRING , CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        	SERVICE_SUBSCRIPTION S  
+        WHERE  
+        	S.SERVICE_CODE IN ('V0114','V011A','I1350') 
+        	AND S.PRODUCT_SUBSCRIPTION_ID = #prodSubId# 
+        	AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        	AND S.STATE_RD = 'PURCHASED' 
+        	AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        	AND CSC.EFFECTIVE_FLAG = 'N' AND csc.EFFECTIVE_STATUS = 'ACTIVE' 
+        	AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('V0112','V0114') 
+        	AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS') 
+        	AND ROWNUM &lt; 11
+		ORDER BY S.SERVICE_SUBSCRIPTION_ID,CSC.SERVICE_CHARACTERISTIC_CODE
+    </select>
+
+    <select id = "onl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+RULE onl.RetrieveExactAccessNumber */ AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM 
+                                          CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                          CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                          AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+   </select>
+
+    <select id = "onl.RetrieveAccessNumberPW" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveAccessNumberPW */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND (AN.START_RANGE_STRING > #shortnumber# AND AN.START_RANGE_STRING &lt;= #accessnumber#  
+                AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                                        WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                                        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS') 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "onl.RetrieveServiceSubscription" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveServiceSubscription */  PS.CUSTOMER_NUMBER, SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE , SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS WHERE 
+        PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS1 
+                                                        WHERE PS.PRODUCT_SUBSCRIPTION_ID = PS1.PRODUCT_SUBSCRIPTION_ID 
+                                                        AND PS1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND PS.PRODUCT_SUBSCRIPTION_ID = SS.PRODUCT_SUBSCRIPTION_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = #value#
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "onl.RetrieveOFContractDataPW" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveOFContractDataPW */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                ORDER_FORM_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED') 
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "onl.RetrieveSDContractDataPW" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveSDContractDataPW */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE 
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                         PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND PC2.STATE_RD = 'SIGNED')
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "ErmittleVertriebspacketWert.onl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ErmittleVertriebspacketWert.onl.RetrieveBundleItems */   DISTINCT SS.SERVICE_CODE ,SS.SERVICE_SUBSCRIPTION_ID, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM BUNDLE_ITEM BI1,
+        BUNDLE_ITEM BI2, 
+        SERVICE_SUBSCRIPTION SS 
+        WHERE 
+        BI1.SUPPORTED_OBJECT_ID = #servSubId# 
+        AND BI1.EFFECTIVE_DATE = (select MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI11 WHERE 
+        BI11.SUPPORTED_OBJECT_ID = BI1.SUPPORTED_OBJECT_ID 
+        AND BI11.EFFECTIVE_DATE &lt;= sysdate)
+        AND BI1.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI1.BUNDLE_ID = BI2.BUNDLE_ID 
+        AND BI2.SUPPORTED_OBJECT_ID != BI1.SUPPORTED_OBJECT_ID 
+        AND BI2.EFFECTIVE_DATE = (select MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI21 WHERE 
+        BI21.SUPPORTED_OBJECT_ID = BI2.SUPPORTED_OBJECT_ID 
+        AND BI21.EFFECTIVE_DATE &lt;= sysdate) 
+        AND BI2.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+    </select>
+    
+    <select id = "onl.RetrieveBandwidthService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveBandwidthService */  S.SERVICE_CODE  
+        FROM     SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE IN ('V0115','V0116','V0117','V0118','V0133','V0174',
+                           'V0175','V0176','V0177','V0178','V0179','V0180',
+                           'V018A','V018B','V018C','V018D','V018G','V018H',
+                           'I1220','I1221','V018N','V017E','V017J','V017K',
+                           'V017L','V017M','V018J','V018O','V018P','V018Q',
+                           'V018R') 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND s.state_rd in ('SUBSCRIBED', 'SUSPENDED') 
+    </select>
+
+    <select id = "onl.RetrieveMainAccessService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveMainAccessService */  S.SERVICE_SUBSCRIPTION_ID  
+        FROM     SERVICE_SUBSCRIPTION S 
+        WHERE  
+         S.PRODUCT_SUBSCRIPTION_ID IN (SELECT PRODUCT_SUBSCRIPTION_ID 
+                                FROM     SERVICE_SUBSCRIPTION WHERE 
+                                SERVICE_SUBSCRIPTION_ID = #value#) 
+        and S.SERVICE_SUBSCRIPTION_ID != #value# 
+        and S.STATE_RD IN ('SUBSCRIBED', 'SUSPENDED') 
+        and S.SERVICE_CODE in ( SELECT SERVICE_CODE FROM SERVICE WHERE SERVICE_TYPE = 'MAIN_ACCESS')
+    </select>
+
+    <select id = "onl.RetrieveCondition" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveCondition */  CV.CONFIGURED_VALUE_STRING  
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+                SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE = 'V0046' 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND S.STATE_RD In ('SUBSCRIBED','SUSPENDED') 
+        AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND csc.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0096' 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+    </select>
+
+    <select id = "onl.RetrieveHardwareCharacteristic" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveHardwareCharacteristic */  CV.CONFIGURED_VALUE_STRING, CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        	SERVICE_SUBSCRIPTION S  
+        WHERE  
+        	S.SERVICE_CODE IN ('V0114','V011A','I1350') 
+        	AND S.PRODUCT_SUBSCRIPTION_ID = #prodSubId#
+        	AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        	AND S.STATE_RD = 'PURCHASED' 
+        	AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        	AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        	AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+        			WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+        	AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        	AND CSC.SERVICE_CHARACTERISTIC_CODE  IN ('V0112','V0114') 
+        	AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS') 
+        	AND ROWNUM &lt; 11
+		ORDER BY S.SERVICE_SUBSCRIPTION_ID,CSC.SERVICE_CHARACTERISTIC_CODE
+    </select>
+
+</sqlMap>
+                                    

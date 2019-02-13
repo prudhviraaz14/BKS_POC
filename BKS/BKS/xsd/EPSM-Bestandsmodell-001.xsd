@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Arbeitsplatz GNP5152 (Arcor AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns:ask="http://www.arcor.net/EPSM-ASK-001" 
+xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-ASK-001" schemaLocation="EPSM-ASK-001.xsd"/>
+	<xs:element name="EPSM_Bestandsmodell_Dokument_Information ">
+		<xs:annotation>
+			<xs:documentation>
+				Dieses Modell beschreibt die initiale Version des Bestandsmodells. Es orientiert aus am Auftragsmodell und
+				bildet für den Bestand das Analogon. Das Wesentliche Element ist die Bestandsposition, welche sich
+				aus einigen Attributen des Auftrags sowie der Auftragsposition zusammensetzt.
+				
+				Tobias Himstedt, 15.10.07
+				
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="bestand" type="Bestandsmodell">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="Bestandsmodell">
+		<xs:sequence>
+			<xs:element name="kunde" type="ask:Kunde" minOccurs="0"/>
+			<xs:element name="bestandsposition" type="Bestandsposition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Bestandsposition">
+		<xs:sequence>
+			<xs:element name="auftragspositionsnummer" type="common:Auftragspositionsnummer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>[Befüllung durch BOI (Ver. 29.5.07) POSITIONEN.POSNR] Auftragspositionsnummer z.B. 1,2,3</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!--
+			<xs:element name="auftragsart" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>[Befüllung durch BOI] Art des Auftrags z.B. Neuanschaltung, Kündigung, Umzug, Änderung, Löschung</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			-->
+			<xs:element name="kundentyp" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>[Bef&#xFC;llung durch BOI] Sagt aus, ob der Kunde Privatkunde (Wert:PK) ist oder Gesch&#xE4;ftskunde (Wert:GK)</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<!--
+			<xs:element name="auftragsnummer" type="common:Barcode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>[Bef&#xFC;llung durch BOI (Ver. 29.5.07) AUFTRAG.BARCODE] Auftragsnummer auch als Barcode bezeichnet. Eindeutige Nummer zur Identifizierung des Auftrages. Bsp.:ARC1234567890"</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		
+			<xs:element name="systemquelle" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>[Bef&#xFC;llung durch BOI] Origin&#xE4;res System &#xFC;ber das der Auftrag angenommen wird. F&#xFC;r 1.24 wird BOI "E-Shop" in dieses Attribut schreiben</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		-->
+			<xs:element name="funktion" type="ask:Funktion" maxOccurs="unbounded"/>
+			<xs:element name="vertriebspaket" type="ask:Vertriebspaket" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,1066 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    <select id = "GetSomMasterData.effonl.RetrieveCustomerInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveCustomerInfo */   
+        C.CLASSIFICATION_RD,C.CATEGORY_RD,C.CUSTOMER_DATA_INDICATOR,C.CUSTOMER_GROUP_RD,C.CUSTOMER_INTERNAL_REF_NUMBER,
+        C.CUSTOMER_NUMBER,C.MARKETING_FAX_INDICATOR,C.MARKETING_PHONE_INDICATOR,C.MATCH_CODE_ID,C.ENCRYPTION_KEY,
+        C.PERSONAL_DATA_INDICATOR,C.POST_IDENT_INDICATOR,C.RISK_CATEGORY_RD,C.USER_PASSWORD,E.ENTITY_ID,
+        C.ASSOCIATED_CUSTOMER_NUMBER AS PARENT_CUSTOMER_NUMBER, C.MARKETING_AUTHORIZATION_DATE
+        FROM CUSTOMER C,ENTITY E
+        WHERE C.CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveCustomerPermissionInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveCustomerPermissionInfo */   
+        PD.PERMISSION_ID, PD.SERVICE_ID, PD.PERMISSION_VALUE, PD.EFFECTIVE_DATE 
+        FROM  
+        PERMISSION_PREFERENCE_DETAIL PD 
+        WHERE  PD.CUSTOMER_NUMBER = #value# 
+        AND PD.EFFECTIVE_STATUS ='ACTIVE' 
+        AND PD.EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveAffinityGroup" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveAffinityGroup */   
+        AG.AFFINITY_GROUP_RD
+        FROM AFFINITY_GROUP AG
+        WHERE AG.CUSTOMER_NUMBER = #value#
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveDocumentRecipient" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveDocumentRecipient */   
+        E.BIRTH_DATE,E.FORENAME,E.NOBILITY_PREFIX_DESCRIPTION,E.SALUTATION_DESCRIPTION, E.ENTITY_TYPE,
+        E.SURNAME_PREFIX_DESCRIPTION,E.TITLE_DESCRIPTION,E.INCORPORATION_CITY_NAME,E.INCORPORATION_NUMBER_ID,
+        E.INCORPORATION_TYPE_RD,E.INDUSTRIAL_SECTOR_RD,E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD,
+        E.ENTITY_TYPE,DR.ADDRESS_ID,DR.ACCESS_INFORMATION_ID
+        FROM DOCUMENT_RECIPIENT DR, ENTITY E WHERE
+        DR.MAILING_ID = #value#
+        AND DR.EFFECTIVE_FLAG = 'N'
+        AND DR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND DR.ENTITY_ID = E.ENTITY_ID
+    </select>
+    
+    
+    <select id = "GetSomMasterData.effonl.RetrieveChampionId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveChampionId */   
+            PM.PARAM_VALUE AS CHAMPION_ID
+        FROM CCM_PARAMETER_MAP PM
+        WHERE  PM.SUPPORTED_OBJECT_ID = #value#
+        AND SUPPORTED_OBJECT_TYPE_RD = 'CUST_NUMB'  
+        AND PARAM_NAME_RD = 'CHAMPION_ID'
+        AND EFFECTIVE_STATUS = 'ACTIVE' 
+        AND EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveRootCustomer */  
+        CUSTOMER_NUMBER AS ROOT_CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_FLAG = 'N'  
+                AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    
+    <select id = "GetSomMasterData.effonl.RetrieveEntityInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveEntityInfo */   
+        E.BIRTH_DATE,E.FORENAME,E.NOBILITY_PREFIX_DESCRIPTION,E.SALUTATION_DESCRIPTION,
+        E.SURNAME_PREFIX_DESCRIPTION,E.TITLE_DESCRIPTION,E.INCORPORATION_CITY_NAME,E.INCORPORATION_NUMBER_ID,
+        E.INCORPORATION_TYPE_RD,E.INDUSTRIAL_SECTOR_RD,E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD,
+        E.ENTITY_TYPE,E.PRIMARY_ADDRESS_ID,E.PRIMARY_ACCESS_INFORMATION_ID
+        FROM ENTITY E
+        WHERE 
+        E.ENTITY_ID = #value#
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveAddressInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveAddressInfo */   
+        A.COUNTRY_RD,A.CITY_NAME,A.CITY_SUFFIX_NAME,A.POSTAL_CODE,A.STREET_NAME,A.STREET_NUMBER,
+        A.STREET_NUMBER_SUFFIX,A.POST_OFFICE_BOX,A.ADDITIONAL_ADDRESS_DESCRIPTION,A.SECOND_ADD_ADDRESS_DESCRIPTION
+        FROM ADDRESS A
+        WHERE 
+        A.ADDRESS_ID = #value#
+        AND A.EFFECTIVE_FLAG = 'N'
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveAddressForEntity" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveAddressForEntity */   
+        A.COUNTRY_RD,A.CITY_NAME,A.CITY_SUFFIX_NAME,A.POSTAL_CODE,A.STREET_NAME,A.STREET_NUMBER,
+        A.STREET_NUMBER_SUFFIX,A.POST_OFFICE_BOX,A.ADDITIONAL_ADDRESS_DESCRIPTION,A.SECOND_ADD_ADDRESS_DESCRIPTION
+        FROM ADDRESS A
+        WHERE 
+        A.ENTITY_ID = #value#
+        AND A.EFFECTIVE_FLAG = 'N'
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveAccessInfo" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* GetSomMasterData.effonl.RetrieveAccessInfo */   
+        AI.CONTACT_NAME,AI.ACCESS_INFORMATION_TYPE_RD,AI.PHONE_NUMBER,AI.FAX_NUMBER,AI.MOBILE_NUMBER,
+        AI.EMAIL_ADDRESS,AI.ELECTRONIC_CONTACT_INDICATOR, AI.EMAIL_VALIDATION_ID
+        FROM ACCESS_INFORMATION AI
+        WHERE 
+        AI.ACCESS_INFORMATION_ID =  #value#
+        AND AI.EFFECTIVE_FLAG = 'N'
+        AND AI.EFFECTIVE_STATUS = 'ACTIVE'
+        and CONTACT_NAME is not null
+        union
+        SELECT (select FORENAME || ' ' || NAME from entity where entity_id = AI.entity_id) contact_name,AI.ACCESS_INFORMATION_TYPE_RD,AI.PHONE_NUMBER,AI.FAX_NUMBER,AI.MOBILE_NUMBER,
+        AI.EMAIL_ADDRESS,AI.ELECTRONIC_CONTACT_INDICATOR , AI.EMAIL_VALIDATION_ID
+        FROM ACCESS_INFORMATION AI
+        WHERE AI.ACCESS_INFORMATION_ID = #value#
+        AND AI.EFFECTIVE_FLAG = 'N'
+        AND AI.EFFECTIVE_STATUS = 'ACTIVE'
+        and CONTACT_NAME is null
+    </select>
+        
+    <select id = "GetSomMasterData.effonl.RetrieveEmailValidation" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* GetSomMasterData.effonl.RetrieveEmailValidation */   
+        EV.STATE_RD  AS VALIDATION_STATUS, EV.EFFECTIVE_DATE  AS VALIDATION_DATE, EV.ERROR_CODE
+        FROM EMAIL_VALIDATION EV
+        WHERE 
+        EV.EMAIL_VALIDATION_ID = #value#
+        AND EV.EFFECTIVE_FLAG = 'N'
+    </select>
+        
+    <select id = "GetSomMasterData.effonl.RetrieveAccountData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveAccountData */   
+            AC.ACCOUNT_NUMBER,AC.METHOD_OF_PAYMENT_RD,AC.DIRECT_DEBIT_AUTHORIZ_DATE,
+            AC.PAYMENT_TERM_RD,AC.BANK_ACCOUNT_ID, CY.DUE_DATE_TIME, AC.MAILING_ID,
+            C.MASKING_DIGITS_RD, AC.MANDATE_REFERENCE_ID, AC.MANDATE_SIGNATURE_DATE,
+            AC.MANDATE_RECURRING_INDICATOR,AC.MANDATE_STATUS_RD,C.CUSTOMER_NUMBER, SAP.SAP_DUNNING_STATUS_INDICATOR 
+        FROM ACCOUNT AC, CYCLE CY, CUSTOMER C, SAP_DUNNING SAP
+        WHERE AC.ACCOUNT_NUMBER = #value#
+            AND C.CUSTOMER_NUMBER = AC.CUSTOMER_NUMBER
+            AND C.EFFECTIVE_FLAG = 'N'
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'
+            AND AC.EFFECTIVE_FLAG = 'N'
+            AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+            AND AC.CYCLE_NAME = CY.CYCLE_NAME
+            AND CY.EFFECTIVE_STATUS = 'ACTIVE'
+            AND CY.EFFECTIVE_FLAG = 'N'
+            AND SAP.ACCOUNT_NUMBER(+) = AC.ACCOUNT_NUMBER
+    </select>
+
+    <select id = "GetSomMasterData.effonl.RetrieveDocumentPattern" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveDocumentPattern */   
+        dp.document_template_name
+        from document_pattern dp, ACCOUNT AC where
+        dp.supported_object_type_rd = 'ACCOUNT'
+        and dp.supported_object_id = #value#
+        AND AC.ACCOUNT_NUMBER = #value#
+        AND AC.EFFECTIVE_FLAG = 'N'
+        AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND dp.EFFECTIVE_FLAG = 'N'
+        AND dp.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveBankData" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveBankData */   
+            BA.BANK_ACCOUNT_NUMBER,BA.BANK_CLEARING_CODE,BA.OWNER_FULL_NAME,
+            BA.BANK_IDENTIFIER_CODE,BA.INTERNAT_BANK_ACCOUNT_NUMBER,BA.BANK_NAME
+        FROM BANK_ACCOUNT BA
+        WHERE BA.BANK_ACCOUNT_ID = #bankAccountId#
+            AND BA.CUSTOMER_NUMBER = #customerNumber#
+            AND BA.EFFECTIVE_FLAG = 'N'
+            AND BA.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetSomMasterData.effonl.RetrieveAccountsForCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveAccountsForCustomer */   
+        AC.ACCOUNT_NUMBER
+        FROM ACCOUNT AC
+        WHERE AC.CUSTOMER_NUMBER = #value#
+        AND AC.EFFECTIVE_FLAG = 'N'
+        AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveServiceDeliveryContract" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveServiceDeliveryContract */   
+        CC.CUSTOMER_NUMBER AS OWNING_CUSTOMER_NUMBER,SDC.NAME,SDC.CONTRACT_NUMBER,SDC.ASSOC_SKELETON_CONTRACT_NUMBER
+        FROM SERVICE_DELIVERY_CONTRACT SDC,CONTRACT_CUSTOMER CC WHERE 
+        SDC.CONTRACT_NUMBER = #value#
+        AND SDC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE_DELIVERY_CONTRACT SDC2 WHERE 
+                                SDC.CONTRACT_NUMBER = SDC2.CONTRACT_NUMBER AND 
+                                SDC2.STATE_RD IN  ('SIGNED','APPROVED'))
+        AND SDC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND SDC.STATE_RD IN  ('SIGNED','APPROVED')
+        AND CC.CONTRACT_NUMBER = SDC.CONTRACT_NUMBER
+        AND CC.CONTRACT_TYPE_INDICATOR = 'S'
+        AND CC.EFFECTIVE_FLAG = 'N'
+        AND CC.EFFECTIVE_STATUS='ACTIVE'
+        AND CC.OWNING_CUSTOMER_INDICATOR ='Y'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveLegacyContactRole" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveLegacyContactRole */   
+        CR.SUPPORTED_OBJECT_TYPE_RD,  CR.SUPPORTED_OBJECT_ID, CR.ENTITY_ID,  CR.CONTACT_ROLE_TYPE_RD,CR.CONTACT_ROLE_POSITION_NAME,
+        CR.CONTACT_ROLE_ID
+        FROM CONTACT_ROLE CR  WHERE 
+        CR.CUSTOMER_NUMBER =  #value#
+        AND CR.EFFECTIVE_FLAG = 'N'
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CR.CONTACT_ROLE_ENTITY_ID IS NULL
+        AND CR.SUPPORTED_OBJECT_TYPE_RD IN ('ACCOUNT','CUSTOMER','SERVDLVRY','SERVICE_SUBS','SKELCNTR')
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveContactRole" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveContactRole */   
+        CR.SUPPORTED_OBJECT_TYPE_RD,  CR.SUPPORTED_OBJECT_ID
+        FROM CONTACT_ROLE CR  WHERE 
+        CR.CONTACT_ROLE_ENTITY_ID =  #value#
+        AND CR.EFFECTIVE_FLAG = 'N'
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE' 
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveContactRoleEntity" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveContactRoleEntity */   
+        CR.ENTITY_ID,  CR.CONTACT_ROLE_TYPE_RD,CR.CONTACT_ROLE_POSITION_NAME,
+        CR.CONTACT_ROLE_ENTITY_ID AS CONTACT_ROLE_ID
+        FROM CONTACT_ROLE_ENTITY CR  WHERE 
+        CR.CUSTOMER_NUMBER =  #value#
+        AND CR.EFFECTIVE_FLAG = 'N'
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE' 
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveSkeletonContractByNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveSkeletonContractByNumber */ 
+        CC.CONTRACT_NUMBER , CC.CUSTOMER_NUMBER, SK.NAME
+        FROM CONTRACT_CUSTOMER CC, SKELETON_CONTRACT SK
+        WHERE CC.OWNING_CUSTOMER_INDICATOR ='Y'
+        AND CC.CONTRACT_TYPE_INDICATOR = 'K'
+        AND CC.EFFECTIVE_FLAG = 'N'
+        AND CC.EFFECTIVE_STATUS='ACTIVE'
+        AND SK.CONTRACT_NUMBER = #value# 
+        AND CC.CONTRACT_NUMBER = SK.CONTRACT_NUMBER
+        AND SK.EFFECTIVE_FLAG = 'N'
+        AND SK.EFFECTIVE_STATUS='ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveSkeletonContracts" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveSkeletonContracts */ 
+        CC.CONTRACT_NUMBER , CC.CUSTOMER_NUMBER, SK.NAME
+        FROM CONTRACT_CUSTOMER CC, SKELETON_CONTRACT SK
+        WHERE CC.CONTRACT_NUMBER IN (SELECT CONTRACT_NUMBER FROM CONTRACT_CUSTOMER CC1
+        WHERE CC1.CUSTOMER_NUMBER = #value# 
+        AND CC1.CONTRACT_TYPE_INDICATOR = 'K'
+        AND CC1.EFFECTIVE_FLAG = 'N'
+        AND CC1.EFFECTIVE_STATUS='ACTIVE')
+        AND CC.OWNING_CUSTOMER_INDICATOR ='Y'
+        AND CC.EFFECTIVE_FLAG = 'N'
+        AND CC.EFFECTIVE_STATUS='ACTIVE'
+        AND CC.CONTRACT_NUMBER = SK.CONTRACT_NUMBER
+        AND SK.EFFECTIVE_FLAG = 'N'
+        AND SK.EFFECTIVE_STATUS='ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveSkeletonItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveSkeletonItems */ 
+        SKP.PRODUCT_CODE, SKP.PRODUCT_VERSION_CODE, SKP.PRICING_STRUCTURE_CODE, S.SERVICE_CODE 
+        FROM SKELETON_CONTRACT_PROD_COMMIT SKP,PRODUCT_VERSION_SERVICE PVS, SERVICE S
+        WHERE SKP.CONTRACT_NUMBER = #value# 
+        AND SKP.EFFECTIVE_FLAG = 'N'
+        AND SKP.EFFECTIVE_STATUS='ACTIVE'
+        AND PVS.PRODUCT_CODE = SKP.PRODUCT_CODE 
+        AND PVS.PRODUCT_VERSION_CODE = SKP.PRODUCT_VERSION_CODE
+        AND PVS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND S.EFFECTIVE_FLAG = 'N'
+        AND S.EFFECTIVE_STATUS='ACTIVE'
+        ORDER BY S.SERVICE_CODE
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveTariffService" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveTariffService */ 
+        PSS.PRICING_STRUCTURE_CODE
+        FROM PRICING_STRUCTURE_SERVICE PSS
+        WHERE PSS.PRODUCT_CODE = #productCode# 
+        AND PSS.PRODUCT_VERSION_CODE= #productVersionCode# 
+        AND PSS.PRICING_STRUCTURE_CODE= #tariffCode# 
+        AND PSS.SERVICE_CODE= #serviceCode# 
+        AND PSS.EFFECTIVE_FLAG = 'N'
+        AND PSS.EFFECTIVE_STATUS='ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveOneGroup" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveOneGroup */ 
+        OG.ONE_GROUP_ID, OG.NAME FROM ONE_GROUP OG, ONE_GROUP_CUSTOMER OGC WHERE 
+        OGC.CUSTOMER_NUMBER = #value#
+        AND OG.ONE_GROUP_ID = OGC.ONE_GROUP_ID
+        AND OG.EFFECTIVE_FLAG = 'N'
+        AND OG.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OGC.EFFECTIVE_FLAG = 'N'
+        AND OGC.EFFECTIVE_STATUS = 'ACTIVE'    
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveCustomerAncestor" parameterClass = "string" resultClass="java.util.HashMap">
+       SELECT /* GetSomMasterData.effonl.RetrieveCustomerAncestor */  
+        CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_FLAG = 'N'  
+                AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveAccountsForCustList" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveAccountsForCustList */ 
+        AN.ACCOUNT_NUMBER 
+        FROM ACCOUNT AN  
+        WHERE 
+        AN.CUSTOMER_NUMBER IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND AN.EFFECTIVE_FLAG = 'N'
+        AND AN.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveSDLContractsForCustList" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveSDLContractsForCustList */ 
+        PC.PRODUCT_CODE,PC.PRODUCT_COMMITMENT_NUMBER,PC.PRICING_STRUCTURE_CODE,SDC.CONTRACT_NUMBER,
+        PROD.BILLING_NAME_2 AS PRODUCT_NAME, PRICING.BILLING_NAME_2 AS PRICING_STRUCTURE_NAME, 
+        CI.CIO_DATA AS SALES_ORG_NUMBER
+        FROM  
+        CONTRACT_CUSTOMER CC,COMMISSIONING_INFORMATION CI,
+        SERVICE_DELIVERY_CONTRACT SDC, SERV_DELIV_CONT_PRODUCT_COMMIT PC,
+        PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+        CC.CUSTOMER_NUMBER IN
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CC.CONTRACT_TYPE_INDICATOR = 'S'
+        AND CC.EFFECTIVE_FLAG = 'N'
+        AND CC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CC.CONTRACT_NUMBER = SDC.CONTRACT_NUMBER 
+        AND SDC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE_DELIVERY_CONTRACT SDC2 WHERE 
+                                SDC.CONTRACT_NUMBER = SDC2.CONTRACT_NUMBER AND 
+                                SDC2.STATE_RD = 'SIGNED')
+        AND SDC.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.PRODUCT_COMMITMENT_NUMBER =  CI.SUPPORTED_OBJECT_ID
+        AND CI.SUPPORTED_OBJECT_TYPE_RD  = 'S'
+        AND CI.EFFECTIVE_FLAG = 'N'
+        AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+        AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+        AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveRebatesForAccountList" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.effonl.RetrieveRebatesForAccountList */ 
+        CI.CONTRIBUTING_ITEM_ID AS ACCOUNT_NUMBER, PPS.PRICE_PLAN_CODE, PPS.OPTION_VALUE_NAME, PC.PRODUCT_CODE, 
+        PC.PRICING_STRUCTURE_CODE, SERSU.SERVICE_SUBSCRIPTION_ID, SERSU.SERVICE_CODE,
+        PROD.BILLING_NAME_2 AS PRODUCT_NAME, PRICING.BILLING_NAME_2 AS PRICING_STRUCTURE_NAME,
+        S.BILLING_NAME_2 AS SERVICE_NAME, PP.BILLING_NAME_2 AS PRICE_PLAN_NAME
+        FROM PRICE_PLAN_SUBSCRIPTION PPS, PRODUCT_SUBSCRIPTION PS, ORDER_FORM_PRODUCT_COMMIT PC, 
+             SERV_SUBSCR_PRICE_PLAN_SUBSCR SSPPS, SERVICE_SUBSCRIPTION SERSU, CONTRIBUTING_ITEM CI,
+             PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING, SERVICE S, PRICE_PLAN PP
+        WHERE PPS.PRICE_PLAN_SUBSCRIPTION_ID = CI.PRICE_PLAN_SUBSCRIPTION_ID 
+        AND CI.CONTRIBUTING_ITEM_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CI.TYPE_RD = 'ACCOUNT'
+        AND CI.EFFECTIVE_FLAG = 'N'
+        AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS.PRICE_PLAN_SUBSCRIPTION_ID=SSPPS.PRICE_PLAN_SUBSCRIPTION_ID
+        AND PPS.EFFECTIVE_FLAG = 'N'
+        AND PPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SSPPS.SERVICE_SUBSCRIPTION_ID=SERSU.SERVICE_SUBSCRIPTION_ID
+        AND SERSU.STATE_RD IN ('SUBSCRIBED')
+        AND SSPPS.EFFECTIVE_FLAG = 'N'
+        AND SSPPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PS.PRODUCT_SUBSCRIPTION_ID = PPS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N'
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE
+                        PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER
+                        AND PC2.STATE_RD  = 'SIGNED')
+        AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+        AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+        AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+        AND SERSU.SERVICE_CODE=S.SERVICE_CODE
+        AND S.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S2
+                                WHERE S.SERVICE_CODE=S2.SERVICE_CODE
+                                AND S2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS.PRICE_PLAN_CODE=PP.PRICE_PLAN_CODE
+        AND PP.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN PP2
+                                WHERE PP.PRICE_PLAN_CODE=PP2.PRICE_PLAN_CODE
+                                AND PP2.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND PP2.EFFECTIVE_DATE &lt;= SYSDATE )
+        UNION SELECT  
+        CI1.CONTRIBUTING_ITEM_ID AS ACCOUNT_NUMBER, PPS1.PRICE_PLAN_CODE, PPS1.OPTION_VALUE_NAME, PC1.PRODUCT_CODE, 
+        PC1.PRICING_STRUCTURE_CODE, SERSU1.SERVICE_SUBSCRIPTION_ID, SERSU1.SERVICE_CODE,
+        PROD1.BILLING_NAME_2 AS PRODUCT_NAME, PRICING1.BILLING_NAME_2 AS PRICING_STRUCTURE_NAME,
+        S1.BILLING_NAME_2 AS SERVICE_NAME, PP1.BILLING_NAME_2 AS PRICE_PLAN_NAME
+        FROM PRICE_PLAN_SUBSCRIPTION PPS1, PRODUCT_SUBSCRIPTION PS1, SERV_DELIV_CONT_PRODUCT_COMMIT PC1, 
+             SERV_SUBSCR_PRICE_PLAN_SUBSCR SSPPS1, SERVICE_SUBSCRIPTION SERSU1, CONTRIBUTING_ITEM CI1,
+             PRODUCT_VERSION PROD1,PRICING_STRUCTURE PRICING1, SERVICE S1, PRICE_PLAN PP1  
+        WHERE PPS1.PRICE_PLAN_SUBSCRIPTION_ID = CI1.PRICE_PLAN_SUBSCRIPTION_ID 
+        AND CI1.CONTRIBUTING_ITEM_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CI1.TYPE_RD = 'ACCOUNT'
+        AND CI1.EFFECTIVE_FLAG = 'N'
+        AND CI1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS1.PRICE_PLAN_SUBSCRIPTION_ID=SSPPS1.PRICE_PLAN_SUBSCRIPTION_ID
+        AND PPS1.EFFECTIVE_FLAG = 'N'
+        AND PPS1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SSPPS1.EFFECTIVE_FLAG = 'N'
+        AND SSPPS1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SSPPS1.SERVICE_SUBSCRIPTION_ID=SERSU1.SERVICE_SUBSCRIPTION_ID
+        AND SERSU1.STATE_RD IN ('SUBSCRIBED')
+        AND PS1.PRODUCT_SUBSCRIPTION_ID = PPS1.PRODUCT_SUBSCRIPTION_ID 
+        AND PS1.EFFECTIVE_FLAG = 'N'
+        AND PS1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PS1.PRODUCT_COMMITMENT_NUMBER = PC1.PRODUCT_COMMITMENT_NUMBER
+        AND PC1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC3 WHERE
+                        PC1.PRODUCT_COMMITMENT_NUMBER = PC3.PRODUCT_COMMITMENT_NUMBER
+                        AND PC3.STATE_RD  = 'SIGNED')
+        AND PROD1.PRODUCT_CODE = PC1.PRODUCT_CODE 
+        AND PROD1.PRODUCT_VERSION_CODE =  PC1.PRODUCT_VERSION_CODE 
+        AND PRICING1.PRICING_STRUCTURE_CODE = PC1.PRICING_STRUCTURE_CODE 
+        AND PRICING1.PRODUCT_CODE = PC1.PRODUCT_CODE 
+        AND PRICING1.PRODUCT_VERSION_CODE = PC1.PRODUCT_VERSION_CODE 
+        AND SERSU1.SERVICE_CODE=S1.SERVICE_CODE
+        AND S1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S3
+                                WHERE S1.SERVICE_CODE=S3.SERVICE_CODE
+                                AND S3.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS1.PRICE_PLAN_CODE=PP1.PRICE_PLAN_CODE
+        AND PP1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN PP3
+                                WHERE PP1.PRICE_PLAN_CODE=PP3.PRICE_PLAN_CODE
+                                AND PP3.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND PP3.EFFECTIVE_DATE &lt;= SYSDATE )
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveCustomerNumber" parameterClass = "String" resultClass="java.util.HashMap">
+    	SELECT /* GetSomMasterData.onl.RetrieveCustomerNumber */
+      	AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE AN.START_RANGE_STRING = #value#
+      	AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+    	AND CSC.EFFECTIVE_FLAG='N' 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.effonl.RetrieveAccessNumberCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+ 		SELECT /* GetSomMasterData.effonl.RetrieveAccessNumberCustomer */
+    	AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+		WHERE  AN.START_RANGE_STRING &lt;= #value#
+		AND AN.TYPE_RD='ACC_NUM_RANGE'
+		AND AN.END_RANGE_STRING||SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER, ';', -1)+1) &gt;= #value#
+    	AND AN.CONFIG_SERVICE_CHAR_ID=CSC.CONFIG_SERVICE_CHAR_ID
+    	AND LENGTH(AN.START_RANGE_STRING) = LENGTH(#value#)
+    	AND CSC.EFFECTIVE_FLAG='N' 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+    
+ 	</select>
+    
+    
+    <select id = "GetSomMasterData.onl.RetrieveCustomerInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveCustomerInfo */   
+        C.CLASSIFICATION_RD,C.CATEGORY_RD,C.CUSTOMER_DATA_INDICATOR,C.CUSTOMER_GROUP_RD,C.CUSTOMER_INTERNAL_REF_NUMBER,
+        C.CUSTOMER_NUMBER,C.MARKETING_FAX_INDICATOR,C.MARKETING_PHONE_INDICATOR,C.MATCH_CODE_ID,C.ENCRYPTION_KEY,
+        C.PERSONAL_DATA_INDICATOR,C.POST_IDENT_INDICATOR,C.RISK_CATEGORY_RD,C.USER_PASSWORD,E.ENTITY_ID,
+        C.ASSOCIATED_CUSTOMER_NUMBER AS PARENT_CUSTOMER_NUMBER, C.MARKETING_AUTHORIZATION_DATE
+        FROM CUSTOMER C,ENTITY E
+        WHERE C.CUSTOMER_NUMBER = #value#
+        AND E.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                 WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER 
+                                 AND C1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetSomMasterData.onl.RetrieveCustomerPermissionInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveCustomerPermissionInfo */   
+        PD.PERMISSION_ID, PD.SERVICE_ID, PD.PERMISSION_VALUE, PD.EFFECTIVE_DATE 
+        FROM  
+        PERMISSION_PREFERENCE_DETAIL PD 
+        WHERE  PD.CUSTOMER_NUMBER = #value# 
+        AND PD.EFFECTIVE_STATUS ='ACTIVE' 
+        AND PD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM PERMISSION_PREFERENCE_DETAIL PD1 
+                                 WHERE PD.CUSTOMER_NUMBER = PD1.CUSTOMER_NUMBER 
+                                 AND PD.PERMISSION_ID = PD1.PERMISSION_ID
+                                 AND PD.SERVICE_ID = PD1.SERVICE_ID
+                                 AND PD1.EFFECTIVE_DATE &lt;= SYSDATE )
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveAffinityGroup" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveAffinityGroup */   
+        AG.AFFINITY_GROUP_RD
+        FROM AFFINITY_GROUP AG
+        WHERE AG.CUSTOMER_NUMBER = #value#
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveDocumentRecipient" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveDocumentRecipient */   
+        E.BIRTH_DATE,E.FORENAME,E.NOBILITY_PREFIX_DESCRIPTION,E.SALUTATION_DESCRIPTION,E.ENTITY_TYPE,
+        E.SURNAME_PREFIX_DESCRIPTION,E.TITLE_DESCRIPTION,E.INCORPORATION_CITY_NAME,E.INCORPORATION_NUMBER_ID,
+        E.INCORPORATION_TYPE_RD,E.INDUSTRIAL_SECTOR_RD,E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD,
+        E.ENTITY_TYPE,DR.ADDRESS_ID,DR.ACCESS_INFORMATION_ID
+        FROM DOCUMENT_RECIPIENT DR, ENTITY E WHERE
+        DR.MAILING_ID = #value#
+        AND DR.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM DOCUMENT_RECIPIENT DR1 
+                                WHERE DR.MAILING_ID = DR1.MAILING_ID 
+                                AND DR.DOCUMENT_RECIPIENT_ID = DR1.DOCUMENT_RECIPIENT_ID 
+                                AND DR1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND DR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND DR.ENTITY_ID = E.ENTITY_ID
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveChampionId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveChampionId */   
+        PM.PARAM_VALUE AS CHAMPION_ID
+        FROM CCM_PARAMETER_MAP PM
+        WHERE  PM.SUPPORTED_OBJECT_ID = #value#
+        AND PM.SUPPORTED_OBJECT_TYPE_RD = 'CUST_NUMB'  
+        AND PM.PARAM_NAME_RD = 'CHAMPION_ID' 
+        AND PM.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PM.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CCM_PARAMETER_MAP PM1 WHERE
+        						PM1.PARAMETER_MAP_ID = PM.PARAMETER_MAP_ID
+        						AND PM1.SUPPORTED_OBJECT_ID = PM.SUPPORTED_OBJECT_ID
+        						AND PM1.SUPPORTED_OBJECT_TYPE_RD = PM.SUPPORTED_OBJECT_TYPE_RD  
+        						AND PM1.PARAM_NAME_RD = PM.PARAM_NAME_RD
+        						AND PM1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveRootCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveRootCustomer */  CUSTOMER_NUMBER AS ROOT_CUSTOMER_NUMBER ,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_DATE =  
+                (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                    WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                    AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                )  
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    
+    <select id = "GetSomMasterData.onl.RetrieveEntityInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveEntityInfo */   
+        E.BIRTH_DATE,E.FORENAME,E.NOBILITY_PREFIX_DESCRIPTION,E.SALUTATION_DESCRIPTION,
+        E.SURNAME_PREFIX_DESCRIPTION,E.TITLE_DESCRIPTION,E.INCORPORATION_CITY_NAME,E.INCORPORATION_NUMBER_ID,
+        E.INCORPORATION_TYPE_RD,E.INDUSTRIAL_SECTOR_RD,E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD,
+        E.ENTITY_TYPE,E.PRIMARY_ADDRESS_ID,E.PRIMARY_ACCESS_INFORMATION_ID
+        FROM ENTITY E
+        WHERE 
+        E.ENTITY_ID = #value#
+    </select>
+
+    <select id = "GetSomMasterData.onl.RetrieveAddressInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveAddressInfo */   
+        A.COUNTRY_RD,A.CITY_NAME,A.CITY_SUFFIX_NAME,A.POSTAL_CODE,A.STREET_NAME,A.STREET_NUMBER,
+        A.STREET_NUMBER_SUFFIX,A.POST_OFFICE_BOX,A.ADDITIONAL_ADDRESS_DESCRIPTION,A.SECOND_ADD_ADDRESS_DESCRIPTION
+        FROM ADDRESS A
+        WHERE 
+        A.ADDRESS_ID = #value#
+        AND A.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS A1 
+        WHERE A.ADDRESS_ID = A1.ADDRESS_ID 
+        AND A.ENTITY_ID = A1.ENTITY_ID 
+        AND A1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveAddressForEntity" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveAddressForEntity */   
+        A.COUNTRY_RD,A.CITY_NAME,A.CITY_SUFFIX_NAME,A.POSTAL_CODE,A.STREET_NAME,A.STREET_NUMBER,
+        A.STREET_NUMBER_SUFFIX,A.POST_OFFICE_BOX,A.ADDITIONAL_ADDRESS_DESCRIPTION,A.SECOND_ADD_ADDRESS_DESCRIPTION
+        FROM ADDRESS A
+        WHERE 
+        A.ENTITY_ID = #value#
+        AND A.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS A1 
+                            WHERE A.ADDRESS_ID = A1.ADDRESS_ID 
+                            AND A.ENTITY_ID = A1.ENTITY_ID 
+                            AND A1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveAccessInfo" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* GetSomMasterData.onl.RetrieveAccessInfo */   
+        AI.CONTACT_NAME,AI.ACCESS_INFORMATION_TYPE_RD,AI.PHONE_NUMBER,AI.FAX_NUMBER,AI.MOBILE_NUMBER,
+        AI.EMAIL_ADDRESS,AI.ELECTRONIC_CONTACT_INDICATOR, AI.EMAIL_VALIDATION_ID
+        FROM ACCESS_INFORMATION AI
+        WHERE 
+        AI.ACCESS_INFORMATION_ID =  #value#
+        AND AI.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCESS_INFORMATION AI1 
+                                  WHERE AI.ACCESS_INFORMATION_ID = AI1.ACCESS_INFORMATION_ID 
+                                  AND AI.ENTITY_ID = AI1.ENTITY_ID 
+                                  AND AI1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND AI.EFFECTIVE_STATUS = 'ACTIVE'
+        and CONTACT_NAME is not null
+        union
+        SELECT (select FORENAME || ' ' || NAME from entity where entity_id = AI.entity_id) contact_name,AI.ACCESS_INFORMATION_TYPE_RD,AI.PHONE_NUMBER,AI.FAX_NUMBER,AI.MOBILE_NUMBER,
+        AI.EMAIL_ADDRESS,AI.ELECTRONIC_CONTACT_INDICATOR , AI.EMAIL_VALIDATION_ID
+        FROM ACCESS_INFORMATION AI
+        WHERE AI.ACCESS_INFORMATION_ID = #value#
+        AND AI.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCESS_INFORMATION AI1 
+                                  WHERE AI.ACCESS_INFORMATION_ID = AI1.ACCESS_INFORMATION_ID 
+                                  AND AI.ENTITY_ID = AI1.ENTITY_ID 
+                                  AND AI1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND AI.EFFECTIVE_STATUS = 'ACTIVE'
+        and CONTACT_NAME is null
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveEmailValidation" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* GetSomMasterData.onl.RetrieveEmailValidation */   
+        EV.STATE_RD  AS VALIDATION_STATUS, EV.EFFECTIVE_DATE  AS VALIDATION_DATE, EV.ERROR_CODE
+        FROM EMAIL_VALIDATION EV
+        WHERE 
+        EV.EMAIL_VALIDATION_ID = #value#
+        AND EV.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM EMAIL_VALIDATION EV1 
+                                  WHERE EV.EMAIL_VALIDATION_ID = EV1.EMAIL_VALIDATION_ID
+                                  AND EV1.EFFECTIVE_DATE &lt;= SYSDATE )
+    </select>
+        
+    <select id = "GetSomMasterData.onl.RetrieveAccountData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveAccountData */   
+        AC.ACCOUNT_NUMBER,AC.METHOD_OF_PAYMENT_RD,AC.DIRECT_DEBIT_AUTHORIZ_DATE,
+        AC.PAYMENT_TERM_RD,AC.BANK_ACCOUNT_ID, CY.DUE_DATE_TIME, AC.MAILING_ID,
+        C.MASKING_DIGITS_RD, AC.MANDATE_REFERENCE_ID, AC.MANDATE_SIGNATURE_DATE,
+        AC.MANDATE_RECURRING_INDICATOR,AC.MANDATE_STATUS_RD,C.CUSTOMER_NUMBER, SAP.SAP_DUNNING_STATUS_INDICATOR
+        FROM ACCOUNT AC, CYCLE CY, CUSTOMER C, SAP_DUNNING SAP
+        WHERE AC.ACCOUNT_NUMBER = #value#
+        AND C.CUSTOMER_NUMBER = AC.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER 
+                                AND C1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'        
+        AND AC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AC1 
+                        WHERE AC.ACCOUNT_NUMBER = AC1.ACCOUNT_NUMBER 
+                        AND AC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AC.CYCLE_NAME = CY.CYCLE_NAME
+        AND CY.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CY.EFFECTIVE_DATE =( SELECT MAX(EFFECTIVE_DATE) FROM CYCLE CY1 
+                        WHERE CY.CYCLE_NAME = CY1.CYCLE_NAME 
+                        AND CY1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND SAP.ACCOUNT_NUMBER(+) = AC.ACCOUNT_NUMBER
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveDocumentPattern" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveDocumentPattern */   
+        dp.document_template_name
+        from  document_pattern dp, ACCOUNT AC where
+        dp.supported_object_type_rd = 'ACCOUNT'
+        and dp.supported_object_id = #value#
+        AND AC.ACCOUNT_NUMBER = #value#
+        AND AC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AC1 
+                            WHERE AC.ACCOUNT_NUMBER = AC1.ACCOUNT_NUMBER 
+                            AND AC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND dp.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM document_pattern dp1 
+                            WHERE dp.DOCUMENT_PATTERN_ID = dp1.DOCUMENT_PATTERN_ID 
+                            AND dp1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND dp.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveBankData" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveBankData */   
+        BA.BANK_ACCOUNT_NUMBER,BA.BANK_CLEARING_CODE,BA.OWNER_FULL_NAME,
+        BA.BANK_IDENTIFIER_CODE,BA.INTERNAT_BANK_ACCOUNT_NUMBER,BA.BANK_NAME
+        FROM BANK_ACCOUNT BA
+        WHERE BA.BANK_ACCOUNT_ID = #bankAccountId#
+        AND BA.CUSTOMER_NUMBER = #customerNumber#
+        AND BA.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BANK_ACCOUNT BA1 
+                            WHERE BA.BANK_ACCOUNT_ID = BA1.BANK_ACCOUNT_ID 
+                            AND BA1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND BA.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveAccountsForCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveAccountsForCustomer */   
+        AC.ACCOUNT_NUMBER
+        FROM ACCOUNT AC
+        WHERE AC.CUSTOMER_NUMBER = #value#
+        AND AC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AC1 
+                            WHERE AC.ACCOUNT_NUMBER = AC1.ACCOUNT_NUMBER 
+                            AND AC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND AC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveServiceDeliveryContract" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveServiceDeliveryContract */   
+        CC.CUSTOMER_NUMBER AS OWNING_CUSTOMER_NUMBER,SDC.NAME,SDC.CONTRACT_NUMBER,SDC.ASSOC_SKELETON_CONTRACT_NUMBER
+        FROM  SERVICE_DELIVERY_CONTRACT SDC,CONTRACT_CUSTOMER CC WHERE 
+        SDC.CONTRACT_NUMBER = #value#
+        AND SDC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE_DELIVERY_CONTRACT SDC2 WHERE 
+                                SDC.CONTRACT_NUMBER = SDC2.CONTRACT_NUMBER AND 
+                                SDC2.STATE_RD IN ('SIGNED','APPROVED'))
+        AND SDC.STATE_RD IN  ('SIGNED','APPROVED')
+        AND SDC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CC.CONTRACT_NUMBER = SDC.CONTRACT_NUMBER
+        AND CC.CONTRACT_TYPE_INDICATOR = 'S'
+        AND CC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONTRACT_CUSTOMER CC1
+                                WHERE CC1.CUSTOMER_NUMBER=CC.CUSTOMER_NUMBER
+                                AND CC1.CONTRACT_NUMBER=CC.CONTRACT_NUMBER)
+        AND CC.EFFECTIVE_STATUS='ACTIVE'
+        AND CC.OWNING_CUSTOMER_INDICATOR ='Y'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveLegacyContactRole" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveLegacyContactRole */   
+        CR.SUPPORTED_OBJECT_TYPE_RD,  CR.SUPPORTED_OBJECT_ID, CR.ENTITY_ID,  CR.CONTACT_ROLE_TYPE_RD,CR.CONTACT_ROLE_POSITION_NAME,
+        CR.CONTACT_ROLE_ID
+        FROM CONTACT_ROLE CR  WHERE 
+        CR.CUSTOMER_NUMBER =  #value#
+        AND CR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONTACT_ROLE CR1 WHERE 
+                    CR.CONTACT_ROLE_ID = CR1.CONTACT_ROLE_ID
+                    AND CR1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CR.CONTACT_ROLE_ENTITY_ID IS NULL
+        AND CR.SUPPORTED_OBJECT_TYPE_RD IN ('ACCOUNT','CUSTOMER','SERVDLVRY','SERVICE_SUBS','SKELCNTR')
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveContactRole" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveContactRole */   
+        CR.SUPPORTED_OBJECT_TYPE_RD,  CR.SUPPORTED_OBJECT_ID
+        FROM CONTACT_ROLE CR  WHERE 
+        CR.CONTACT_ROLE_ENTITY_ID =  #value#
+        AND CR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONTACT_ROLE CR1 WHERE 
+            CR.CONTACT_ROLE_ID = CR1.CONTACT_ROLE_ID
+            AND CR1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE' 
+    </select>
+
+    <select id = "GetSomMasterData.onl.RetrieveContactRoleEntity" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveContactRoleEntity */   
+        CR.ENTITY_ID,  CR.CONTACT_ROLE_TYPE_RD,CR.CONTACT_ROLE_POSITION_NAME,
+        CR.CONTACT_ROLE_ENTITY_ID AS CONTACT_ROLE_ID
+        FROM CONTACT_ROLE_ENTITY CR  WHERE 
+        CR.CUSTOMER_NUMBER =  #value#
+        AND CR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONTACT_ROLE_ENTITY CR1 WHERE 
+                CR.CONTACT_ROLE_ENTITY_ID = CR1.CONTACT_ROLE_ENTITY_ID
+                AND CR1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE' 
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveCustomerNumber" parameterClass = "String" resultClass="java.util.HashMap">
+    	SELECT /* GetSomMasterData.onl.RetrieveCustomerNumber */
+      	AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE AN.START_RANGE_STRING = #value#
+      	AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+    	AND CSC.EFFECTIVE_DATE=( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+        CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID
+        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE')
+    </select>
+ 	
+ 	<select id = "GetSomMasterData.onl.RetrieveAccessNumberCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+ 		SELECT /* GetSomMasterData.onl.RetrieveAccessNumberCustomer */
+    	AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC
+		WHERE  AN.START_RANGE_STRING &lt;= #value#
+		AND AN.TYPE_RD='ACC_NUM_RANGE'
+		AND AN.END_RANGE_STRING||SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER, ';', -1)+1) &gt;= #value#
+    	AND AN.CONFIG_SERVICE_CHAR_ID=CSC.CONFIG_SERVICE_CHAR_ID
+    	AND LENGTH(AN.START_RANGE_STRING) = LENGTH(#value#)
+    	AND CSC.EFFECTIVE_DATE=( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+        CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID
+        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE')
+ 	</select>
+ 	
+    <select id = "GetSomMasterData.onl.RetrieveSkeletonContractByNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveSkeletonContractByNumber */ 
+        CC.CONTRACT_NUMBER , CC.CUSTOMER_NUMBER, SK.NAME
+        FROM CONTRACT_CUSTOMER CC, SKELETON_CONTRACT SK
+        WHERE CC.OWNING_CUSTOMER_INDICATOR ='Y'
+        AND CC.CONTRACT_TYPE_INDICATOR = 'K'
+        AND CC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONTRACT_CUSTOMER CC1
+                                WHERE CC.CUSTOMER_NUMBER=CC1.CUSTOMER_NUMBER
+                                AND CC.CONTRACT_NUMBER=CC1.CONTRACT_NUMBER)
+        AND CC.EFFECTIVE_STATUS='ACTIVE'
+        AND CC.CONTRACT_NUMBER = SK.CONTRACT_NUMBER
+        AND SK.CONTRACT_NUMBER = #value# 
+        AND SK.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SKELETON_CONTRACT SK1
+                        WHERE SK.CONTRACT_NUMBER=SK1.CONTRACT_NUMBER)
+        AND SK.EFFECTIVE_STATUS='ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveSkeletonContracts" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveSkeletonContracts */ 
+        CC.CONTRACT_NUMBER , CC.CUSTOMER_NUMBER, SK.NAME
+        FROM CONTRACT_CUSTOMER CC, SKELETON_CONTRACT SK
+        WHERE CC.CONTRACT_NUMBER IN (SELECT CONTRACT_NUMBER FROM CONTRACT_CUSTOMER CC1
+        WHERE CC1.CUSTOMER_NUMBER = #value# 
+        AND CC1.CONTRACT_TYPE_INDICATOR = 'K'
+        AND CC1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONTRACT_CUSTOMER CC2
+        WHERE CC1.CUSTOMER_NUMBER=CC2.CUSTOMER_NUMBER
+        AND CC1.CONTRACT_NUMBER=CC2.CONTRACT_NUMBER)
+        AND CC1.EFFECTIVE_STATUS='ACTIVE')
+        AND CC.OWNING_CUSTOMER_INDICATOR ='Y'
+        AND CC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONTRACT_CUSTOMER CC3
+        WHERE CC.CUSTOMER_NUMBER=CC3.CUSTOMER_NUMBER
+        AND CC.CONTRACT_NUMBER=CC3.CONTRACT_NUMBER)
+        AND CC.EFFECTIVE_STATUS='ACTIVE'
+        AND CC.CONTRACT_NUMBER = SK.CONTRACT_NUMBER
+        AND SK.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SKELETON_CONTRACT SK1
+        WHERE SK.CONTRACT_NUMBER=SK1.CONTRACT_NUMBER)
+        AND SK.EFFECTIVE_STATUS='ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveSkeletonItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveSkeletonItems */ 
+        SKP.PRODUCT_CODE, SKP.PRODUCT_VERSION_CODE, SKP.PRICING_STRUCTURE_CODE, S.SERVICE_CODE 
+        FROM SKELETON_CONTRACT_PROD_COMMIT SKP,PRODUCT_VERSION_SERVICE PVS, SERVICE S
+        WHERE SKP.CONTRACT_NUMBER = #value# 
+        AND SKP.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SKELETON_CONTRACT_PROD_COMMIT SKP1
+                                WHERE SKP.PRODUCT_COMMITMENT_NUMBER=SKP1.PRODUCT_COMMITMENT_NUMBER)
+        AND SKP.EFFECTIVE_STATUS='ACTIVE'
+        AND PVS.PRODUCT_CODE = SKP.PRODUCT_CODE 
+        AND PVS.PRODUCT_VERSION_CODE = SKP.PRODUCT_VERSION_CODE
+        AND PVS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND S.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1
+                                WHERE S.SERVICE_CODE=S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND S.EFFECTIVE_STATUS='ACTIVE'
+        ORDER BY S.SERVICE_CODE
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveTariffService" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveTariffService */ 
+        PSS.PRICING_STRUCTURE_CODE
+        FROM PRICING_STRUCTURE_SERVICE PSS
+        WHERE PSS.PRODUCT_CODE = #productCode# 
+        AND PSS.PRODUCT_VERSION_CODE= #productVersionCode# 
+        AND PSS.PRICING_STRUCTURE_CODE= #tariffCode# 
+        AND PSS.SERVICE_CODE= #serviceCode# 
+        AND PSS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICING_STRUCTURE_SERVICE PSS1
+        WHERE PSS.PRODUCT_CODE=PSS1.PRODUCT_CODE
+        AND PSS.PRODUCT_VERSION_CODE=PSS1.PRODUCT_VERSION_CODE
+        AND PSS.PRICING_STRUCTURE_CODE=PSS1.PRICING_STRUCTURE_CODE
+        AND PSS.SERVICE_CODE=PSS1.SERVICE_CODE
+        AND PSS1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PSS.EFFECTIVE_STATUS='ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveOneGroup" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveOneGroup */ 
+        OG.ONE_GROUP_ID, OG.NAME 
+        FROM ONE_GROUP OG, ONE_GROUP_CUSTOMER OGC 
+        WHERE 
+        OGC.CUSTOMER_NUMBER = #value#
+        AND OG.ONE_GROUP_ID = OGC.ONE_GROUP_ID
+        AND OG.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ONE_GROUP OG1 WHERE
+                                OG.ONE_GROUP_ID = OG1.ONE_GROUP_ID)
+        AND OG.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OGC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ONE_GROUP_CUSTOMER OGC1 WHERE
+                                OGC.CUSTOMER_NUMBER = OGC1.CUSTOMER_NUMBER
+                                AND OGC.ONE_GROUP_ID = OGC1.ONE_GROUP_ID)
+        AND OGC.EFFECTIVE_STATUS = 'ACTIVE'    
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveCustomerAncestor" parameterClass = "string" resultClass="java.util.HashMap">
+       SELECT /* GetSomMasterData.onl.RetrieveCustomerAncestor */  
+        CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_DATE =  
+                (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                    WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                    AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                )    
+                AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveAccountsForCustList" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveAccountsForCustList */ 
+        AN.ACCOUNT_NUMBER 
+        FROM ACCOUNT AN  
+        WHERE 
+        AN.CUSTOMER_NUMBER IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND AN.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AN1 
+                        WHERE AN.ACCOUNT_NUMBER = AN1.ACCOUNT_NUMBER 
+                        AND AN1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND AN.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveSDLContractsForCustList" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveSDLContractsForCustList */ 
+        PC.PRODUCT_CODE,PC.PRODUCT_COMMITMENT_NUMBER,PC.PRICING_STRUCTURE_CODE,SDC.CONTRACT_NUMBER,
+        PROD.BILLING_NAME_2 AS PRODUCT_NAME, PRICING.BILLING_NAME_2 AS PRICING_STRUCTURE_NAME, 
+        CI.CIO_DATA AS SALES_ORG_NUMBER
+        FROM  
+        CONTRACT_CUSTOMER CC,COMMISSIONING_INFORMATION CI,
+        SERVICE_DELIVERY_CONTRACT SDC, SERV_DELIV_CONT_PRODUCT_COMMIT PC,
+        PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+        CC.CUSTOMER_NUMBER IN
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CC.CONTRACT_TYPE_INDICATOR = 'S'
+        AND CC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONTRACT_CUSTOMER CC1
+                                WHERE CC1.CUSTOMER_NUMBER=CC.CUSTOMER_NUMBER
+                                AND CC1.CONTRACT_NUMBER=CC.CONTRACT_NUMBER 
+                                AND CC1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND CC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CC.CONTRACT_NUMBER = SDC.CONTRACT_NUMBER 
+        AND SDC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE_DELIVERY_CONTRACT SDC2 WHERE 
+                                SDC.CONTRACT_NUMBER = SDC2.CONTRACT_NUMBER AND 
+                                SDC2.STATE_RD = 'SIGNED')
+        AND SDC.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.PRODUCT_COMMITMENT_NUMBER =  CI.SUPPORTED_OBJECT_ID
+        AND CI.SUPPORTED_OBJECT_TYPE_RD  = 'S'
+        AND CI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM COMMISSIONING_INFORMATION CI1
+                                WHERE CI1.SUPPORTED_OBJECT_ID=CI.SUPPORTED_OBJECT_ID
+                                AND CI1.SUPPORTED_OBJECT_TYPE_RD=CI.SUPPORTED_OBJECT_TYPE_RD
+                                AND CI1.CIO_TYPE_RD=CI.CIO_TYPE_RD
+                                AND CI1.COMMISSIONING_INFORMATION_ID=CI.COMMISSIONING_INFORMATION_ID 
+                                AND CI1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+        AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+        AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>
+    
+    <select id = "GetSomMasterData.onl.RetrieveRebatesForAccountList" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* GetSomMasterData.onl.RetrieveRebatesForAccountList */ 
+        CI.CONTRIBUTING_ITEM_ID AS ACCOUNT_NUMBER, PPS.PRICE_PLAN_CODE, PPS.OPTION_VALUE_NAME, PC.PRODUCT_CODE, 
+        PC.PRICING_STRUCTURE_CODE, SERSU.SERVICE_SUBSCRIPTION_ID, SERSU.SERVICE_CODE,
+        PROD.BILLING_NAME_2 AS PRODUCT_NAME, PRICING.BILLING_NAME_2 AS PRICING_STRUCTURE_NAME,
+        S.BILLING_NAME_2 AS SERVICE_NAME, PP.BILLING_NAME_2 AS PRICE_PLAN_NAME
+        FROM PRICE_PLAN_SUBSCRIPTION PPS, PRODUCT_SUBSCRIPTION PS, ORDER_FORM_PRODUCT_COMMIT PC, 
+             SERV_SUBSCR_PRICE_PLAN_SUBSCR SSPPS, SERVICE_SUBSCRIPTION SERSU, CONTRIBUTING_ITEM CI,
+             PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING, SERVICE S, PRICE_PLAN PP
+        WHERE PPS.PRICE_PLAN_SUBSCRIPTION_ID = CI.PRICE_PLAN_SUBSCRIPTION_ID 
+        AND CI.CONTRIBUTING_ITEM_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CI.TYPE_RD = 'ACCOUNT'
+        AND CI.EFFECTIVE_DATE=(SELECT MAX(EFFECTIVE_DATE) FROM CONTRIBUTING_ITEM CI2 WHERE
+                       CI.CONTRIBUTING_ITEM_ID = CI2.CONTRIBUTING_ITEM_ID
+                       AND CI.TYPE_RD = CI2.TYPE_RD
+                       AND CI.PRICE_PLAN_SUBSCRIPTION_ID=CI2.PRICE_PLAN_SUBSCRIPTION_ID 
+                       AND CI.CONTRIBUTING_ITEM_NUMBER=CI2.CONTRIBUTING_ITEM_NUMBER
+                       AND CI2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS.PRICE_PLAN_SUBSCRIPTION_ID=SSPPS.PRICE_PLAN_SUBSCRIPTION_ID
+        AND PPS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN_SUBSCRIPTION PPS2 WHERE 
+                        PPS.PRICE_PLAN_SUBSCRIPTION_ID = PPS2.PRICE_PLAN_SUBSCRIPTION_ID
+                        AND PPS2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SSPPS.SERVICE_SUBSCRIPTION_ID=SERSU.SERVICE_SUBSCRIPTION_ID
+        AND SERSU.STATE_RD IN ('SUBSCRIBED')
+        AND SSPPS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_SUBSCR_PRICE_PLAN_SUBSCR SSPPS2 WHERE 
+                        SSPPS.PRICE_PLAN_SUBSCRIPTION_ID = SSPPS2.PRICE_PLAN_SUBSCRIPTION_ID
+                        AND SSPPS.SERVICE_SUBSCRIPTION_ID = SSPPS2.SERVICE_SUBSCRIPTION_ID
+                        AND SSPPS2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND SSPPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PS.PRODUCT_SUBSCRIPTION_ID = PPS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                            PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE
+                        PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER
+                        AND PC2.STATE_RD  = 'SIGNED')
+        AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+        AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+        AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+        AND SERSU.SERVICE_CODE=S.SERVICE_CODE
+        AND S.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S2
+                                WHERE S.SERVICE_CODE=S2.SERVICE_CODE
+                                AND S2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS.PRICE_PLAN_CODE=PP.PRICE_PLAN_CODE
+        AND PP.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN PP2
+                                WHERE PP.PRICE_PLAN_CODE=PP2.PRICE_PLAN_CODE
+                                AND PP2.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND PP2.EFFECTIVE_DATE &lt;= SYSDATE )
+        UNION SELECT  
+        CI1.CONTRIBUTING_ITEM_ID AS ACCOUNT_NUMBER, PPS1.PRICE_PLAN_CODE, PPS1.OPTION_VALUE_NAME, PC1.PRODUCT_CODE, 
+        PC1.PRICING_STRUCTURE_CODE, SERSU1.SERVICE_SUBSCRIPTION_ID, SERSU1.SERVICE_CODE,
+        PROD1.BILLING_NAME_2 AS PRODUCT_NAME, PRICING1.BILLING_NAME_2 AS PRICING_STRUCTURE_NAME,
+        S1.BILLING_NAME_2 AS SERVICE_NAME, PP1.BILLING_NAME_2 AS PRICE_PLAN_NAME
+        FROM PRICE_PLAN_SUBSCRIPTION PPS1, PRODUCT_SUBSCRIPTION PS1, SERV_DELIV_CONT_PRODUCT_COMMIT PC1, 
+             SERV_SUBSCR_PRICE_PLAN_SUBSCR SSPPS1, SERVICE_SUBSCRIPTION SERSU1, CONTRIBUTING_ITEM CI1,
+             PRODUCT_VERSION PROD1,PRICING_STRUCTURE PRICING1, SERVICE S1, PRICE_PLAN PP1  
+        WHERE PPS1.PRICE_PLAN_SUBSCRIPTION_ID = CI1.PRICE_PLAN_SUBSCRIPTION_ID 
+        AND CI1.CONTRIBUTING_ITEM_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        AND CI1.TYPE_RD = 'ACCOUNT'
+        AND CI1.EFFECTIVE_DATE=(SELECT MAX(EFFECTIVE_DATE) FROM CONTRIBUTING_ITEM CI3 WHERE
+                       CI1.CONTRIBUTING_ITEM_ID = CI3.CONTRIBUTING_ITEM_ID
+                       AND CI1.TYPE_RD = CI3.TYPE_RD
+                       AND CI1.PRICE_PLAN_SUBSCRIPTION_ID=CI3.PRICE_PLAN_SUBSCRIPTION_ID 
+                       AND CI1.CONTRIBUTING_ITEM_NUMBER=CI3.CONTRIBUTING_ITEM_NUMBER
+                       AND CI3.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CI1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS1.PRICE_PLAN_SUBSCRIPTION_ID=SSPPS1.PRICE_PLAN_SUBSCRIPTION_ID
+        AND PPS1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN_SUBSCRIPTION PPS3 WHERE 
+                        PPS1.PRICE_PLAN_SUBSCRIPTION_ID = PPS3.PRICE_PLAN_SUBSCRIPTION_ID
+                        AND PPS3.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SSPPS1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_SUBSCR_PRICE_PLAN_SUBSCR SSPPS3 WHERE 
+                        SSPPS1.PRICE_PLAN_SUBSCRIPTION_ID = SSPPS3.PRICE_PLAN_SUBSCRIPTION_ID
+                        AND SSPPS1.SERVICE_SUBSCRIPTION_ID = SSPPS3.SERVICE_SUBSCRIPTION_ID
+                        AND SSPPS3.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND SSPPS1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SSPPS1.SERVICE_SUBSCRIPTION_ID=SERSU1.SERVICE_SUBSCRIPTION_ID
+        AND SERSU1.STATE_RD IN ('SUBSCRIBED')
+        AND PS1.PRODUCT_SUBSCRIPTION_ID = PPS1.PRODUCT_SUBSCRIPTION_ID 
+        AND PS1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS3 WHERE 
+                            PS1.PRODUCT_SUBSCRIPTION_ID = PS3.PRODUCT_SUBSCRIPTION_ID)
+        AND PS1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PS1.PRODUCT_COMMITMENT_NUMBER = PC1.PRODUCT_COMMITMENT_NUMBER
+        AND PC1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC3 WHERE
+                        PC1.PRODUCT_COMMITMENT_NUMBER = PC3.PRODUCT_COMMITMENT_NUMBER
+                        AND PC3.STATE_RD  = 'SIGNED')
+        AND PROD1.PRODUCT_CODE = PC1.PRODUCT_CODE 
+        AND PROD1.PRODUCT_VERSION_CODE =  PC1.PRODUCT_VERSION_CODE 
+        AND PRICING1.PRICING_STRUCTURE_CODE = PC1.PRICING_STRUCTURE_CODE 
+        AND PRICING1.PRODUCT_CODE = PC1.PRODUCT_CODE 
+        AND PRICING1.PRODUCT_VERSION_CODE = PC1.PRODUCT_VERSION_CODE 
+        AND SERSU1.SERVICE_CODE=S1.SERVICE_CODE
+        AND S1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S3
+                                WHERE S1.SERVICE_CODE=S3.SERVICE_CODE
+                                AND S3.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS1.PRICE_PLAN_CODE=PP1.PRICE_PLAN_CODE
+        AND PP1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN PP3
+                                WHERE PP1.PRICE_PLAN_CODE=PP3.PRICE_PLAN_CODE
+                                AND PP3.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND PP3.EFFECTIVE_DATE &lt;= SYSDATE )
+    </select>
+    
+</sqlMap>
+                                    

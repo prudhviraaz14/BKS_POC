@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.arcor.net/auftragsmodell-001" 
+	xmlns:am="http://www.arcor.net/auftragsmodell-001" 
+	xmlns:mi="http://www.arcor.net/auftragsmodell/metainformationen-002"
+	xmlns:ask="http://www.arcor.net/EPSM-ASK-001" 
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<import namespace="http://www.arcor.net/auftragsmodell/metainformationen-002" schemaLocation="metainformationen-002.xsd" />
+	<import namespace="http://www.arcor.net/EPSM-ASK-001" schemaLocation="EPSM-ASK-001.xsd" />
+	<element name="auftragsmodell" type="am:Auftragsmodell" />
+	<complexType name="Auftragsmodell">
+		<sequence>
+			<element name="aawSpracheVersion" minOccurs="1">
+				<simpleType>
+					<annotation>
+						<documentation>Releaseversion. Beginnt mit der Releasenummer gefolgt von 3 Nummernblöcken von je 2 Ziffern, die mit einem Punkt getrennt sind.</documentation>
+					</annotation>
+					<restriction base="string">
+						<pattern value="[0-9]{3}(\.[0-9]{2}){3}"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="adonisModellVersion" minOccurs="1">
+				<simpleType>
+					<annotation>
+						<documentation>Releaseversion. Beginnt mit der Releasenummer gefolgt von 3 Nummernblöcken von je 2 Ziffern, die mit einem Punkt getrennt sind.</documentation>
+					</annotation>
+					<restriction base="string">
+						<pattern value="[0-9]{3}(\.[0-9]{2}){2}"/>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="mdtsVersion" type="string" minOccurs="1" />
+			<element name="technischeZusatzdaten" type="am:TechnischeZusatzdaten" minOccurs="0" maxOccurs="unbounded" />
+			<element name="inhalt" type="ask:AuftragsPositionsElement" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						Im Inhalt sind in der Regel die Auftragsdaten zu finden. Ganz allgemein können hier beliebige 
+						Element vom Typ AuftragsPositionsElement vorkommen. Diese Tatsache wird dazu genutzt, hier auch Bestands- und (später) auch Prognosedaten zu transportieren.
+						</documentation>
+				</annotation>
+			</element>
+			<element name="metainformationen" type="mi:MetainformationsGruppe" minOccurs="0" maxOccurs="unbounded" />
+			<element name="meldungen" type="mi:Meldung" minOccurs="0" maxOccurs="unbounded" />
+			<element name="erfassungsZaehler" type="integer" minOccurs="0" />
+		</sequence>
+	</complexType>
+	<complexType name="TechnischeZusatzdaten">
+		<sequence>
+			<element name="schluessel" type="string" />
+			<element name="wert" type="string" />
+		</sequence>
+	</complexType>
+</schema>

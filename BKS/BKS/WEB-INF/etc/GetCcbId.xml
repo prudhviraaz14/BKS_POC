@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "GetCcbId.effonl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+RULE GetCcbId.effonl.RetrieveExactAccessNumber */ 
+        AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , BI.BUNDLE_ID, GR.ACCOUNT_NUMBER 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, BUNDLE_ITEM BI, GUIDING_RULE GR
+        WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND GR.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND GR.EFFECTIVE_FLAG = 'N'
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND BI.EFFECTIVE_FLAG = 'N' 
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "GetCcbId.onl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+RULE GetCcbId.onl.RetrieveExactAccessNumber */ 
+		AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , BI.BUNDLE_ID, GR.ACCOUNT_NUMBER 
+		FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, BUNDLE_ITEM BI, GUIDING_RULE GR
+		WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM 
+                                          CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                          CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                          AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND GR.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+		AND GR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM GUIDING_RULE GR1 WHERE 
+                                  GR.SERVICE_SUBSCRIPTION_ID = GR1.SERVICE_SUBSCRIPTION_ID 
+                                  AND GR.ACCOUNT_NUMBER = GR1.ACCOUNT_NUMBER 
+                                  AND GR1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE' 
+		AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+		AND BI.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE 
+                                  BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                  AND BI1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 3 
+    </select>
+</sqlMap>
+                                    

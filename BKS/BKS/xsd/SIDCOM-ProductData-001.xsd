@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:master="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" targetNamespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation><![CDATA[
+Author: Heiko Barthel
+Change history:
+  0.1  2009-12-01 Heiko Barthel: Initial version
+  1.01 2010-02-09 Thomas Schneider: Typo ProductOfferingOccurence and productOfferingOccurance corrected to ProductOfferingOccurrence
+  1.02 2010-06-10 Heiko Barthel: IT-k-28484, added optional element 'pricableCharacteristic' to complex type 'ProductPrice'
+  1.03 2010-06-23 Gesa Prien: define choice of detached/appartmentHouse as optional
+Since 1.36:  
+  1.04 2010-07-13 Joerg Winter: IT-27143 added "aoMastered" to "ProductOfferingOccurrence"
+       2010-08-03 Hans Becker: IT-27143 added apId to characteristicValue
+  1.05 2010-08-04 Hans Becker: IT-27143 moved apId up
+  1.06 2010-01-28 Hans Becker: IT-k-29954 added apId to Entity and ProductOfferingOccurrence
+                                          added contractStartDate to ProductOfferingOccurrence
+                                          added apId to minimumContractDuration
+  1.07 2011-02-21 Hans Becker: IT-29578 added 'productOfInterestTo' to type 'Product' and new type 'PartyRoleProductInvolvement'
+Since 1.39:
+  1.10 2011-04-20 Hans Becker: IT-29627 added mappedValue to CharacteristicValue
+                                        added pricingStructureName and productName to ProductPrice
+                                        added contractDurationEnd, lastNoticeDate and terminationData to ProductOfferingOccurrence
+Since 1.40:
+  1.2  2011-08-11 Hans Becker: IT-k-30642 renamed contractDurationEnd to contractDurationEndDate and added contractSignDate
+Since 1.42:
+  1.21 2012-01-10 Hans Becker: IT-30713 New type BillingAccountProductInvolvement, new element billingAccountPays in Entity
+  1.22 2012-04-11 Joerg Winter: IT-31526 added resetContractStartDate to ProductOfferingOccurrence
+Since 1.44:
+  1.23 2012-11-13 Hans Becker: IT-76671 Added new elements to type ProductPrice, added element productPrice to type Entity
+Since 1.45:
+  1.24 2013-01-15 Hans Becker: IT-32220 Added conditionServiceEndEvent to type ProductPrice
+Since 1.50:
+  1.25 2014-12-10 Prabhat Singh: PPM-132303 changed type of minimumContractDuration from positiveInteger to nonNegativeInteger
+Since BSS-20:
+  1.26 2016-06-07 Prabhat Singh: PPM-196371 added element endDate, terminationDate to CharacteristicValue and also added restriction to durationUnit with enumeration values 'DAY', 'MONTH', 'YEAR'
+]]></xs:documentation>
+  </xs:annotation>
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+  <xs:simpleType name="SerialNumber">
+    <xs:annotation>
+      <xs:documentation>The ID of the object. Has to be unique across the enterprise. Will be created by the system that stores the installed base.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="GermanPropertyAddress">
+    <xs:sequence>
+      <xs:element name="address" type="master:Address" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When missing the customer address is used.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:choice minOccurs="0">
+        <xs:element name="detachedHouse" type="DetachedHouse"/>
+        <xs:element name="appartmentHouse" type="AppartmentHouse"/>
+      </xs:choice>
+      <xs:element name="accessOwner" type="master:AccessOwner" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Has to be provided when the access owner is different from the customer. When there are more than one access owners the DTAG has to know them all.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="previousAccessOwner" type="master:Individual" minOccurs="0"/>
+      <xs:element name="previousAccessNumber" type="master:FixedNetPhoneNumber" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DetachedHouse">
+    <xs:annotation>
+      <xs:documentation>German: Einfamilienhaus</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="details">
+        <xs:annotation>
+          <xs:documentation>German: genaue Lagebezeichnung der TAE-Dose, z.B. KG, EG, DG</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AppartmentHouse">
+    <xs:annotation>
+      <xs:documentation>German: Mehrfamilienhaus</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="details" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="entranceLocation">
+        <xs:annotation>
+          <xs:documentation>German: Lage des Eingangs (Vorderhaus, Hinterhaus)</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="frontBuilding"/>
+            <xs:enumeration value="rearBuilding"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="appartmentLocation">
+        <xs:annotation>
+          <xs:documentation>German: Lage der Wohnung (links, mitte, rechts)</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="middle"/>
+            <xs:enumeration value="right"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="floor">
+        <xs:annotation>
+          <xs:documentation>German: Etage</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="3"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProductOfferingOccurrence">
+    <xs:sequence>
+      <xs:element name="productOfferingCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Reference to the corresponding ProductOffering</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productOfferingName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Name of the corresponding ProductOffering; plausibility list: sheet 'PACKAGE', column B (Name of the Package)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minimumContractDuration" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The minimum contract duration in months for this offering. If not provided the first minimumContractDuration found in hierarchy above is used.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:nonNegativeInteger">
+              <xs:attribute name="apId" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation><![CDATA[
+Since: IT-k-29554 (1.37)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+]]></xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="contractStartDate" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-k-29554 (1.37)
+Filled by: BKS
+Used by: ePOS/AO
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:date">
+              <xs:attribute name="apId" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation><![CDATA[
+Since: IT-k-29554 (1.37)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+]]></xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="resetContractStartDate" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Flag to reset the contract start date, for example in case of a sales package change or
+    ordering a monthly billed hardware.
+    Valid in productOfferingOccurrenceToBe part only!
+Since: IT-31526 (1.42)
+Filled by: Frontend
+Used by: COM
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="contractDurationEndDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: End of current contract term duration.
+Since: IT-29627 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="contractSignDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Sign date. Will replace contractSignDate in derived BKS type.
+Since: IT-k-30642 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="lastNoticeDateToTerminate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Last day when current term duration allows termination
+Since: IT-29627 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productPrice" type="ProductPrice" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="installationSite" type="GermanPropertyAddress" minOccurs="0"/>
+      <xs:choice>
+        <xs:element name="productBundle" type="ProductBundle"/>
+        <xs:element name="product" type="Product"/>
+        <xs:element name="productOfferingOccurrence" type="ProductOfferingOccurrence" maxOccurs="unbounded"/>
+      </xs:choice>
+      <xs:element name="aoMastered" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Indicates that the product is known to the AO installed base
+Since: IT-27143 (1.36)
+Filled by: BKS delivers to ePOS+ for asIs, AO has to set it for toBe if the bundle stays or is created in installed base
+Used by: FIF, COM to decide if AO has to be informed about changes in according product
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="terminationData" type="TerminationData" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Provide information for terminated products
+Since: IT-29627 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="serialNumber" type="SerialNumber"/>
+    <xs:attribute name="apId" type="xs:string">
+      <xs:annotation>
+        <xs:documentation><![CDATA[
+Since: IT-k-29554 (1.37)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+]]></xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="ProductPrice">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>A name (may also be a code) referencing a pricing. For Simple-Offerings this typically is the CCB tariff code also known as pricingStructureCode, plausibility list: sheet TARIFF, column F. The meaning of this field depends on the context (defined in product catalogue).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="pricingStructureName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Provide a descriptive text for the given name, i.e. the tariff name from CCB
+Since: IT-29627 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="type" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Indicates what type of price is given. For Simple-Offerings this typically is the CCB product code, plausibility list: sheet TARIFF, column F. The meaning of this field depends on the context (defined in product catalogue).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="productName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Provide a descriptive text for the given type, i.e. the product name from CCB
+Since: IT-29627 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="pricableCharacteristic" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Since: IT-k-28484 Sample values: "Vorteilspr_0509_Doku[0E]", "EP Befreiung"</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="netAmount" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Contains the monetary value without taxes.
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="grossAmount" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Contains the monetary value including taxes.
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transactionType" maxOccurs="1" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Possible values: CREDIT, DEBIT. Indicates a positive or negative amount.
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="CREDIT"/>
+            <xs:enumeration value="DEBIT"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="currency" type="xs:string" default="EUR" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The ISO 4217 3-Letter code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taxCode" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="shortDescription" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="frequency" type="Frequency" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Indicates how many times a ProductPrice is applied. 
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="additionalData" type="AdditionalData" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Vehicle for any information related to a ProductPrice. Ignored by COM.
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="chargeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Workaround for missing customer data in an order for an existing customer.
+         BillingAccountProductInvolvement should be used instead.
+Since: IT-76671 (1.44)
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="oneTimeCharge"/>
+            <xs:enumeration value="recurringCharge"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="conditionServiceEndEvent" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Indicates the automatic cancellation of a promotion on a certain event.
+Since: IT-32220 (1.45)
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="portingFinished"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Product">
+    <xs:complexContent>
+      <xs:extension base="Entity">
+        <xs:sequence>
+          <xs:element name="customerFacingService" type="CustomerFacingService" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="resource" type="Resource" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ProductBundle">
+    <xs:complexContent>
+      <xs:extension base="Product">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="productBundle" type="ProductBundle"/>
+          <xs:element name="product" type="Product"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CharacteristicValue">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Name of the corresponding SpecCharacteristic.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="apId" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: ?
+Since: IT-27143 (1.36)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:choice>
+        <xs:sequence>
+          <xs:element name="stringValue" type="xs:string"/>
+          <xs:element name="mappedValue" type="xs:string" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation><![CDATA[
+Purpose: Provide a descriptive text for the given stringValue
+Since: IT-29627 (1.39)
+Filled by: BKS
+Used by: KIAS, ePOS
+]]></xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="startDate" type="xs:date" minOccurs="0"/>
+          <xs:element name="duration" type="xs:int" minOccurs="0"/>
+          <xs:element name="durationUnit" minOccurs="0">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="DAY"></xs:enumeration>
+                <xs:enumeration value="MONTH"></xs:enumeration>
+                <xs:enumeration value="YEAR"></xs:enumeration>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="endDate" type="xs:date" minOccurs="0"/>
+          <xs:element name="terminationDate" type="xs:date" minOccurs="0"/>
+        </xs:sequence>
+        <xs:element name="numberValue" type="xs:decimal"/>
+        <xs:element name="dateValue" type="xs:date"/>
+        <xs:element name="booleanValue" type="xs:boolean"/>
+        <xs:element name="fixedNetPhoneNumber" type="master:FixedNetPhoneNumber"/>
+        <xs:element name="mobilePhoneNumber" type="master:MobilePhoneNumber"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CustomerFacingService">
+    <xs:complexContent>
+      <xs:extension base="Entity">
+        <xs:sequence>
+          <xs:element name="customerFacingService" type="CustomerFacingService" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Resource">
+    <xs:complexContent>
+      <xs:extension base="Entity">
+        <xs:sequence>
+          <xs:element name="resource" type="Resource" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Entity" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Represents the abstract SID type Entity.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="apId" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-k-29554 (1.37)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="serialNumber" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Object ID unique in the installed base. For new entities it can be left. The backend system storing the entity will create the serialNumber in the installed base.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="subOrderId" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Must be unique across the order. Enables order tracking for this specific entity. Currently used for hardware products.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="10"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="specification" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Reference to the definition of the Entity. For Products this is the ProductSpecificationCode.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="characteristicValue" type="CharacteristicValue" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="productOfInterestTo" type="PartyRoleProductInvolvement" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="billingAccountPays" type="BillingAccountProductInvolvement" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Association between product and billing account.
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="xs:string" minOccurs="0"></xs:element>
+      <xs:element name="productPrice" type="ProductPrice" maxOccurs="unbounded" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PartyRoleProductInvolvement">
+    <xs:annotation>
+      <xs:documentation><![CDATA[
+Purpose: A PartyRole involved with a Product. The involvement may be a subscriber, lessor, owner, and so forth.
+Since: IT-29578
+]]></xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="partyRole" type="master:PartyRole"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TerminationData">
+    <xs:sequence>
+      <xs:element name="terminationDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Date when product will be terminated
+Since: IT-29627
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="terminationEntryDate" type="xs:date">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Order entry date of termination
+Since: IT-29627
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="terminationReason" type="xs:string">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Reason of the termination from CCB reference data
+Since: IT-29627
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BillingAccountProductInvolvement">
+    <xs:annotation>
+      <xs:documentation><![CDATA[
+Purpose: Association between product and billing account.
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="billingAccountId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Reference to a billing account.
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="chargeType" maxOccurs="1" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Indicates in which way the product is charged.
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="recurring"></xs:enumeration>
+            <xs:enumeration value="oneTime"></xs:enumeration>
+            <xs:enumeration value="usage"></xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Frequency">
+    <xs:sequence>
+      <xs:element name="unit">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="DAY"></xs:enumeration>
+            <xs:enumeration value="MONTH"></xs:enumeration>
+            <xs:enumeration value="YEAR"></xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="quantity" type="xs:int" minOccurs="0"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AdditionalData">
+    <xs:sequence>
+      <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

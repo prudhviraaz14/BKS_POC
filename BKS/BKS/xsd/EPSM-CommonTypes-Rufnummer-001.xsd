@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001" 
+xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:leistungsmerkmal="http://www.arcor.net/EPSM-CommonTypes-Leistungsmerkmal-001" 
+xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Rufnummer-001" 
+targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Rufnummer-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Leistungsmerkmal-001" schemaLocation="EPSM-CommonTypes-Leistungsmerkmal-001.xsd"/>
+	<xs:element name="EPSM_MobilRufnummer_Dokument_Information ">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="Laenderkennzeichen">
+		<xs:annotation>
+			<xs:documentation>Länderkennzeichen</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Vorwahl">
+		<xs:annotation>
+			<xs:documentation>Vorwahl (Ortsnetzkennzah)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="6"/>
+			<xs:minLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Asb">
+		<xs:annotation>
+			<xs:documentation>Anschlussbereich</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Rufnummer">
+		<xs:annotation>
+			<xs:documentation>Rufnummer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>		
+	<xs:complexType name="GesamtRufnummer">
+		<xs:annotation>
+			<xs:documentation></xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="leistungsmerkmal:Leistungsmerkmal">
+				<xs:sequence>
+					<xs:element name="laenderkenzeichen" type="rufnummer:Laenderkennzeichen" minOccurs="0"/>
+					<xs:element name="vorwahl" type="rufnummer:Vorwahl" minOccurs="0"/>
+					<xs:element name="rufnummer" type="rufnummer:Rufnummer" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

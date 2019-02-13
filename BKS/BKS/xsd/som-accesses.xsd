@@ -1,0 +1,2756 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/orderSchema" elementFormDefault="qualified">
+  <annotation>
+    <documentation><![CDATA[
+Part of the XML schema definition for SOM (Simple Order Model)
+WARNING:
+This XSD denotes the structure of the SOM and its elements.
+It does NOT indicate which parts are mandatory or optional in the different use cases.
+
+Change history:
+      0.1 25.11.2009 - Gregor Emmerich initial delivery COM_133.01.00.00
+      0.2 04.12.2009 - Gregor Emmerich - removed include of som-common to please more strict validator
+      0.3 22.12.2009 - Gregor Emmerich - processingStatus added to access isdnConfiguration, ngnConfiguration, ipBitstreamConfiguration
+      0.4 11.01.2010 - Gregor Emmerich - dtagFreeText added to businessDSLConfiguration
+      0.5 28.01.2010 - Gregor Emmerich - added processAfterNodeRefId at access
+Since 1.0:
+      2010-03-11 - Alex Borho - added ngnConfiguration, isdnConfiguration and ipBitstreamConfiguration
+      2010-03-16 - Jadranko Mrkonjic: added changes from TV-Center-IT
+                        - replaced multimediaEnabledIndicator with multimediaPort in 
+                          o isdnConfiguration
+                          o ngnConfiguration
+                          o ipBitstreamConfiguration
+      2010-04-13 - Heiko Barthel - IT-27626 added 'iadPinChangeType' to 'businessDSLConfiguration'
+Since 3.0:
+      2010-05-05 - Heiko Barthel - IT-27693 added 'iadPinChangeType' to all accesses that have also 'iadPin'
+                                            added 'dslrConfiguration' to 'dslr' to support IAD pin change
+      2010-05-20 - Jadranko Mrkonjic - added iadPinChange Element.
+      2010-05-27 - Heiko Barthel - removed 'dslrConfiguration' element (review comment by Alex Borho and because PIN change not even supported for DSLR by OPM)
+      2010-06-01 - Jadranko Mrkonjic - added minOccurs="0" to msisdn in 'iadPinChange' because msisdn is obsolet if sendAdditionalSMS is set to false.
+      2010-06-09 - Heiko Barthel - changed 'sendAdditionalSMS' to optional
+Since 3.1:
+      2010-07-14 - Joerg Winter - IT-28260 added 'lteConfiguration'
+      2010-07-21 - Joerg Winter - IT-28260 removed 'simCardChange' from 'lteConfiguration'
+      2010-08-05 - Hans Becker - IT-28260 added type sendConfirmationLetterIndicator to lteConfiguration
+      2010-08-09 - Heiko Barthel - IT-28260 added element enrichFromNodeRefId to access
+      2010-08-16 - Heiko Barthel - removed SimId from lteConfig
+      2010-08-19 - Hans Becker - IT-27143 added technicianContactNodeRefID to access
+                                          added acsIndicator to accesses
+      2010-08-25 - Hans Becker - IT-27143 changed type of technicianContactNodeRefID to ExistConfStringId
+      2010-09-02 - Joerg Winter - IT-28260 removed unused type 'existConf_simCardChangeType' with subtypes
+      2010-09-08 - Hans Becker - IT-28260 added technicalServiceGroup to lteConfiguration
+Since 3.2:
+      2010-11-04 - Gesa Prien - IT 28170 changed type of 'iadPinChangeType' from inline type to 'pinChangeType'
+      2010-11-24 - Joerg Winter - added 'otherAccess' for generic accesses of any kind
+      2010-11-24 - Gesa Prien - IT 28170 use 'ExistConfPinChangeType' instead of 'pinChangeType'
+Since 3.3:
+      2011-01-19 - Gesa Prien - IT-28190 added 'lineKey', 'DTAGContractNumber', 'DTAGCompletionDate', 'DTAGPaymentDate', 'accessTechnology', 'customerChangeConfirmation' to 'ngnConfiguration',
+                                         added 'lineKey', 'DTAGContractNumber', 'customerChangeConfirmation' to 'isdnConfiguration',
+                                         added 'lineKey', 'multimediaPort', 'DTAGContractNumber', 'customerChangeConfirmation', 'accessTechnology' to 'businessDSLConfiguration',
+                                         added 'lineKey', 'DTAGCompletionDate', 'DTAGPaymentDate', 'customerChangeConfirmation', 'serviceLevelName' to 'ipBitstreamConfiguration'
+      2011-01-21 - Gesa Prien - IT-28190 added 'DTAGOrderNumber' to 'ngnConfiguration' and 'ipBitstreamConfiguration'
+      2011-01-25 - Gesa Prien - IT-28190 renamed 'customerChangeConfirmation' as 'customerCommunication'
+      2011-01-26 - Gesa Prien - IT-28190 removed 'lineKey' from 'ipBitstreamConfiguration'
+                                         removed 'lineKey', 'DTAGContractNumber' and 'multimediaPort' from 'businessDSLConfiguration'
+      2011-02-01 - Joerg Winter - restricted all unlimited strings to 100 characters maximum (specify database restriction)
+      2011-02-03 - Gesa Prien - IT-28190 added 'availabilityCheckFrontendQueryDate', 'availabilityCheckBandwidthDeterminationDate', 'availabilityCheckBandwidthInfoSource' 
+                                           and 'availabilityCheckBandwidthScoringInfo' to 'ngnConfiguration' and 'ipBitstreamConfiguration'
+      2011-03-03 - Joerg Winter - IT-k-30164 added 'contactRoleRefIdList' to 'access'
+      2011-03-10 - Joerg Winter - PN-4715 added 'accessTechnology' to 'lteConfiguration'
+      2011-03-11 - Gesa Prien - IT-k-30180 added 'accessTechnology' to 'ipBitstreamConfiguration'
+Since 3.4:
+      2011-03-16 - Joerg Winter - related to PN-4719 made 'ID' attribute mandatory in abstract 'access' structure
+      2011-03-23 - Joerg Winter - IT-28575 added 'testPeriodDuration' to 'businessDSLConfiguration'
+                                           added complex type 'sipTrunk'
+                                           added 'testPeriodDuration' to 'sipTrunkConfiguration'
+      2011-04-05 - Joerg Winter - IT-28575 renamed 'gatewayPinReplaceIndicator' to 'gatewayPinChangeType'
+                                               as type 'changeType'
+                                           moved 'phoneSystemType', 'phoneSystemModel', 'phoneSystemMasterSlave' from function
+                                               level ('sipTrunkSiteConfiguration') to access level ('sipTrunkConfiguration')
+      2011-04-05 - Gesa Prien - IT-28575 renamed 'gatewayPinChangeType' of 'sipTrunkConfiguration' to 'gatewayPinChange', changed type to 'pinChange',
+                                         added 'iadPin' and 'iadPinChange' to 'sipTrunkConfiguration',
+                                         swapped order of 'gatewayPin' and 'gatewayPinChange' in analogy to 'iadPin*'
+Since 3.42:
+      2011-08-02 - Joerg Winter - PN-6273 added elements 'completionStatusOldCcbId', 'completionStatusNewCcbId',
+                                              'previousCompletionStatusOldCcbId' and 'previousCompletionStatusNewCcbId' to all accesses
+Since 3.5:
+      2011-06-16 - Joerg Winter - IT-28575 removed 'oneGroup' from 'sipTrunkConfiguration'
+      2011-06-21 - Joerg Winter - IT-28575 added 'oneGroupID' to 'sipTrunkConfiguration'
+                                           removed 'iadPin' and 'iadPinChange' from 'sipTrunkConfiguration'
+Since 3.6:
+      2011-08-10 - Joerg Winter - IT-28900 extracted identical elements from 'isdnConfiguration' and 'ngnConfiguration'
+                                               into new abstract type 'TalConfiguration'
+                                               (includes DTAGContractNumber, DTAGOrderNumber, DTAGCompletionDate, DTAGPaymentDate)
+                                           added elements 'suppressPiaIndicator' and 'suppressAaaIndicator' to 'isdnConfiguration'
+                                           added elements 'newLocalExchangeCarrierWitaIndicator' and 'inboundPortingSourceAddress'
+                                               to 'TalConfiguration'
+      2011-08-26 - Gesa Prien - IT-28900 added elements 'DTAGContractNumber', 'DTAGOrderNumber', 'DTAGCompletionDate', 'DTAGPaymentDate',
+                                             'newLocalExchangeCarrierWitaIndicator', 'inboundPortingSourceAddress'
+                                             to 'businessDSLConfiguration',
+                                         added element 'witaUsage' to 'TalConfiguration' and 'businessDSLConfiguration'
+      2011-09-07 - Joerg Winter - IT-28900 moved 'dtagFreeText' to different location in 'TalConfiguration'
+                                               and 'businessDSLConfiguration'
+      2011-10-18 - Joerg Winter - IT-28900 added 'newLocalExchangeCarrierWitaIndicator' and 'witaUsage' to 'ipBitstreamConfiguration'
+      2011-12-14 - Gesa Prien - ITk-31489 added 'cancellationReasonCodeOldCcbId' and 'cancellationReasonCodeNewCcbId' to 'access'
+Since 3.7:
+      2012-04-04 - Gesa Prien - ITk-31740 changed length of 'dtagFreeText' from String100 to String160 in 'businessDSLConfiguration', 
+                                             'TalConfiguration', 'ipCentrexConfiguration' and 'sipTrunkConfiguration'
+Since 3.8:
+      2012-04-18 - Gesa Prien - IT-31157 added 'remarks' to 'businessDSLConfiguration' and 'TalConfiguration',
+                                             added types for access 'isdnP2P': 'IsdnP2P', 'IsdnP2PConfiguration' and 'IsdnPBXConfiguration'
+      2012-04-25 - Joerg Winter - IT-31830 added 'cancellationDateOldCcbId' and 'cancellationDateNewCcbId' to 'access'
+      2012-07-20 - Chetan Goyani - IT 32245 added 'suppressPiaIndicator' to 'isdnP2PConfiguration'
+Since 3.9:
+      2012-08-07 - Joerg Winter (Gesa Prien) - IT-31752 added 'businessDSLProfi' and 'businessDSLProfiConfiguration'
+      2012-08-14 - Gesa Prien - IT-31752 removed 'featuresServiceCodeList' from 'BusinessDSLProfiConfiguration'  
+      2012-08-23 - Gesa Prien - IT-31752 removed 'businessDSLProfi' and 'businessDSLProfiConfiguration'
+      2012-09-24 - Chetan Goyani - PN 10668 removed 'tasi' from 'isdnP2PConfiguration'
+Since 4.0:
+      2013-01-30 - Chetan Goyani - IT 32434 - added types for access 'isdnS2M' : 'IsdnS2M' and 'IsdnS2MConfiguration'  
+Since 4.2:
+      2013-08-20 - Neha Khombare - IT 31530 - added lineTakeOver and oldWitaContractNumber for TALConfiguration, BusinessDslConfiguration, IpBitstreamConfiguration  
+                                              Added dtagPbxAccountNumber to IsdnPbxConfiguration     
+Since 16.0:
+      2015-01-06 - Prabhat Singh - PPM-120389 - added 'dtagFreeText' in ipBitstreamConfiguration. Also added some documentations for(e.g activationType etc.) 
+Since 17.0:
+      2015-06-15 - Prabhat Singh - PPM-116590_2 - added new types PbxConfiguration, oneNetBusiness, OneNetBusinessConfiguration
+                                                  changed type ipCentrexConfiguration to be derived from PbxConfiguration
+Since 19.0:                                                           
+      2015-12-14 - Prabhat Singh - PPM-101666 - added 'businessIpBitstreamConfiguration' to ipBitstream
+      2015-12-28 - Prabhat Singh - PPM-100281 - added 'ngabLineID' to ipBitstreamConfiguration
+      2015-12-28 - Prabhat Singh - PPM-100281 - modified documentation of element 'accessTechnology' by adding VDSL-L2
+Since 21.0:
+      2016-08-29 - Prabhat Singh - PPM-155469 - changed elements DTAGCompletionDate, DTAGPaymentDate and DTAGContractNumber to an ExistConf type under TalConfiguration, ipBitstreamConfiguration, businessDSLConfiguration.
+      2016-10-05 - Apoorva Saini - PN-30834 - Reverted the changes of PPM-155469  
+      2016-10-13 - Neha Khombare - PPM-155469_xxxxx - Added new elements providerCompletionDate, providerPaymentDate and providerContractNumber
+                                                      and deprecate DTAGCompletionDate, DTAGPaymentDate and DTAGContractNumber
+Since 22.0
+      2017-01-31 - Neha Khombare - PPM-196228 - Added kiasReference element to all access configurations
+      2017-03-08 - Neha Khombare - PN-31621(PPM-196228) -  Added kiasReference element to sipTrunkConfiguration 
+Since 23.0      
+      2017-05-30 - Apoorva Saini - PPM-197512 -  added ngabLineID to types 'TalConfiguration' and 'businessDSLConfiguration'
+Since 24.0
+      2017-09-28 - Hazarath Meravula - PPM-101666_242258 - added 'customerCallBackNumber' element to 'businessDSLConfiguration',,'TalConfiguration',
+                                       'ipBitstreamConfiguration','lteConfiguration','sipTrunkConfiguration','PbxConfiguration'
+                                                           added 'remarks' element to 'ipBitstreamConfiguration','lteConfiguration','sipTrunkConfiguration','PbxConfiguration'
+Since 25.0
+      2018-01-18 - Apoorva Saini - PPM-196251_278654 - added elements 'maxNumberOfVoiceChannels' and 'voiceChannelType' to OneNetBusinessConfiguration
+      
+Since 26.0
+      2018-05-08 - Apoorva Saini - PPM-239428 - added element voicePrioritization to businessDSLConfiguration and ipBitstreamConfiguration
+      2018-06-04 - Neha Khombare - PPM-230939 - Added new access type businessVoip and configuration businessVoipConfiguration
+            
+Since 27.0  
+      2018-09-06 - Neha Khombare - PPM-320858 - Added element 'tenderArea' in ngnConfiguration and businessDSLConfiguration
+                                              - Changed type of 'providerContractNumber' in TalConfiguration and businessDSLConfiguration to RemovableExistConfString100           
+]]></documentation>
+  </annotation>
+  <include schemaLocation="som-common.xsd"/>
+  <complexType name="access" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose:
+  How to distinguish between accesses and functions (German):
+  - Produkteigenschaften 
+  - Bezogen auf die technische Implementierung 
+  - Ein Access hat keinen ProcessingType, dieser ermittelt sich über den der Function, die auf den Access referenziert. 
+  - Ist der Begriff des Dependent Access notwendig? Wenn ja: dann nur an gleicher Lokation. Es entsteht die Notwendigkeit für
+    einen Processing Type am Dep Acc
+  Begriff der xyConfiguration: 
+  - Informationen über Produkteigenschaften kommen in die Configuration 
+  - Auftragsbezogene Information in die Ebene darüber. Das sind i.W. status und ids. 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="processingStatus" type="tns:string16" minOccurs="0">
+        <annotation>
+          <documentation>for internal use in COM</documentation>
+        </annotation>
+      </element>
+      <element name="completionStatusOldCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: partial processing status for old ccb id
+Since: PN-6273 (1.39)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="completionStatusNewCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: partial processing status for new ccb id
+Since: PN-6273 (1.39)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="previousCompletionStatusOldCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: previous partial processing status for old ccb id
+Since: PN-6273 (1.39)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="previousCompletionStatusNewCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: previous partial processing status for new ccb id
+Since: PN-6273 (1.39)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationReasonCodeOldCcbId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: cancellation reason for old ccb id
+Since: ITk-31489
+Values:
+    ANE         Auftrag nie erteilt
+    ANV         Anschluss nicht mehr vorhanden
+    ANVG        Geschäftsaufgabe
+    APV         Anschalt- oder Produktverzug
+    BANDWIDTH   Bandbreite nicht verfügbar
+    DNA         Kann Dienst nicht in Anspruch nehmen
+    DNAI        Arcor-ISDN nicht möglich
+    FVB         Falschinfo
+    FVBB        Falschinfo Vertrieb - Betrug
+    MISC        Unbestimmter Grund
+    NONE        Keines
+    NO_DSL      DSL nicht verfügbar
+    NUB         Nicht unterschriftsberechtigt
+    NUBB        Kunde ist unter Betreuung
+    NUBM        Minderjährig
+    SKR         Sonderkündigungsrecht
+    SON         Kündigungsgründe
+    WID         Auftragswiderruf
+Filled by: OPM
+Used by: FIF, OMTS, DWH/VTS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationReasonCodeNewCcbId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: cancellation reason for new ccb id
+Since: ITk-31489
+Filled by: OPM
+Used by: FIF, OMTS, DWH/VTS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationDateOldCcbId" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see function/cancellationDateNewCcbId
+Since: IT-31830 (1.43)
+Filled by: COM
+Used by: DWH
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationDateNewCcbId" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see function/cancellationDateNewCcbId
+Since: IT-31830 (1.43)
+Filled by: COM
+Used by: DWH
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="processAfterNodeRefId" type="tns:stringId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+For internal use between COM and OPM: indicates that the access should be executed after the 
+  execution of the referenced function/access.
+  E.g.: if an access or function is cancelled, the safety package is cancelled as well.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_S" minOccurs="0"/>
+      <element name="enrichFromNodeRefId" type="tns:stringId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: References a node in the orderPosition (referenced by 'previousOrderRef') by the node ID.
+  Data from the referenced node are used to enrich this node. Only another access may be referenced!
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="technicianContactNodeRefID" type="tns:ExistConfStringId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: References a contactRole in the customerData node of an order.
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+    </sequence>
+    <attribute name="ID" type="tns:ID" use="required"/>  </complexType>
+  <complexType name="businessDSL">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="businessDSLConfiguration" type="tns:businessDSLConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="companyNet">
+    <complexContent>
+      <extension base="tns:access"/>
+    </complexContent>
+  </complexType>
+  <complexType name="businessDSLConfiguration">
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="serviceLocation" type="tns:ExistConfServiceLocation" minOccurs="0"/>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="dtagFreeText" type="tns:ExistConfString160" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Free text to be sent to DTAG.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="locationTAE" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: location of the TAE, e.g. MFH ,VH ,1 ,mi ,Keller. V0123 - Lage TAE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier 
+Values: Arcor (Default), ISIS, Netcom Kassel, wücom
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: type of the line, V0138 - Leitungstyp, default is 'CuDa'. 
+Since: 
+Values: CuDa, Direct Access, FTTx, OPAL, TAL vorhanden
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldAccess" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0094 - Alter Anschluss
+Values:
+  analog
+  digital
+  IPBSA
+  TAL (since IT-28900)
+  Kabelnetzbetreiber (since IT-28900)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="vdslEnabledIndicator" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the access is VDSL enabled and a bandwidth higher than 16000 is technically possible. 
+It does not implicit that the customer has a bandwidth higher than 16000. 
+Filled by: Frontend
+DEPRECATED, use accessTechnology instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="numberVoiceChannels" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: number of voice channels, must be > 0 if using ipCentrex. V0879 - Anzahl Sprachkanäle. 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="acsIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the ACS feature is enabled for this access
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="iadPin" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="iadPinChange" type="tns:iadPinChange" minOccurs="0"/>
+      <element name="lineID" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0144 - Line-Id
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ngabLineID" type="tns:RemovableExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Identifier for NGAB. nganLineID is being used for the identification of the emergency call routing 
+Used by: OPM
+Filled by: OPM (line creation), BKS (life cycle)
+Since: PPM-197512
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="dialInAccountName" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation></documentation>
+        </annotation>
+      </element>
+      <element name="responsibleRegion" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation></documentation>
+        </annotation>
+      </element>
+      <element name="responsibleDepartment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation></documentation>
+        </annotation>
+      </element>
+      <element name="technicalServiceGroup" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation></documentation>
+        </annotation>
+      </element>
+      <element name="technicalServiceId" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation></documentation>
+        </annotation>
+      </element>
+      <element name="accessTechnology" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: technology of access, V009C - Anschlusstechnologie. 
+Since: IT-k-30180 (3.3), ADSL-AnnexJ since IT-31545 (3.8)
+Values:
+    FTTB-Ethernet, FTTB-VDSL, FTTH-Ethernet for FTTx; 
+    ADSL, ADSL-AnnexJ, VDSL for businessDSL, ngn, ipBitstream
+    FTTH-GPON (PSM value - V009C) for Fiber access
+Filled by: OPM
+Used by: OPM, CCB
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="tenderArea" type="tns:RemovableExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: (Ausschreibungsgebiet) A specific area which is different than municipality and can consist of several municipalities 
+or parts of a municipality. This information is used for promotion criteria and for documentation in CCB
+Since : BSS-27, PPM-320858
+Used by: CCB
+Filled by: FrontEnd
+]]></documentation>
+            </annotation>
+      </element>
+      <element name="customerCommunication" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: distinguishes letter types for contract partner changes, independent of the order variant. V0216 - Änderungsbestätigung.
+Since: IT-28190 (3.3)
+Values: Abschalteanordnung, BK-Wechsel auf BIT-VDSL, BK-Wechsel von BIT-VDSL zu TAL, Standardbriefe (Default), VPW: Brief Migration Kundennr.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="testPeriodDuration" type="tns:ExistConfString5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Days of test period duration
+Since Rel: 1.39
+Since IT: 28575
+Values: 2, 16
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGContractNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: I1325 - DTAG Vertragsnummer. For FTTX NetCologne the NetCologne contract number is stored here.
+Since: IT-28190 (3.3)
+Used by: OPM
+DEPRECATED, use providerContractNumber instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerContractNumber" type="tns:RemovableExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: I1325 - DTAG Vertragsnummer. For FTTX NetCologne the NetCologne contract number is stored here.
+Since:  BSS-21 : PPM-155469_xxxxx
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGOrderNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Since: IT-28190 (3.3)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGCompletionDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+DEPRECATED : - use providerCompletionDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerCompletionDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+   for FTTX Netcologne (Non-TAL) only
+Since: BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGPaymentDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:  late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin),
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+DEPRECATED, use providerPaymentDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerPaymentDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:  late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin),
+   for FTTX Netcologne (Non-TAL) only
+Since:  BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="newLocalExchangeCarrierWitaIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: For an outbound provider change (termination with 2 or three parties porting) it
+    has to be stored if the accepting carrier supports WITA
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldWitaContractNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Contract number related with the technical ressource, i.e. the physical line.
+         Needed in a porting scenario over WBCI.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="inboundPortingSourceAddress" type="tns:ExistConfAddress" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Relocation from Non-Vodafone-area to Vodafone
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="witaUsage" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This element is a temporary criterion for the workflow selector to decide
+    if a TAL line change order should use WF-12 or WF-15. Valid values are 'WITA4.0' and 'ITEX'.
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineTakeOver" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the technical ressource (the line) shall be transferred from the current
+         customer contract partner to the new contract partner in a porting scenario over WBCI.
+         Replaces the child element threePartyProcess of the order position termination.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0008
+Since: 
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="voicePrioritization" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The service will allow the customer to use prioritize voice packages to have a better voice quality 
+Since: PPM-239428
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>  
+    </sequence>
+  </complexType>
+  <complexType name="TalConfiguration" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: TAL - Teilnehmeranschlussleitung (Kupfer-Doppelader);
+    Base structure for ISDN and NGN
+Since: IT-29800 (1.41)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="serviceLocation" type="tns:ExistConfServiceLocation" minOccurs="0"/>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="dtagFreeText" type="tns:ExistConfString160" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Free text to be sent to DTAG.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="locationTAE" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: location of the TAE, e.g. MFH ,VH ,1 ,mi ,Keller. V0123 - Lage TAE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier 
+Values: Arcor (Default), ISIS, Netcom Kassel, wücom
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldAccess" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0094 - Alter Anschluss
+Values:
+  analog
+  digital
+  IPBSA
+  TAL (since IT-28900)
+  Kabelnetzbetreiber (since IT-28900)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: type of the line, V0138 - Leitungstyp, default is 'CuDa'. 
+Since: 
+Values: CuDa, Direct Access, FTTx, OPAL, TAL vorhanden
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="multimediaPort" type="tns:multimediaPortType" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: indicates if QoS for IPTV streaming is switched on (SOC / Carrier(NetCologne)). 
+   Currently supported for ISDN, BIT, NGN, Fttx. I1323 - Multimedia VC
+Values: e.g. IPTV_BASIC, VOD_ONLY, Nein
+Filled by: 
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="acsIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the ACS feature is enabled for this access
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="iadPin" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="iadPinChange" type="tns:iadPinChange" minOccurs="0"/>
+      <element name="lineID" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0144 - Line-Id
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ngabLineID" type="tns:RemovableExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Identifier for NGAB. nganLineID is being used for the identification of the emergency call routing 
+Used by: OPM
+Filled by: OPM (line creation), BKS (life cycle)
+Since: PPM-197512
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineKey" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0586 - Leitungsschluesselzahl (LSZ)
+Filled by: BKS
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="responsibleRegion" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleDepartment" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceGroup" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceId" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalAccessServiceIdentifer" type="tns:string100" minOccurs="0"/>
+      <element name="customerCommunication" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: distinguishes letter types for contract partner changes, independent of the order variant. V0216 - Änderungsbestätigung.
+Since: IT-28190 (3.3)
+Values: Abschalteanordnung, BK-Wechsel auf BIT-VDSL, BK-Wechsel von BIT-VDSL zu TAL, Standardbriefe (Default), VPW: Brief Migration Kundennr.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGContractNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: I1325 - DTAG Vertragsnummer. For FTTX NetCologne the NetCologne contract number is stored here.
+Since: IT-28190 (3.3)
+Used by: OPM
+DEPRECATED, use providerContractNumber instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerContractNumber" type="tns:RemovableExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: I1325 - DTAG Vertragsnummer. For FTTX NetCologne the NetCologne contract number is stored here.
+Since:  BSS-21 : PPM-155469_xxxxx
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGOrderNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Since: IT-28190 (3.3)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGCompletionDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+DEPRECATED : - use providerCompletionDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerCompletionDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+   for FTTX Netcologne (Non-TAL) only
+Since:  BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGPaymentDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:  late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin),
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+DEPRECATED, use providerPaymentDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerPaymentDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:  late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin),
+   for FTTX Netcologne (Non-TAL) only
+Since:  BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="newLocalExchangeCarrierWitaIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: For an outbound provider change (termination with 2 or three parties porting) it
+    has to be stored if the accepting carrier supports WITA
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldWitaContractNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Contract number related with the technical ressource, i.e. the physical line.
+         Needed in a porting scenario over WBCI.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="inboundPortingSourceAddress" type="tns:ExistConfAddress" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Relocation from Non-Vodafone-area to Vodafone
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="witaUsage" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This element is a temporary criterion for the workflow selector to decide
+    if a TAL line change order should use WF-12 or WF-15. Valid values are 'WITA4.0' and 'ITEX'.
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineTakeOver" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the technical ressource (the line) shall be transferred from the current
+         customer contract partner to the new contract partner in a porting scenario over WBCI.
+         Replaces the child element threePartyProcess of the order position termination.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0008
+Since: 
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="IsdnPBXConfiguration" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Base type for PMX, and Point-to-Point (P2P) ...
+Since: IT-31157 (1.43)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:TalConfiguration">
+        <sequence>
+          <element name="isdnActiveVariant" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: V0864 isdnActivVariant
+activation variant of the ISDN line. This parameter is not used anymore and exists only for BKS to provide it for old lines.
+Since: IT-31157 (1.43)
+Filled by: BKS
+Used by: not by COM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="provisioningDiscount" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: V0149 Discount for provisioning (in % used by VTS)
+Since: IT-31157 (1.43)
+Filled by: 
+Used by: VTS
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="dtagPbxAccountNumber" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 'Verrechnungsnummer'. Identifier of a technical ressource of a private branch exchange (PBX) access.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="IsdnP2PConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Since: IT-31157 (1.43)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:IsdnPBXConfiguration">
+        <sequence>
+          <element name="suppressPiaIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: If POS-FE takes care of the creation of a PIA account,
+this action should not be initiated by COM/OPM again
+Since: IT-32245 (1.43)
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ngnConfiguration">
+    <complexContent>
+      <extension base="tns:TalConfiguration">
+        <sequence>
+          <element name="vdslEnabledIndicator" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[DEPRECATED, use accessTechnology instead]]></documentation>
+            </annotation>
+          </element>
+          <element name="availabilityCheckFrontendQueryDate" type="date" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: date of the VFP bandwidth availability query in the frontend, I1019 - Datum der VFP Bandbreitenabfrage im Frontend,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="availabilityCheckBandwidthDeterminationDate" type="date" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: date of the VFP bandwidth determination, I1017 - Datum Bandbreitenermittlung,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="availabilityCheckBandwidthInfoSource" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: source of bandwidth information, I1016 - Quelle der Bandbreiteninformation,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="availabilityCheckBandwidthScoringInfo" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: precision of bandwidth information, I1018 - Genauigkeit der Bandbreitenbestimmung,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="accessTechnology" type="tns:ExistConfString16" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: technology of access, V009C - Anschlusstechnologie. 
+Since: IT-k-30180 (3.3), ADSL-AnnexJ since IT-31545 (3.8)
+Values:
+    FTTB-Ethernet, FTTB-VDSL, FTTH-Ethernet for FTTx;
+    ADSL, ADSL-AnnexJ, VDSL for businessDSL, ngn, ipBitstream
+    FTTH-GPON (PSM value - V009C) for Fiber access
+Filled by: OPM
+Used by: OPM, CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="tenderArea" type="tns:RemovableExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: (Ausschreibungsgebiet) A specific area which is different than municipality and can consist of several municipalities 
+or parts of a municipality. This information is used for promotion criteria and for documentation in CCB
+Since : BSS-27, PPM-320858
+Used by: CCB
+Filled by: FrontEnd
+]]></documentation>
+            </annotation>
+      </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="isdnConfiguration">
+    <complexContent>
+      <extension base="tns:TalConfiguration">
+        <sequence>
+          <element name="connectionType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="suppressPiaIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: If POS-FE takes care of the creation of a PIA account, this action should not be
+    initiated by COM/OPM, too
+Since: IT-28900 (1.41)
+Filled by: POS
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="suppressAaaIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: During the creation of a CompanyNet product POS-FE needs
+    to order an ISDN/DSL access without AAA account
+Since: IT-28900 (1.41)
+Filled by: POS
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ipBitstreamConfiguration">
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The address, where the TAL for the access is located
+Type: Mandatory for lineCreation
+Filled by: Frontend
+Used by: FIF, OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceLocation" type="tns:ExistConfServiceLocation" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Unknown
+Type: Optional
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Type: Optional
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="dtagFreeText" type="tns:ExistConfString160" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Free text to be sent to DTAG.
+Type: Optional
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="locationTAE" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: location of the TAE, e.g. MFH ,VH ,1 ,mi ,Keller. V0123 - Lage TAE
+Type: Mandatory for lineCreation, relocation
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+Type: Optional
+Filled by: OPM
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Type: Mandatory for lineCreation
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier 
+Type: Mandatory if different from default
+Values: Arcor (Default), ISIS, Netcom Kassel, wücom
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldAccess" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0094 - Alter Anschluss
+Values:
+  analog
+  digital
+  IPBSA
+  TAL (since IT-28900)
+  Kabelnetzbetreiber (since IT-28900)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: type of the line, V0138 - Leitungstyp, default is 'CuDa'. 
+Since: 
+Values: CuDa, Direct Access, FTTx, OPAL, TAL vorhanden
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="vdslEnabledIndicator" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[DEPRECATED, use accessTechnology instead]]></documentation>
+        </annotation>
+      </element>
+      <element name="multimediaPort" type="tns:multimediaPortType" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: indicates if QoS for IPTV streaming is switched on (SOC / Carrier(NetCologne)). 
+   Currently supported for ISDN, BIT, NGN, Fttx. I1323 - Multimedia VC
+Values: e.g. IPTV_BASIC, VOD_ONLY, Nein
+Filled by: 
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="acsIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the ACS feature is enabled for this access
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="iadPin" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="iadPinChange" type="tns:iadPinChange" minOccurs="0"/>
+      <element name="lineID" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0144 - Line-Id
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="ngabLineID" type="tns:RemovableExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Identifier for the NGAB (only for IP Bitstream layer 2).
+Filled by: OPM (line creation), BKS (life cycle)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="responsibleRegion" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleDepartment" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceGroup" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceId" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalAccessServiceIdentifer" type="tns:string100" minOccurs="0"/>
+      <element name="DTAGContractNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: I1325 - DTAG Vertragsnummer. For FTTX NetCologne the NetCologne contract number is stored here.
+Since: IT-28190 (3.3)
+Used by: OPM
+DEPRECATED, use providerContractNumber instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerContractNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: I1325 - DTAG Vertragsnummer. For FTTX NetCologne the NetCologne contract number is stored here.
+Since:  BSS-21 : PPM-155469_xxxxx
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGOrderNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Since: IT-28190 (3.3)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGCompletionDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+DEPRECATED : - use providerCompletionDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerCompletionDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+   for FTTX Netcologne (Non-TAL) only
+Since:  BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGPaymentDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:  late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin),
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+DEPRECATED, use providerPaymentDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerPaymentDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:  late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin),
+   for FTTX Netcologne (Non-TAL) only
+Since:  BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="availabilityCheckFrontendQueryDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: date of the VFP bandwidth availability query in the frontend, I1019 - Datum der VFP Bandbreitenabfrage im Frontend,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="availabilityCheckBandwidthDeterminationDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: date of the VFP bandwidth determination, I1017 - Datum Bandbreitenermittlung,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="availabilityCheckBandwidthInfoSource" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: source of bandwidth information, I1016 - Quelle der Bandbreiteninformation,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="availabilityCheckBandwidthScoringInfo" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: precision of bandwidth information, I1018 - Genauigkeit der Bandbreitenbestimmung,
+   for FTTX Netcologne (Non-TAL) only
+Since: IT-28190 (3.3)
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="accessTechnology" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: technology of access, V009C - Anschlusstechnologie. 
+Values : FTTB-Ethernet, FTTB-VDSL, FTTH-Ethernet for FTTx, ADSL, 
+ADSL-AnnexJ, VDSL for businessDSL, ngn, ipBitstream, VDSL-L2
+Filled by: OPM
+Used by: OPM, CCB
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCommunication" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: distinguishes letter types for contract partner changes, independent of the order variant. V0216 - Änderungsbestätigung.
+Since: IT-28190 (3.3)
+Values: Abschalteanordnung, BK-Wechsel auf BIT-VDSL, BK-Wechsel von BIT-VDSL zu TAL, Standardbriefe (Default), VPW: Brief Migration Kundennr.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceLevelName" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: bitstream service level. S0144 - Bezeichnung des Servicelevels
+Deprecated: Use the according fields in the dependent functions instead.
+Since: IT-28190 (3.3)
+Values: CLASSIC, CLASSIC_PLUS
+Filled by: 
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="newLocalExchangeCarrierWitaIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: For an outbound provider change (termination with 2 or three parties porting) it
+    has to be stored if the accepting carrier supports WITA
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldWitaContractNumber" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Contract number related with the technical ressource, i.e. the physical line.
+         Needed in a porting scenario over WBCI.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="witaUsage" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This element is a temporary criterion for the workflow selector to decide
+    if a TAL line change order should use WF-12 or WF-15. Valid values are 'WITA4.0' and 'ITEX'.
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="lineTakeOver" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the technical ressource (the line) shall be transferred from the current
+         customer contract partner to the new contract partner in a porting scenario over WBCI.
+         Replaces the child element threePartyProcess of the order position termination.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A general remark for the technical implementation. Sometimes predefined tags are used to transport different processing hints (V0008)
+Since: PPM-101666_242258
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="voicePrioritization" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The service will allow the customer to use prioritize voice packages to have a better voice quality 
+Since: PPM-239428
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>  
+    </sequence>
+  </complexType>
+  <complexType name="ipCentrex">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="ipCentrexConfiguration" type="tns:ipCentrexConfiguration" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PbxConfiguration">
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="serviceLocation" type="tns:ExistConfServiceLocation" minOccurs="0"/>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="activationType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Indicates the type of the activation of the access. Corresponds to CCB service characteristic V0133.
+Values:
+Bei initialer Bestellung:
+"Neuanschluss"  (OPM default, and used for the initial line creation) "Wechsel mit Rufnummernübern." (only for relocation), "Wechsel ohne Rufnummernübern." (only for relocation), "Parallelbereitstellung" (only for relocation)
+Filled by: CCM, KBA
+UsedBy: OPM
+Type: MI (Mandatory on initial lineCreation)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier 
+Values: Arcor (Default), ISIS, Netcom Kassel, wücom
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldLocalExchangeCarrier" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="oldInterExchangeCarrier" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="lineType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: type of the line, V0138 - Leitungstyp, default is 'CuDa'
+Since: 
+Values: CuDa, Direct Access, FTTx, OPAL, TAL vorhanden
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="dtagFreeText" type="tns:ExistConfString160" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Free text to be sent to DTAG.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldConnectionType" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteType" type="tns:ExistConfString60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: maps to CCB service characteristic VI072 in subscription for service VI010
+Since: 
+Values:
+ 'Standard' = this ipCentrex and additionally 1 businessDSL access with 1 voice, 1 internet and x seats
+ 'Mobile Only Site' = only this ipCentrex access with 1 voice and x seats
+ 'Company Net' = sometimes referred to as complex and is reflected in SOM like 'Mobile Only Site', but means for OPM there is a different access product not known to SOM
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oneGroupID" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="dialOutPrefix" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="mailboxDialCode" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteName" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteID" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleRegion" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleDepartment" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceId" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="networkElementId" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A general remark for the technical implementation. Sometimes predefined tags are used to transport different processing hints (V0008)
+Since: PPM-101666_242258
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="sipTrunk">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="sipTrunkConfiguration" type="tns:sipTrunkConfiguration" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="sipTrunkConfiguration">
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="serviceLocation" type="tns:ExistConfServiceLocation" minOccurs="0"/>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="activationType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Indicates the type of the activation of the access. Corresponds to CCB service characteristic V0133.
+Values:
+Bei initialer Bestellung:
+"Neuanschluss"  (OPM default, and used for the initial line creation) "Wechsel mit Rufnummernübern." (only for relocation), "Wechsel ohne Rufnummernübern." (only for relocation), "Parallelbereitstellung" (only for relocation)
+Filled by: CCM, KBA
+UsedBy: OPM
+Type: MI (Mandatory on initial lineCreation)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier. e.g. Arcor, Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldLocalExchangeCarrier" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="oldInterExchangeCarrier" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="lineType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: type of the line, V0138 - Leitungstyp 
+Since: 
+Values: CuDa, Direct Access, OPAL, TAL
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="dtagFreeText" type="tns:ExistConfString160" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Free text to be sent to DTAG.
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldConnectionType" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteType" type="tns:ExistConfString60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: maps to CCB service characteristic VI072 in subscription for service VI010
+Since: 
+Values:
+ 'Standard' = this ipCentrex and additionally 1 businessDSL access with 1 voice, 1 internet and x seats
+ 'Mobile Only Site' = only this ipCentrex access with 1 voice and x seats
+ 'Company Net' = sometimes referred to as complex and is reflected in SOM like 'Mobile Only Site', but means for OPM there is a different access product not known to SOM
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oneGroupID" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="dialOutPrefix" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="mailboxDialCode" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteName" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteID" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleRegion" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleDepartment" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceId" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="networkElementId" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="numberS0Accesses" type="tns:ExistConfString10" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The amount of S0 accesses
+Since: IT-28575 (1.39)
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="numberS2MAccesses" type="tns:ExistConfString10" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The amount of S2M accesses
+Since: IT-28575 (1.39)
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="isPbxSipReadyIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates whether the customers phone system is SIP ready
+Since: IT-28575 (1.39)
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="sipTrunkVoiceChannels" type="tns:ExistConfString10" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The amount of sipTrunk voice channels;
+    Note: OPM requested this at the access level
+Since: IT-28575 (1.39)
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="gatewayPin" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The gateway pin (aka gic (gateway installation code))
+Since: IT-28575 (1.39)
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="gatewayPinChange" type="tns:pinChange" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: indicates if a gateway pin should be generated
+Since: IT-28575 (1.39)
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="testPeriodDuration" type="tns:ExistConfString5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Days of test period duration
+Since: IT-28575 (1.39)
+Values: 40, 999
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="phoneSystemType" type="tns:ExistConfString20" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Type of the customer phone system;
+    should be displayed on KBA sip trunk order detail view
+Since: IT-28575 (1.39)
+Values:
+    S0-A
+    SIP-Proxy
+    S2M
+Filled by: POS-FE
+Used by: KBA, OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="phoneSystemModel" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Customer phone  system model;
+    should be displayed on KBA sip trunk order detail view
+Since: IT-28575 (1.39)
+Values: i.e. AlcaOmniPCX
+Filled by: POS-FE
+Used by: KBA, OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="phoneSystemMasterSlave" type="tns:ExistConfString1" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the phone system is master (M) or slave (S);
+    should be displayed on KBA sip trunk order detail view
+Since: IT-28575 (1.39)
+Values:
+    M : Master
+    S : Slave
+Filled by: POS-FE
+Used by: KBA, OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)(PN-31621)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A general remark for the technical implementation. Sometimes predefined tags are used to transport different processing hints (V0008)
+Since: PPM-101666_242258
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="businessVoip">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="businessVoipConfiguration" type="tns:BusinessVoipConfiguration" minOccurs="0"/>
+          <element name="referenceOrder" type="tns:ReferenceOrder" minOccurs="0"/>
+          
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BusinessVoipConfiguration">
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="serviceLocation" type="tns:ExistConfServiceLocation" minOccurs="0"/>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="activationType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Indicates the type of the activation of the access. Corresponds to CCB service characteristic V0133.
+Values:
+Bei initialer Bestellung:
+"Neuanschluss"  (OPM default, and used for the initial line creation) "Wechsel mit Rufnummernübern." (only for relocation), "Wechsel ohne Rufnummernübern." (only for relocation), "Parallelbereitstellung" (only for relocation)
+Filled by: CCM, KBA
+UsedBy: OPM
+Type: MI (Mandatory on initial lineCreation)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier. e.g. Arcor, Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>   
+      <element name="oneGroupID" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="dialOutPrefix" type="tns:ExistConfString100" minOccurs="0"/>      
+      <element name="siteName" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="siteID" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleRegion" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="responsibleDepartment" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="technicalServiceId" type="tns:ExistConfString100" minOccurs="0"/>      
+      <element name="numberOfVoiceChannels" type="tns:ExistConfString10" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The amount of  voice channels; Note: OPM requested this at the access level
+Since: 
+Values: 
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="gatewayPin" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The gateway pin (aka gic (gateway installation code))
+Since: PPM-230939
+Values: 
+Filled by: OPM / FrontEnds
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="gatewayPinChange" type="tns:pinChange" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: indicates if a gateway pin should be generated
+Since: IT-28575 (1.39)
+Values: 
+Filled by: Front Ends
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+      <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)(PN-31621)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A general remark for the technical implementation. Sometimes predefined tags are used to transport different processing hints (V0008)
+Since: PPM-101666_242258
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+        </annotation>
+      </element>   
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ReferenceOrder">
+  <sequence>
+  <element name="barcode" type="tns:string16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The barcode for the acess order 
+Since: PPM-230969
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="orderPositionNumber" type="tns:orderPositionNumber" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The order position number for the acess order 
+Since: PPM-230969
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>      
+      <element name="staticAAAAccountName" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Static triple A account name needed for troubleshooting systems
+Since: PPM-230969
+Filled by: Frontend
+Used by: Troubleshooting systems
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="fixedIPAddress" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: For Business VoIP product either the order can be received with details of access order and the access order will have fixedIPAddress
+But if the acess order is not available then the ip address is stored in this element.
+As OPM is not supporting IPV6 format for landline subscribers hence only IPV4 format is supported.
+Since: PPM-230969
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>      
+  </sequence>
+  </complexType>
+  <complexType name="isdn">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="locationAddress" type="tns:address" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+          <element name="connectionType" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+          <element name="isdnConfiguration" type="tns:isdnConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="IsdnP2P">
+    <annotation>
+      <documentation><![CDATA[
+Since: IT-31157 (1.43)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="isdnP2PConfiguration" type="tns:IsdnP2PConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ngn">
+    <annotation>
+      <documentation><![CDATA[
+ngn has a mandatory internet function
+Since: 1.31
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="locationAddress" type="tns:address" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+          <element name="technicalAccessServiceIdentifer" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+          <element name="ngnConfiguration" type="tns:ngnConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="lte">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="lteConfiguration" type="tns:lteConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ipBitstream">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="locationAddress" type="tns:address" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+          <element name="DTAGContractNumber" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+          <element name="ipBitstreamConfiguration" type="tns:ipBitstreamConfiguration" minOccurs="0"/>
+          <element name="businessIpBitstreamConfiguration" type="tns:ipBitstreamConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="dslr">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="locationAddress" type="tns:address" minOccurs="0">
+            <annotation>
+              <documentation>deprecated</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="preselect">
+    <complexContent>
+      <extension base="tns:access"/>
+    </complexContent>
+  </complexType>
+  <complexType name="mobile">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="mobileConfiguration" type="tns:mobileConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="mobileConfiguration">
+    <sequence>
+      <element name="simID" type="tns:string100" minOccurs="0"/>
+      <element name="puk" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="sip">
+    <complexContent>
+      <extension base="tns:access"/>
+    </complexContent>
+  </complexType>
+  <complexType name="multimediaPortType">
+    <sequence>
+      <element name="existing" type="tns:multimediaPortRD" minOccurs="0"/>
+      <element name="configured" type="tns:multimediaPortRD" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="lteConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: DSL via LTE 
+Since: IT-28260 (1.36)
+Filled by: 
+Used by: OPM
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="locationAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="salesSegment" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0105 - Vertriebssegment. Used mainly for reporting.
+Values: PK, GK, unbekannt
+Filled by: Frontend
+Used by: OPM, VTS(MICOS/DWH)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="asb" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: connection area indicator, V0934 - Anschlussbereich-Kennzeichen der Standortadresse
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: local area code for the location address with leading 0. V0124 - Ortsnetzkennzahl (ONKZ)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0081 - Carrier 
+Values: Arcor (Default), ISIS, Netcom Kassel, wücom
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceProvider" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0088, e.g. Vodafone
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldAccess" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0094 - Alter Anschluss
+Values:
+  analog
+  digital
+  IPBSA
+  TAL (since IT-28900)
+  Kabelnetzbetreiber (since IT-28900)
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="activationType" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Indicates the type of the activation of the access. Corresponds to CCB service characteristic V0133.
+Values:
+Bei initialer Bestellung:
+"Neuanschluss"  (OPM default, and used for the initial line creation) "Wechsel mit Rufnummernübern." (only for relocation), "Wechsel ohne Rufnummernübern." (only for relocation), "Parallelbereitstellung" (only for relocation)
+Filled by: CCM, KBA
+UsedBy: OPM
+Type: MI (Mandatory on initial lineCreation)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="acsIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates if the ACS feature is enabled for this access
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="iadPin" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="mobileAccessNumber" type="tns:ExistConfAccessNumber" minOccurs="0"/>
+      <element name="multimediaPort" type="tns:multimediaPortType" minOccurs="0"/>
+      <element name="imsi" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="locationAreaId" type="tns:ExistConfLocationAreaIdentityType" minOccurs="0"/>
+      <element name="simPuk" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="simAuthenticationKey" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="simSerialNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Note for use case 'SIM card exchange':
+    place old SIM card number here as 'existing', and specify new number in a new
+    functions/hardware block with an articleName/configured 'SIM Card'
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCommunication" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The value "LTE mit temp. RN" (German: LTE mit temporaerer Rufnummernuebernahme) is set
+  in case of that the current/existing phone number shall be taken for the new access  
+Since: IT-28260 (1.36)
+Values: "LTE mit temp. RN"
+Filled by: 
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="sendConfirmationLetterIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Kündigungsbrief-Versand (V0580)
+Since: IT-28260 (1.36)
+Filled by: 
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="technicalServiceGroup" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Value of ServiceCharacteristic V0154
+Since: IT-28260
+Filled by: COM via BKS enrichment
+Used by: OPM
+      ]]></documentation>
+        </annotation>
+      </element>
+      <element name="accessTechnology" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: technology of access, V009C - Anschlusstechnologie. 
+Since: PN-4715 (3.3), ADSL-AnnexJ since IT-31545 (3.8)
+Values:
+    FTTB-Ethernet, FTTB-VDSL, FTTH-Ethernet for FTTx;
+    ADSL, ADSL-AnnexJ, VDSL for businessDSL, ngn, ipBitstream
+Filled by: OPM
+Used by: OPM, CCB
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="kiasReference" type="tns:KiasReference" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A reference to the KIAS customer. The BAN must be set for accesses, if the fixed net product is part of a bundle containing mobile parts.
+Since: PPM-196228 (BSS-22)
+Filled by: frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: A general remark for the technical implementation. Sometimes predefined tags are used to transport different processing hints (V0008)
+Since: PPM-101666_242258
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The telephone number to reach the customer during the techncal fulfilment.
+Since: PPM-196228
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfLocationAreaIdentityType">
+    <sequence>
+      <element name="existing" type="tns:LocationAreaIdentityType" minOccurs="0"/>
+      <element name="configured" type="tns:LocationAreaIdentityType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="iadPinChange">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Controls IAD pin changes in OPM. 
+  For IT-28170 (3.2) a type "pinChange" was added to som-common.xsd that should be used for every new pin change. This type, "iadPinChange", 
+  has not been removed for backwards compatibility reasons, to keep the element name "iadPinChangeType" for the IAD pin changes.
+Since: IT-27693
+Filled by: KBA ("lineChange")
+Used by: OPM
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="iadPinChangeType" type="tns:ExistConfPinChangeType">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Controls IAD pin changes in OPM. COM passes it to OPM order, as new orderDetail "iadPinChangeType" (together with existing value for "iadPin")
+  inside "businessDSL", "isdn", "ngn" and "bitstream" access nodes.
+  This element is mandatory within <iadPinChange>. If no changes are wanted just omit the entire <iadPinChange> or set <iadPinChangeType> to "None"
+  Attention: BKS returns that field as existing defaulted to "None" !!!
+Since: IT-27626
+Values: "None", "Add", "Replace"
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+Remarks: It makes no sense for KBA to set the iadPin value directly, because that will be set (or overwritten) by OPM. KBA can only indicate that a change is requested.
+      ]]></documentation>
+        </annotation>
+      </element>
+      <element name="sendAdditionalSMS" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Controls whether the new IAD-Pin should be send to the customer via sms.
+  This field is mandatory when iadPinChangeType is set to "ADD"
+Since: IT-27626
+Values: "true", "false"
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+      ]]></documentation>
+        </annotation>
+      </element>
+      <element name="msisdn" type="tns:ExistConfAccessNumber" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This field holds the mobile-access number to which to send the SMS.
+  If sendAdditionalSMS is set to "false" this element is ignored and can be omitted.
+Since: IT-27626
+Values: a valid mobile access number
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+      ]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <simpleType name="multimediaPortRD">
+    <restriction base="string">
+      <enumeration value="nein">
+        <annotation>
+          <documentation>Default</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="TV_CENTER"/>
+      <enumeration value="IPTV_BASIC"/>
+      <enumeration value="VOD_BASIC"/>
+      <enumeration value="VOD_ONLY"/>
+      <enumeration value="potentiell"/>
+    </restriction>
+  </simpleType>
+  <complexType name="LocationAreaIdentityType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Uniquely identifies an LTE cell; also known as Geo-ID
+Reference: http://en.wikipedia.org/wiki/Location_Area_Identity
+Since: IT-28260 (1.36)
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="countryCode">
+        <annotation>
+          <documentation><![CDATA[
+This is *not* the fixed net country code!
+]]></documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <pattern value="[0-9]{3}"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="mobileNetworkCode">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="[0-9]{2,3}"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="locationAreaCode" minOccurs="0">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="[0-9]{0,5}"/>
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="otherAccess">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Enables COM to process any type of access, e.g. entered into SOM-Editor
+Since: 1.37
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="otherAccessConfiguration" type="tns:otherAccessConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="otherAccessConfiguration">
+    <sequence>
+      <any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="IsdnS2M">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Represents a Primary Rate Interface (PRI) access.
+Since: IT-32434 (1.45)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="isdnS2MConfiguration" type="tns:IsdnS2MConfiguration" minOccurs="0"></element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="IsdnS2MConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Since: IT-32434 (1.45)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:IsdnPBXConfiguration"></extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="oneNetBusiness">
+    <complexContent>
+      <extension base="tns:access">
+        <sequence>
+          <element name="oneNetBusinessConfiguration" type="tns:OneNetBusinessConfiguration" maxOccurs="1" minOccurs="0"></element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="OneNetBusinessConfiguration">
+    <complexContent>
+      <extension base="tns:PbxConfiguration">
+        <sequence>
+          <element name="oneNetId" type="tns:ExistConfString12" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A unique id to identify different site-based orders to one customer
+Since:
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="numberOfVoiceChannels" type="tns:ExistConfString10" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The number of voice channels for a site
+Since:
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="maxNumberOfVoiceChannels" type="tns:RemovableExistConfNonNegativeInteger" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The maximum number of voice channels, which can technically be used on a slave site, due to some restrictions (currently the site’s bandwidth).
+The element must only be filled for ONB accesses with voiceChannelType=Slave. Must be removed for changes to other models.
+Filled by: Frontend
+Used by: OPM
+Values: Numerical number of voice channels
+Since: PPM-196251_278654(BSS25)
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="accessType" type="tns:ExistConfString100" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Specifies access; Allowed values are: 
+“VF Access – unterstützt”
+“VF Access - nicht unterstützt“
+„Fremdaccess“
+Since:
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="voiceChannelType" type="tns:ExistConfVoiceChannelType" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The type of the ONB-access regarding the voice channels
+- Master: A virtual ONB access, which holds the enterprise wide voice channels. These voice channels can be distributed among all slave sites
+- Slave: A Slave is a physical ONB site which receives its voice channels from its Master (transparent on the order level). The maximum number of allocatable voice channels is limited by the parameter maxNumberOfVoiceChannels.
+- Standard: A site which manages its own voice channels
+The parameter may be missing for old orders. In this case the site will be treated as a Standard site.
+Filled by: Frontend
+Used by: OPM
+Values: Standard, Master, Slave
+Since: PPM-196251_278654(BSS25)
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfVoiceChannelType">
+    <sequence>
+      <element name="existing" type="tns:voiceChannelTypeEnum" minOccurs="0"/>
+      <element name="configured" type="tns:voiceChannelTypeEnum" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <simpleType name="voiceChannelTypeEnum">
+    <restriction base="string">
+      <enumeration value="Standard"/>
+      <enumeration value="Master"/>
+      <enumeration value="Slave"/>
+    </restriction>
+  </simpleType>
+  <complexType name="ipCentrexConfiguration">
+    <complexContent>
+      <extension base="tns:PbxConfiguration"></extension>
+    </complexContent>
+  </complexType>
+
+</schema>

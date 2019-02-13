@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:auftrag="http://www.arcor.net/auftragsmodell-001" xmlns="http://www.arcor.net/RefService/EPSM-RefService-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.arcor.net/RefService/EPSM-RefService-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:element name="EPSM_RefService_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+				<xs:documentation>
+					Version: 0.5 Status des Dokument:
+					Aenderungshistorie: 
+					Version 0.1 03.07.2007 Christian Mueller - Initiale Version
+					Version 0.2 28.04.2008 Achille Chimi - LeseMicosRolleService hinzugefuegt
+					Version 0.3 07.07.2008 Achille Chimi - Alle alte Services entfernt, ReferenzdatenVersionService hinzugefuegt
+					Version 0.4 05.08.2008 Phuong Ha - ReferenzdatenVersionService mit currentVersion ergaenzt
+				    Version 0.5 15.08.2008 Achille Chimi - Namensänderung des Services
+				</xs:documentation>
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!--=============================  ReferenzdatenVersionService ===========================-->
+	<xs:complexType name="LeseReferenzdatenVersionService">
+		<xs:annotation>
+			<xs:documentation>
+				Liest die aktuelle und nächste Versionsummer der Datenbank.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="leseReferenzdatenVersionInput" type="LeseReferenzdatenVersionInput"/>
+					<xs:element name="leseReferenzdatenVersionOutput" type="LeseReferenzdatenVersionOutput"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--=============================  ReferenzdatenVersionInput ===========================-->
+	<xs:complexType name="LeseReferenzdatenVersionInput">
+		<xs:annotation>
+			<xs:documentation>Fragt die Versionsnummer ab</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--=============================  ReferenzdatenVersionOutput ===========================-->
+	 <xs:complexType name="LeseReferenzdatenVersionOutput">
+		<xs:annotation>
+		  <xs:documentation>Liefert die Versionsnummern zurück</xs:documentation>
+	 	</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="currentVersion" type="xs:string" nillable="false"/>
+					<xs:element name="nextVersion" type="xs:string" nillable="false"/>
+					<xs:element name="updateAt" type="xs:dateTime" nillable="false"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ================================= Services and Events ==============================-->
+	<xs:element name="leseReferenzdatenVersionService" type="LeseReferenzdatenVersionService"/>
+	<!-- ===================================== Root Element=================================-->
+	<xs:element name="_Endpunkt_Diensterbringer_RefService">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="leseReferenzdatenVersionService"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

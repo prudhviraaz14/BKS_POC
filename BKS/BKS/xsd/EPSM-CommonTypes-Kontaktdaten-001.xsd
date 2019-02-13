@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001" xmlns:kontaktdaten="http://www.arcor.net/EPSM-CommonTypes-Kontaktdaten-001" targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktdaten-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+	<xs:element name="EPSM_Kontaktdaten_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 19.10.2007  13:37</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="BevorzugteKommunikation">
+		<xs:annotation>
+			<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) AUFTRAG.ELEKTR_KOMMUNIKATION, "ja"-&gt;E-Mail, "nein"-&gt;Post]
+Kunde kann bei Angabe verschiedener Kontaktdaten eine Priorisierung durch Angabe der bevorzugten Kommunikation festlegen. Der vom Kunden bevorzugte Kommunikationsweg wird geflagt.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Rueckfragezeiten">
+		<xs:annotation>
+			<xs:documentation>Der Kunde kann angeben, zu welcher Tageszeit er für Rückfragen am besten erreichbar ist.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Kontaktdaten">
+		<xs:annotation>
+			<xs:documentation>allg. Kontaktdaten des Kunden</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ape:AuftragsPositionsElement">
+				<xs:sequence>
+					<xs:element name="emailAdresse" type="common:Email" minOccurs="0"/>
+					<xs:element name="bevorzugteKommunikation" type="kontaktdaten:BevorzugteKommunikation" minOccurs="0"/>
+					<xs:element name="rueckfragezeiten" type="kontaktdaten:Rueckfragezeiten" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

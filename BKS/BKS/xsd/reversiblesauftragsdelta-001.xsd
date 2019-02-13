@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.arcor.net/auftragsmodell/reversiblesauftragsdelta-001"
+	xmlns="http://www.arcor.net/auftragsmodell/reversiblesauftragsdelta-001"
+	elementFormDefault="qualified">
+
+	<xs:element name="EPSM_XXX_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>
+				Version 2
+				Status des Dokuments: in Review
+				Änderungshistorie
+				1	26.03.2007	Wolff	Initiale Version
+				2   27.04.2007  Birnbaum Datentyp Auftragsnummer in String geändert
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
+	<xs:element name="reversiblesAuftragDelta"
+		type="ReversiblesAuftragDelta" />
+	<xs:complexType name="ReversiblesAuftragDelta">
+		<xs:sequence>
+			<xs:element name="auftragsdeltaelement"
+				type="ReversiblesAuftragsDeltaElement" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xs:element name="auftragsnummer" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="reversiblesAuftragsDeltaElement"
+		type="ReversiblesAuftragsDeltaElement" />
+	<xs:complexType name="ReversiblesAuftragsDeltaElement"
+		abstract="true">
+		<xs:sequence>
+			<xs:element name="basisVersion" type="xs:long" />
+			<xs:element name="elementPfad" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="elementEinfuegen" type="ElementEinfuegen" />
+	<xs:complexType name="ElementEinfuegen">
+		<xs:complexContent>
+			<xs:extension base="ReversiblesAuftragsDeltaElement">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+					<xs:element name="typ" type="xs:string" />
+					<xs:element name="metaModellKlasse"
+						type="xs:string" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="elementLoeschen" type="ElementLoeschen" />
+	<xs:complexType name="ElementLoeschen">
+		<xs:complexContent>
+			<xs:extension base="ReversiblesAuftragsDeltaElement">
+				<xs:sequence>
+					<xs:element name="typ" type="xs:string" />
+					<xs:element name="metaModellKlasse"
+						type="xs:string" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="attributAendern" type="AttributAendern" />
+	<xs:complexType name="AttributAendern" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="ReversiblesAuftragsDeltaElement">
+				<xs:sequence>
+					<xs:element name="attributName" type="xs:string" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="attributEinfuegen" type="AttributEinfuegen" />
+	<xs:complexType name="AttributEinfuegen">
+		<xs:complexContent>
+			<xs:extension base="AttributAendern">
+				<xs:sequence>
+					<xs:element name="initialerWert" type="xs:string"
+						minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="attributLoeschen" type="AttributLoeschen" />
+	<xs:complexType name="AttributLoeschen">
+		<xs:complexContent>
+			<xs:extension base="AttributAendern">
+				<xs:sequence>
+					<xs:element name="wert" type="xs:string"
+						minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="attributWertAendern" type="AttributWertAendern" />
+	<xs:complexType name="AttributWertAendern">
+		<xs:complexContent>
+			<xs:extension base="AttributAendern">
+				<xs:sequence>
+					<xs:element name="alterWert" type="xs:string" />
+					<xs:element name="neuerWert" type="xs:string" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

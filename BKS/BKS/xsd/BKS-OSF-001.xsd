@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2010 (http://www.altova.com) von Reto Renner (Vodafone AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-OSF-001" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:jurperson="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:sbuscommon="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:som="http://www.arcor.net/orderSchema" xmlns:bkstypes="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" xmlns:bkstypesint="http://www.vodafone.de/ccm/BKS-Types-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-OSF-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" schemaLocation="EPSM-CommonTypes-JuristischePerson-002.xsd"/>
+  <xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002" schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+  <xs:import namespace="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" schemaLocation="EPSM-BksTypes-001.xsd"/>
+  <xs:import namespace="http://www.vodafone.de/ccm/BKS-Types-001" schemaLocation="BKS-Types-001.xsd"/>
+  <xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd"/>
+  <xs:annotation>
+    <xs:documentation>
+      XML schema definition for endpoint 
+      BKS History of Changes: 
+      Vers.   Date      Author                Comment 
+      ==== ========== ===========  =================================================== 
+      0.1  2016-04-15 Marcin Leja   Initial draft version
+      0.2  2016-08-24 Rusbe Makuie  clientSomReleaseVersion added to the input.
+    </xs:documentation>
+  </xs:annotation>
+  <!-- ================ Endpoint Specific Operations =====================================-->
+  <xs:element name="GetFNPCustomerSomDataRequest">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="requestType" default="CID">
+          <xs:annotation>
+            <xs:documentation>type of request that is send. ICS - integrated customer search, searches access_number or customer name and returns whether customer is know in CCM. CPD - customer and product data will return detailed customer and product data. will be intoduced with CPCOM v1b</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="CID"/>
+              <xs:enumeration value="CPD"/>
+              <xs:enumeration value="COM"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="clientSomReleaseVersion" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+                 The release version of the client SOM XSD. For example for BSS 20 this fiels should be set to 20.0.
+                 If not populated the latest SOM release version is assumed. 
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="customerNumber" type="sbuscommon:Kundennummer" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>CCM customer number</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="accessNumber" type="common:ComplexPhoneNumber" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>fixedNetPhoneNumber</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="barcode" type="sbuscommon:Barcode" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The barcode of the order</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="personData" type="bkstypes:PersonDataQueryInput" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Person Data containing: . familyName . firstName . street . housenumber . housenumberSuffix . zipCode . dateOfBirth . userPassword</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="companyData" type="bkstypes:CompanyDataQueryInput" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Company Data containing: . companyName . companySuffixName . street . housenumber . housenumberSuffix . zipCode . userPassword and either . commercialRegisterNumber for companies or` . contact for SOHO</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFNPCustomerSomDataResponse">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="customerData" type="som:customerData" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="productBundleData" type="som:productBundle" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="lineCreation" type="bkstypesint:lineCreationPacket" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="lineChange" type="bkstypesint:lineChangePacket" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="termination" type="bkstypesint:terminationPacket" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="relocation" type="bkstypesint:relocationPacket" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="contractPartnerChange" type="bkstypesint:contractPartnerChangePacket" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- ================================= Services and Events ============================== -->
+</xs:schema>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+  <!-- $Id: bks-web-performance.xml 985 2015-11-13 12:58:54Z makuier $ -->
+  <import resource="classpath:conf/applicationContext-performance.xml"/>
+
+  <bean id="abstractAawMonitor" abstract="true">
+    <property name="tracer">
+      <bean class="de.arcor.aaw.ptf.interceptors.CommonsLoggingTracer"/>
+    </property>
+  </bean>
+
+  <bean id="EaiMonitor" class="net.arcor.bks.common.EaiInterceptor" parent="abstractAawMonitor">
+  </bean>
+  <bean id="simpleMonitor" class="net.arcor.bks.common.DBAccessInterceptor" parent="abstractAawMonitor">
+  </bean>
+
+  <aop:config proxy-target-class="true">
+    <aop:advisor advice-ref="EaiMonitor" pointcut="execution (* net.arcor.bks.common.BksHttpServiceHandler.execute(..))" />
+    <aop:advisor advice-ref="simpleMonitor" pointcut="execution (* net.arcor.bks.db.*DAO.get*(..))" />
+  </aop:config>
+
+</beans>

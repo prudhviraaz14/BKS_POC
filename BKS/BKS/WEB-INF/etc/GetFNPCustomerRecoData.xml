@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+	<select id="GetFNPCustomerRecoData.effonl.RetrieveBundleForBundleId" parameterClass="String" resultClass="java.util.HashMap">
+	  SELECT /* GetFNPCustomerRecoData.effonl.RetrieveBundleForBundleId */ 
+	  B.CUSTOMER_NUMBER 
+	  FROM BUNDLE B
+	  WHERE 
+	  B.BUNDLE_ID = #value#
+	  AND B.EFFECTIVE_FLAG = 'N'
+	  AND B.EFFECTIVE_STATUS = 'ACTIVE'
+	  AND B.AOSTATUS = 'Y'
+    </select>
+	<select id="GetFNPCustomerRecoData.effonl.RetrieveCustomersForDateInterval" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+      SELECT /* GetFNPCustomerRecoData.effonl.RetrieveCustomersForDateInterval */  
+      B.CUSTOMER_NUMBER 
+      FROM BUNDLE B 
+      WHERE 
+      B.EFFECTIVE_DATE BETWEEN #startDate# AND #endDate#
+      AND B.EFFECTIVE_FLAG = 'N'
+      AND B.STATE_RD = 'COMPLETE' 
+      AND B.AOSTATUS = 'Y' 
+      UNION 
+        (SELECT B1.CUSTOMER_NUMBER 
+            FROM BUNDLE B1,BUNDLE_ITEM BI
+        WHERE 
+          B1.BUNDLE_ID = BI.BUNDLE_ID
+          AND B1.EFFECTIVE_FLAG = 'N'
+          AND B1.STATE_RD = 'COMPLETE' 
+          AND B1.AOSTATUS = 'Y' 
+          AND BI.EFFECTIVE_FLAG = 'N'
+          AND BI.EFFECTIVE_DATE BETWEEN #startDate# AND #endDate#)
+	</select>
+	<select id="GetFNPCustomerRecoData.onl.RetrieveBundleForBundleId" parameterClass="String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPCustomerRecoData.onl.RetrieveBundleForBundleId */  
+        B.CUSTOMER_NUMBER 
+        FROM BUNDLE B
+        WHERE 
+        B.BUNDLE_ID = #value#
+        AND B.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                                B.BUNDLE_ID = B1.BUNDLE_ID 
+                                AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.AOSTATUS = 'Y'
+	</select>
+	<select id="GetFNPCustomerRecoData.onl.RetrieveCustomersForDateInterval" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetFNPCustomerRecoData.onl.RetrieveCustomersForDateInterval */  
+        B.CUSTOMER_NUMBER 
+        FROM BUNDLE B 
+        WHERE 
+        B.EFFECTIVE_DATE BETWEEN #startDate# AND #endDate#
+        AND B.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B2 WHERE
+                            B.BUNDLE_ID = B2.BUNDLE_ID 
+                            AND B2.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.STATE_RD = 'COMPLETE' 
+        AND B.AOSTATUS = 'Y' 
+        UNION 
+        (SELECT B1.CUSTOMER_NUMBER 
+            FROM BUNDLE B1,BUNDLE_ITEM BI
+            WHERE 
+            B1.BUNDLE_ID = BI.BUNDLE_ID
+            AND B1.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B2 WHERE
+                                B1.BUNDLE_ID = B2.BUNDLE_ID 
+                                AND B2.EFFECTIVE_DATE &lt; SYSDATE)
+            AND B1.STATE_RD = 'COMPLETE' 
+            AND B1.AOSTATUS = 'Y' 
+            AND BI.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI2 WHERE
+                                BI.BUNDLE_ITEM_ID = BI2.BUNDLE_ITEM_ID 
+                                AND BI2.EFFECTIVE_DATE &lt; SYSDATE)
+            AND BI.EFFECTIVE_DATE BETWEEN #startDate# AND #endDate#)
+	</select>
+</sqlMap>

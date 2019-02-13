@@ -1,0 +1,1061 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "FetchProductBundle.effonl.RetrieveBundleItemsByTasi" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveBundleItemsByTasi */   
+        BI.SUPPORTED_OBJECT_ID, BI.BUNDLE_ITEM_TYPE_RD, BI.DEVIATING_CUSTOMER_NUMBER, B.HIERARCHY_INDICATOR, B.BUNDLE_ROLE_RD, B.BUNDLE_TYPE_RD, C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD,
+        SS.SERVICE_CODE,B.BUNDLE_ID,B.AOSTATUS,BI.FUTURE_INDICATOR
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE_ITEM BI2, BUNDLE B, CUSTOMER C,SERVICE_SUBSCRIPTION SS,
+        CONFIG_SERVICE_CHARACTERISTIC CSC, ACCESS_NUMBER AN
+        WHERE 
+        AN.ACCESS_NUMBER = #value#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND B.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+
+    <select id = "FetchProductBundle.effonl.RetrieveBundleItemsByServSubs" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveBundleItemsByServSubs */   
+        BI.SUPPORTED_OBJECT_ID, BI.BUNDLE_ITEM_TYPE_RD, BI.DEVIATING_CUSTOMER_NUMBER, B.HIERARCHY_INDICATOR, B.BUNDLE_ROLE_RD, B.BUNDLE_TYPE_RD, C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD,
+        SS.SERVICE_CODE,B.BUNDLE_ID,B.AOSTATUS,BI.FUTURE_INDICATOR
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE_ITEM BI2, BUNDLE B, CUSTOMER C,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI2.SUPPORTED_OBJECT_ID = #value#
+        AND B.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.EFFECTIVE_FLAG = 'N'
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveBundleItems */   
+        BI.SUPPORTED_OBJECT_ID, BI.BUNDLE_ITEM_TYPE_RD, BI.DEVIATING_CUSTOMER_NUMBER, B.HIERARCHY_INDICATOR, B.BUNDLE_ROLE_RD, B.BUNDLE_TYPE_RD, C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD,
+        SS.SERVICE_CODE,B.AOSTATUS,BI.FUTURE_INDICATOR
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE B, CUSTOMER C,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI.BUNDLE_ID = #value#
+        AND B.BUNDLE_ID = #value#
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveAddress */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX ,
+        CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                    AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.DATA_TYPE_RD = 'ADDRESS'
+        AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveServiceSubscription" parameterClass = "String" resultClass="java.util.HashMap">
+       SELECT /* FetchProductBundle.effonl.RetrieveServiceSubscription */  
+        SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, GR.ACCOUNT_NUMBER, GR.CHARGE_TYPE_RD
+        FROM
+        SERVICE_SUBSCRIPTION SS, GUIDING_RULE GR
+        WHERE SS.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND SS.SERVICE_SUBSCRIPTION_ID = GR.SERVICE_SUBSCRIPTION_ID
+        AND GR.CHARGE_TYPE_RD = 'PRIMARY'
+        AND GR.EFFECTIVE_FLAG = 'N'
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveUnbundledServiceSubscription" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveUnbundledServiceSubscription */  
+        SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, GR.ACCOUNT_NUMBER, GR.CHARGE_TYPE_RD,C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD, S.SERVICE_TYPE
+        FROM
+        SERVICE_SUBSCRIPTION SS, GUIDING_RULE GR, CUSTOMER C, PRODUCT_SUBSCRIPTION PR, SERVICE S
+        WHERE SS.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PR.PRODUCT_SUBSCRIPTION_ID
+        AND PR.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.SERVICE_SUBSCRIPTION_ID = GR.SERVICE_SUBSCRIPTION_ID
+        AND GR.EFFECTIVE_FLAG = 'N'
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+      
+
+    <select id = "FetchProductBundle.effonl.RetrieveConfiguredValue" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveConfiguredValue */   
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC             
+        <dynamic prepend="WHERE ">
+          CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+          AND CSC.EFFECTIVE_STATUS = 'ACTIVE'  
+ 	      <isEmpty property="returnOrdered">
+	        AND 
+	        ((
+	           CSC.EFFECTIVE_FLAG = 'N' and CSC.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS')
+	        )or(
+	           CSC.EFFECTIVE_FLAG = 'P' and CSC.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') 
+	           and exists (select 1 from  CONFIG_SERVICE_CHARACTERISTIC CSC1
+	              where csc1.service_subscription_id=csc.service_subscription_id
+	              and csc1.config_service_char_id = csc.config_service_char_id
+	              and csc1.service_characteristic_code = csc.service_characteristic_code
+	              and csc1.effective_flag='N'
+	              and csc1.completion_date = TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS')) 
+             ))
+	      </isEmpty>
+ 	      <isNotEmpty property="returnOrdered">
+	        AND CSC.EFFECTIVE_FLAG = 'N' 
+	      </isNotEmpty>
+        AND CV.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        </dynamic>
+    </select>
+
+
+
+    <select id = "FetchProductBundle.effonl.RetrieveConfigCharacteristics" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveConfigCharacteristics */  
+        CSC.SERVICE_CHARACTERISTIC_CODE, CSC.CONFIG_SERVICE_CHAR_ID 
+        FROM
+        CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveCharValues" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveCharValues */ 
+        CV.CONFIGURED_VALUE_STRING AS VALUE
+        FROM 
+        CONFIGURED_VALUE CV  
+        WHERE 
+        CV.CONFIG_SERVICE_CHAR_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        UNION SELECT AN.ACCESS_NUMBER AS VALUE
+        FROM 
+        ACCESS_NUMBER AN 
+        WHERE 
+        AN.CONFIG_SERVICE_CHAR_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveContractData */ 
+           OF1.NOTICE_PERIOD_DUR_UNIT_RD,OF1.NOTICE_PERIOD_DUR_VALUE,OF1.TERMINATION_RESTRICTION_RD,
+           OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,OF1.TERM_START_DATE,
+           OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,
+           PC.PRODUCT_CODE,OF1.BOARD_SIGN_NAME,OF1.BOARD_SIGN_DATE,OF1.PRIMARY_CUST_SIGN_NAME,
+           OF1.PRIMARY_CUST_SIGN_DATE,PS.VIS_TRACKING_POSITION,PC.PRODUCT_COMMITMENT_NUMBER,
+           PC.PRICING_STRUCTURE_CODE,OF1.CONTRACT_NUMBER,OF1.SPECIAL_TERMINATION_RIGHT_RD,
+           OF1.ASSOC_SKELETON_CONTRACT_NUMBER,SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,
+           PC.PRODUCT_VERSION_CODE,substr(PROD.BILLING_NAME_2,1,39) AS PRODUCT_NAME,
+           substr(PRICING.BILLING_NAME_2,1,39) AS PRICING_STRUCTURE_NAME,PS.PRODUCT_SUBSCRIPTION_ID
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC,
+        PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+           SS.SERVICE_SUBSCRIPTION_ID = #value# 
+           AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+           AND PS.EFFECTIVE_FLAG = 'N'
+           AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+           AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                           PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                           PC2.STATE_RD = 'SIGNED')
+           AND PC.STATE_RD = 'SIGNED'
+           AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+           AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                               OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                               OF2.STATE_RD = 'SIGNED')
+           AND OF1.STATE_RD = 'SIGNED'
+           AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+           AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+           AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+           AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+           AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveSDContractData */ 
+        PC.NOTICE_PERIOD_DUR_UNIT_RD,PC.NOTICE_PERIOD_DUR_VALUE,PC.TERMINATION_RESTRICTION_RD,
+        PC.MIN_PERIOD_DUR_UNIT_RD,PC.MIN_PERIOD_DUR_VALUE,PC.MIN_PERIOD_START_DATE,PC.TERM_START_DATE,
+        PC.AUTO_EXTENT_DUR_UNIT_RD,PC.AUTO_EXTENT_DUR_VALUE,PC.AUTO_EXTENSION_IND,PC.PRODUCT_CODE,
+        PC.BOARD_SIGN_NAME,PC.BOARD_SIGN_DATE,PC.PRIMARY_CUST_SIGN_NAME,
+        PC.PRIMARY_CUST_SIGN_DATE,PS.VIS_TRACKING_POSITION,PC.PRODUCT_COMMITMENT_NUMBER,
+        PC.PRICING_STRUCTURE_CODE,SDC.CONTRACT_NUMBER,PC.SPECIAL_TERMINATION_RIGHT_RD,
+        SDC.ASSOC_SKELETON_CONTRACT_NUMBER AS SERV_DELIV_SKELETON_NUMBER,SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,
+        PC.PRODUCT_VERSION_CODE,substr(PROD.BILLING_NAME_2,1,39) AS PRODUCT_NAME,PS.PRODUCT_SUBSCRIPTION_ID,
+        substr(PRICING.BILLING_NAME_2,1,39) AS PRICING_STRUCTURE_NAME, SDC.CONTRACT_NUMBER AS SERVICE_DELIVERY_ID
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,
+        SERVICE_DELIVERY_CONTRACT SDC, SERV_DELIV_CONT_PRODUCT_COMMIT PC,
+        PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N'
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND SDC.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND SDC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE_DELIVERY_CONTRACT SDC2 WHERE 
+                                SDC.CONTRACT_NUMBER = SDC2.CONTRACT_NUMBER AND 
+                                SDC2.STATE_RD = 'SIGNED')
+        AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+        AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+        AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveSalesPackageInfo" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveSalesPackageInfo */ 
+        SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.BILLING_NAME_1 AS NAME, SP.SALES_PACKET_CODE, SP.AAW_PACKET_ID
+        FROM BUNDLE B, BUNDLE_PACKET BP, SALES_PACKET SP
+        WHERE 
+        B.BUNDLE_ID = #value#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.BUNDLE_ID = BP.BUNDLE_ID
+        AND BP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_PACKET BP1
+                                WHERE BP1.BUNDLE_ID = BP.BUNDLE_ID
+                                AND BP1.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND BP1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BP.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BP.SALES_PACKET_ID = SP.SALES_PACKET_ID
+        AND SP.EFFECTIVE_FLAG = 'N'
+        AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveSalesPackageInfoByCode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveSalesPackageInfoByCode */ 
+        SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.BILLING_NAME_1 AS NAME, SP.SALES_PACKET_CODE, SP.AAW_PACKET_ID
+        FROM  SALES_PACKET SP
+        WHERE 
+        SP.SALES_PACKET_CODE = #value#
+        AND SP.EFFECTIVE_FLAG = 'N'
+        AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "FetchProductBundle.effonl.RetrieveServiceLocation" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveServiceLocation */ 
+        SL.ROOM_NUMBER,SL.DESK_NUMBER,SL.JACK_LOCATION,
+        SL.ADDITIONAL_LOCATION_INFO,SL.FLOOR,CSC.SERVICE_CHARACTERISTIC_CODE  
+        FROM
+        SERVICE_LOCATION SL, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = SL.CONFIG_SERVICE_CHAR_ID
+    </select>        
+
+    <select id = "FetchProductBundle.effonl.RetrieveAccessNumberChars" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveAccessNumberChars */  CSC.SERVICE_CHARACTERISTIC_CODE, AN.RETENTION_PERIOD_RD, AN.MASKING_DIGITS_RD, AN.ACCESS_NUMBER       
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC 
+        <dynamic prepend="WHERE ">
+            AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+            AND CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+            AND CSC.EFFECTIVE_STATUS = 'ACTIVE'  
+	        <isEmpty property="returnOrdered">
+	            AND 
+	            ((
+	               CSC.EFFECTIVE_FLAG = 'N' and CSC.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS')
+	            )or(
+	               CSC.EFFECTIVE_FLAG = 'P' and CSC.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') 
+	               and exists (select 1 from  CONFIG_SERVICE_CHARACTERISTIC CSC1
+	                  where csc1.service_subscription_id=csc.service_subscription_id
+	                  and csc1.config_service_char_id = csc.config_service_char_id
+	                  and csc1.service_characteristic_code = csc.service_characteristic_code
+	                  and csc1.effective_flag='N'
+	                  and csc1.completion_date = TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS')) 
+               ))
+	        </isEmpty>
+ 	        <isNotEmpty property="returnOrdered">
+	          AND CSC.EFFECTIVE_FLAG = 'N' 
+	        </isNotEmpty>
+	        <isNotEmpty property="servCharCode">
+	           AND CSC.SERVICE_CHARACTERISTIC_CODE = #servCharCode#
+	        </isNotEmpty>
+            ORDER BY CSC.SERVICE_CHARACTERISTIC_CODE      
+        </dynamic>
+    </select>
+
+
+    <select id = "FetchProductBundle.effonl.RetrieveChildServices" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveChildServices */  
+        SS.SERVICE_CODE , SS.SERVICE_SUBSCRIPTION_ID, S.ALT_BILLING_NAME_1 AS SERVICE_BILLING_NAME,
+        SD.SERVICE_SUBSCRIPTION_DEP_ID
+        FROM SERVICE_SUBSCRIPTION SS, 
+        SERVICE_SUBSCRIPTION_DEP SD,
+        SERVICE S
+        <dynamic prepend="WHERE ">
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #servSubsId#
+ 	    <isNotEmpty property="returnOrdered">
+            AND SS.STATE_RD IN ('SUBSCRIBED', 'ORDERED')
+        </isNotEmpty>
+ 	    <isEmpty property="returnOrdered">
+            AND (SS.STATE_RD IN ('SUBSCRIBED') OR (SS.STATE_RD = 'ORDERED' AND SS.SERVICE_CODE = 'V0100'))
+        </isEmpty>
+        AND SS.SERVICE_CODE NOT IN ('I1291')
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.SERVICE_TYPE NOT IN ('ACCESS_HW','TERMINAL_HW')
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND NOT EXISTS (SELECT 1 FROM SERVICE_TICKET_POSITION STP WHERE  
+                        STP.SERVICE_SUBSCRIPTION_ID = SS.SERVICE_SUBSCRIPTION_ID
+                        AND STP.USAGE_MODE_VALUE_RD = '4'
+                        AND STP.STATE_RD != 'CANCELED')
+        </dynamic>
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveHardwareDepService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveHardwareDepService */  
+        SS2.SERVICE_CODE , SS2.SERVICE_SUBSCRIPTION_ID, S.ALT_BILLING_NAME_1 AS SERVICE_BILLING_NAME,
+        SS1.SERVICE_SUBSCRIPTION_ID AS SERVICE_SUBSCRIPTION_DEP_ID
+        FROM SERVICE_SUBSCRIPTION SS1, SERVICE_SUBSCRIPTION SS2, SERVICE S
+           WHERE 
+        SS1.SERVICE_SUBSCRIPTION_ID = #value#
+        AND SS1.PRODUCT_SUBSCRIPTION_ID = SS2.PRODUCT_SUBSCRIPTION_ID
+        AND SS2.SERVICE_CODE = S.SERVICE_CODE
+        AND SS2.STATE_RD NOT IN ('CANCELED','TERMINATED')
+        AND S.EFFECTIVE_FLAG = 'N'
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.SERVICE_TYPE IN ('ACCESS_HW','TERMINAL_HW')
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveOpenOrdersForService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND)  FetchProductBundle.effonl.RetrieveOpenOrdersForService */  
+            EO.ORDER_ID , EO.ORDER_POSITION_NUMBER
+        FROM 
+            EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EOD.SUPPORTED_OBJECT_ID = #value#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_FLAG = 'N'
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveCompletedOrder" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveCompletedOrder */  
+        EOD.SUPPORTED_OBJECT_ID,EO.CLOSE_REASON_RD
+        FROM 
+        EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EO.ORDER_ID = #orderId#
+        AND EO.ORDER_POSITION_NUMBER = #orderPosNum#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveSelectedDestinations" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveSelectedDestinations */  
+        SD.BEGIN_NUMBER
+        FROM 
+        PRICE_PLAN_SUBSCRIPTION PPS, SELECTED_DESTINATION SD
+        WHERE 
+        PPS.PRODUCT_SUBSCRIPTION_ID = #value#
+        AND PPS.EFFECTIVE_FLAG = 'N'
+        AND PPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS.PRICE_PLAN_SUBSCRIPTION_ID = SD.PRICE_PLAN_SUBSCRIPTION_ID
+        AND SD.EFFECTIVE_FLAG = 'N'
+        AND SD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    
+    <select id = "FetchProductBundle.effonl.RetrieveCustomerOrderBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveCustomerOrderBundle */  
+        DISTINCT BI.BUNDLE_ID FROM 
+        CUSTOMER_ORDER CO, SERVICE_TICKET_POSITION STP, BUNDLE_ITEM BI,BUNDLE B
+        WHERE CO.CUSTOMER_TRACKING_ID = #value#
+        AND STP.CUSTOMER_ORDER_ID = CO.CUSTOMER_ORDER_ID
+        AND BI.SUPPORTED_OBJECT_ID = STP.SERVICE_SUBSCRIPTION_ID 
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.BUNDLE_ID = B.BUNDLE_ID 
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveAllocatedId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveAllocatedId */  
+        ACI.CCB_ID FROM 
+        ALLOCATED_CCB_ID ACI
+        WHERE ACI.CCB_ID = #value#
+        AND ACI.EFFECTIVE_FLAG = 'N'
+        AND ACI.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    
+    <select id = "FetchProductBundle.effonl.RetrieveDialupSelectedDestination" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveDialupSelectedDestination */  
+        CSC.SERVICE_SUBSCRIPTION_ID 
+        FROM 
+        ACCESS_NUMBER AN,CONFIG_SERVICE_CHARACTERISTIC CSC, SELECTED_DESTINATION SD, 
+        PRICE_PLAN_SUBSCRIPTION PPS, SERVICE_SUBSCRIPTION SS 
+        WHERE SS.SERVICE_SUBSCRIPTION_ID = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PPS.PRODUCT_SUBSCRIPTION_ID
+        AND PPS.EFFECTIVE_FLAG = 'N'
+        AND PPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS.PRICE_PLAN_SUBSCRIPTION_ID = SD.PRICE_PLAN_SUBSCRIPTION_ID
+        AND SD.EFFECTIVE_FLAG = 'N'
+        AND SD.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AN.START_RANGE_STRING = SD.BEGIN_NUMBER
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveOnlineService" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveOnlineService */  
+        SS.SERVICE_SUBSCRIPTION_ID 
+        FROM 
+        SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS WHERE 
+        PS.CUSTOMER_NUMBER = #customerNumber#
+        AND PS.EFFECTIVE_FLAG = 'N'
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID
+        AND SS.SERVICE_CODE = 'I1040'
+        AND NOT EXISTS ( SELECT 1 FROM BUNDLE_ITEM BI WHERE BI.BUNDLE_ID = #bundleId# 
+                        AND BI.BUNDLE_ITEM_TYPE_RD IN ('ONLINE_SERVICE','DSLONL_SERVICE')
+                        AND BI.EFFECTIVE_FLAG = 'N'
+                        AND BI.EFFECTIVE_STATUS  = 'ACTIVE')
+        AND NOT EXISTS ( SELECT 1 FROM BUNDLE_ITEM BI1 WHERE  BI1.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+                        AND BI1.EFFECTIVE_FLAG = 'N'
+                        AND BI1.EFFECTIVE_STATUS  = 'ACTIVE')    
+    </select>
+    
+    <select id = "FetchProductBundle.effonl.RetrieveOnenetForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveOnenetForBundle */
+            ONENET_ID 
+        FROM ONENET_SITE OS 
+        WHERE OS.BUNDLE_ID = #value#
+        AND OS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OS.EFFECTIVE_FLAG = 'N'
+    </select>
+
+    <select id = "FetchProductBundle.effonl.RetrieveDefaultLicences" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveOnenetForBundle */
+        S.SERVICE_CODE,S.NAME, 0 AS QUANTITY 
+        FROM SERVICE S 
+        WHERE 
+        SERVICE_TYPE = #serviceType#
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND NOT EXISTS (SELECT 1 FROM SERVICE_SUBSCRIPTION SS1 WHERE 
+                        S.SERVICE_CODE = SS1.SERVICE_CODE
+                        AND SERVICE_SUBSCRIPTION_ID IN (SELECT SERVICE_SUBSCRIPTION_ID 
+                                                    FROM SERVICE_SUBSCRIPTION_DEP SSD
+                                                    WHERE SERVICE_SUBSCRIPTION_DEP_ID = #parentSerSuId#))
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                 S.SERVICE_CODE = S1.SERVICE_CODE
+                                 AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+
+    <select id = "FetchProductBundle.effonl.RetrieveInitialTicketForService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.effonl.RetrieveInitialTicketForService */
+        STP.USAGE_MODE_VALUE_RD 
+        FROM SERVICE_TICKET_POSITION STP 
+        WHERE 
+        STP.SERVICE_SUBSCRIPTION_ID = #value#
+        AND STP.STATE_RD NOT IN ('CANCELED','REJECTED')
+        AND STP.USAGE_MODE_VALUE_RD IN ('1','5','6')
+    </select>
+
+    
+    <select id = "FetchProductBundle.onl.RetrieveBundleItemsByTasi" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveBundleItemsByTasi */   
+        BI.SUPPORTED_OBJECT_ID, BI.BUNDLE_ITEM_TYPE_RD, BI.DEVIATING_CUSTOMER_NUMBER, B.HIERARCHY_INDICATOR, B.BUNDLE_ROLE_RD, B.BUNDLE_TYPE_RD, C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD,
+        SS.SERVICE_CODE,B.BUNDLE_ID,B.AOSTATUS,BI.FUTURE_INDICATOR
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE_ITEM BI2, BUNDLE B, CUSTOMER C,SERVICE_SUBSCRIPTION SS,
+        CONFIG_SERVICE_CHARACTERISTIC CSC, ACCESS_NUMBER AN
+        WHERE 
+        AN.ACCESS_NUMBER = #value#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                        WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND B.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                            B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                            WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                            AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveBundleItemsByServSubs" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ rule FetchProductBundle.onl.RetrieveBundleItemsByServSubs */   
+        BI.SUPPORTED_OBJECT_ID, BI.BUNDLE_ITEM_TYPE_RD, BI.DEVIATING_CUSTOMER_NUMBER, B.HIERARCHY_INDICATOR, B.BUNDLE_ROLE_RD, B.BUNDLE_TYPE_RD, C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD,
+        SS.SERVICE_CODE,B.BUNDLE_ID,B.AOSTATUS,BI.FUTURE_INDICATOR
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE_ITEM BI2, BUNDLE B, CUSTOMER C,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI2.SUPPORTED_OBJECT_ID = #value#
+        AND B.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI3 WHERE
+                BI2.BUNDLE_ITEM_ID = BI3.BUNDLE_ITEM_ID AND BI3.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                 WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                 AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+
+    <select id = "FetchProductBundle.onl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ rule FetchProductBundle.onl.RetrieveBundleItems */   
+        BI.SUPPORTED_OBJECT_ID, BI.BUNDLE_ITEM_TYPE_RD, BI.DEVIATING_CUSTOMER_NUMBER, B.HIERARCHY_INDICATOR, B.BUNDLE_ROLE_RD, B.BUNDLE_TYPE_RD, C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD,
+        SS.SERVICE_CODE,B.AOSTATUS,BI.FUTURE_INDICATOR
+        FROM 
+        BUNDLE_ITEM BI,  BUNDLE B, CUSTOMER C,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI.BUNDLE_ID = #value#
+        AND B.BUNDLE_ID = #value#
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+        BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+        B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+        WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+        AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveAddress" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveAddress */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX,
+        CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                    AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.DATA_TYPE_RD = 'ADDRESS'
+        AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                    WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                    AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                    AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveServiceSubscription" parameterClass = "String" resultClass="java.util.HashMap">
+       SELECT /* FetchProductBundle.onl.RetrieveServiceSubscription */  
+        SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, GR.ACCOUNT_NUMBER, GR.CHARGE_TYPE_RD
+        FROM
+        SERVICE_SUBSCRIPTION SS, GUIDING_RULE GR
+        WHERE SS.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND SS.SERVICE_SUBSCRIPTION_ID = GR.SERVICE_SUBSCRIPTION_ID
+        AND GR.CHARGE_TYPE_RD = 'PRIMARY'
+        AND GR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM GUIDING_RULE GR1 
+                                 WHERE GR.SERVICE_SUBSCRIPTION_ID = GR1.SERVICE_SUBSCRIPTION_ID  
+                                 AND GR.CHARGE_TYPE_RD = GR1.CHARGE_TYPE_RD  
+                                 AND GR1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveUnbundledServiceSubscription" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveUnbundledServiceSubscription */  
+        SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID, GR.ACCOUNT_NUMBER, GR.CHARGE_TYPE_RD,C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD, S.SERVICE_TYPE
+        FROM
+        SERVICE_SUBSCRIPTION SS, GUIDING_RULE GR, CUSTOMER C, PRODUCT_SUBSCRIPTION PR, SERVICE S
+        WHERE SS.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PR.PRODUCT_SUBSCRIPTION_ID
+        AND PR.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                        WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                        AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.SERVICE_SUBSCRIPTION_ID = GR.SERVICE_SUBSCRIPTION_ID
+        AND GR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM GUIDING_RULE GR1 
+                                WHERE GR.SERVICE_SUBSCRIPTION_ID = GR1.SERVICE_SUBSCRIPTION_ID  
+                                AND GR.ACCOUNT_NUMBER = GR1.ACCOUNT_NUMBER  
+                                AND GR1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND GR.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+
+    <select id = "FetchProductBundle.onl.RetrieveConfiguredValue" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveConfiguredValue */  
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+ 		AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveConfigCharacteristics" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveConfigCharacteristics */  
+        CSC.SERVICE_CHARACTERISTIC_CODE, CSC.CONFIG_SERVICE_CHAR_ID
+        FROM
+        CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveCharValues" parameterClass = "java.util.List" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveCharValues */ 
+        CV.CONFIGURED_VALUE_STRING AS VALUE
+        FROM 
+        CONFIGURED_VALUE CV  
+        WHERE 
+        CV.CONFIG_SERVICE_CHAR_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        UNION SELECT AN.ACCESS_NUMBER AS VALUE
+        FROM 
+        ACCESS_NUMBER AN 
+        WHERE 
+        AN.CONFIG_SERVICE_CHAR_ID IN 
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveContractData */ 
+           OF1.NOTICE_PERIOD_DUR_UNIT_RD,OF1.NOTICE_PERIOD_DUR_VALUE,OF1.TERMINATION_RESTRICTION_RD,
+           OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,OF1.TERM_START_DATE,
+           OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,
+           PC.PRODUCT_CODE,OF1.BOARD_SIGN_NAME,OF1.BOARD_SIGN_DATE,OF1.PRIMARY_CUST_SIGN_NAME,
+           OF1.PRIMARY_CUST_SIGN_DATE,PS.VIS_TRACKING_POSITION,PC.PRODUCT_COMMITMENT_NUMBER,
+           PC.PRICING_STRUCTURE_CODE,OF1.CONTRACT_NUMBER,OF1.SPECIAL_TERMINATION_RIGHT_RD,
+           OF1.ASSOC_SKELETON_CONTRACT_NUMBER,SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,
+           PC.PRODUCT_VERSION_CODE,substr(PROD.BILLING_NAME_2,1,39) AS PRODUCT_NAME,
+           substr(PRICING.BILLING_NAME_2,1,39) AS PRICING_STRUCTURE_NAME,PS.PRODUCT_SUBSCRIPTION_ID
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC,
+        PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+           SS.SERVICE_SUBSCRIPTION_ID = #value# 
+           AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+           AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+           AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+           AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+           AND PC.STATE_RD = 'SIGNED'
+           AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+           AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD = 'SIGNED')
+           AND OF1.STATE_RD = 'SIGNED'
+           AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+           AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+           AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+           AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+           AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveSDContractData */ 
+        PC.NOTICE_PERIOD_DUR_UNIT_RD,PC.NOTICE_PERIOD_DUR_VALUE,PC.TERMINATION_RESTRICTION_RD,
+        PC.MIN_PERIOD_DUR_UNIT_RD,PC.MIN_PERIOD_DUR_VALUE,PC.MIN_PERIOD_START_DATE,PC.TERM_START_DATE,
+        PC.AUTO_EXTENT_DUR_UNIT_RD,PC.AUTO_EXTENT_DUR_VALUE,PC.AUTO_EXTENSION_IND,PC.PRODUCT_CODE,
+        PC.BOARD_SIGN_NAME,PC.BOARD_SIGN_DATE,PC.PRIMARY_CUST_SIGN_NAME,
+        PC.PRIMARY_CUST_SIGN_DATE,PS.VIS_TRACKING_POSITION,PC.PRODUCT_COMMITMENT_NUMBER,
+        PC.PRICING_STRUCTURE_CODE,SDC.CONTRACT_NUMBER,PC.SPECIAL_TERMINATION_RIGHT_RD,
+        SDC.ASSOC_SKELETON_CONTRACT_NUMBER AS SERV_DELIV_SKELETON_NUMBER,SS.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,
+        PC.PRODUCT_VERSION_CODE,substr(PROD.BILLING_NAME_2,1,39) AS PRODUCT_NAME,PS.PRODUCT_SUBSCRIPTION_ID,
+        substr(PRICING.BILLING_NAME_2,1,39) AS PRICING_STRUCTURE_NAME, SDC.CONTRACT_NUMBER AS SERVICE_DELIVERY_ID
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,
+        SERVICE_DELIVERY_CONTRACT SDC, SERV_DELIV_CONT_PRODUCT_COMMIT PC,
+        PRODUCT_VERSION PROD,PRICING_STRUCTURE PRICING
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.STATE_RD = 'SIGNED'
+        AND SDC.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND SDC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERVICE_DELIVERY_CONTRACT SDC2 WHERE 
+                                SDC.CONTRACT_NUMBER = SDC2.CONTRACT_NUMBER AND 
+                                SDC2.STATE_RD = 'SIGNED')
+        AND SDC.STATE_RD = 'SIGNED'
+        AND PROD.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PROD.PRODUCT_VERSION_CODE =  PC.PRODUCT_VERSION_CODE 
+        AND PRICING.PRICING_STRUCTURE_CODE = PC.PRICING_STRUCTURE_CODE 
+        AND PRICING.PRODUCT_CODE = PC.PRODUCT_CODE 
+        AND PRICING.PRODUCT_VERSION_CODE = PC.PRODUCT_VERSION_CODE 
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveSalesPackageInfo" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* FetchProductBundle.onl.RetrieveSalesPackageInfo */ 
+		SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.BILLING_NAME_1 AS NAME, SP.SALES_PACKET_CODE, SP.AAW_PACKET_ID 
+		FROM BUNDLE B, BUNDLE_PACKET BP, SALES_PACKET SP
+		WHERE 
+		B.BUNDLE_ID = #value#
+		AND B.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1
+		                          WHERE B.BUNDLE_ID = B1.BUNDLE_ID
+								  AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+		AND B.EFFECTIVE_STATUS = 'ACTIVE'
+		AND B.BUNDLE_ID = BP.BUNDLE_ID
+		AND BP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_PACKET BP1
+                            		WHERE BP1.BUNDLE_ID = BP.BUNDLE_ID
+                            		AND BP1.EFFECTIVE_STATUS = 'ACTIVE'
+                            		AND BP1.EFFECTIVE_DATE &lt; SYSDATE)		
+		AND BP.EFFECTIVE_STATUS = 'ACTIVE'
+		AND BP.SALES_PACKET_ID = SP.SALES_PACKET_ID
+		AND SP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SALES_PACKET SP1
+		                          WHERE SP.SALES_PACKET_ID = SP1.SALES_PACKET_ID
+								  AND SP1.EFFECTIVE_DATE &lt; SYSDATE)
+		AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "FetchProductBundle.onl.RetrieveSalesPackageInfoByCode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveSalesPackageInfoByCode */ 
+        SP.BILLING_NAME_BASE_CHARGE, SP.SALES_PACKET_ID, SP.BILLING_NAME_1 AS NAME, SP.SALES_PACKET_CODE, SP.AAW_PACKET_ID 
+        FROM  SALES_PACKET SP
+        WHERE 
+        SP.SALES_PACKET_CODE = #value#
+		AND SP.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SALES_PACKET SP1
+		                          WHERE SP.SALES_PACKET_ID = SP1.SALES_PACKET_ID
+								  AND SP1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND SP.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "FetchProductBundle.onl.RetrieveServiceLocation" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveServiceLocation */ 
+        SL.ROOM_NUMBER,SL.DESK_NUMBER,SL.JACK_LOCATION,
+        SL.ADDITIONAL_LOCATION_INFO,SL.FLOOR,CSC.SERVICE_CHARACTERISTIC_CODE  
+        FROM
+        SERVICE_LOCATION SL, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                            WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                            AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = SL.CONFIG_SERVICE_CHAR_ID
+    </select>
+   
+    <select id = "FetchProductBundle.onl.RetrieveAccessNumberChars" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveAccessNumberChars */  CSC.SERVICE_CHARACTERISTIC_CODE, AN.RETENTION_PERIOD_RD, AN.MASKING_DIGITS_RD, AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC 
+        <dynamic prepend="WHERE ">
+            AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+            AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+            WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+            AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+            AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+	        AND CSC.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+	        <isNotEmpty property="servCharCode">
+	           AND CSC.SERVICE_CHARACTERISTIC_CODE = #servCharCode#
+	        </isNotEmpty>
+            ORDER BY CSC.SERVICE_CHARACTERISTIC_CODE
+        </dynamic>
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveChildServices" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveChildServices */  
+        SS.SERVICE_CODE , SS.SERVICE_SUBSCRIPTION_ID, S.ALT_BILLING_NAME_1 AS SERVICE_BILLING_NAME,
+        SD.SERVICE_SUBSCRIPTION_DEP_ID
+        FROM SERVICE_SUBSCRIPTION SS, 
+        SERVICE_SUBSCRIPTION_DEP SD,
+        SERVICE S
+        <dynamic prepend="WHERE ">
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #servSubsId#
+ 	    <isNotEmpty property="returnOrdered">
+            AND SS.STATE_RD IN ('SUBSCRIBED', 'ORDERED')
+        </isNotEmpty>
+ 	    <isEmpty property="returnOrdered">
+            AND (SS.STATE_RD IN ('SUBSCRIBED') OR (SS.STATE_RD = 'ORDERED' AND SS.SERVICE_CODE = 'V0100'))
+        </isEmpty>
+        AND SS.SERVICE_CODE NOT IN ('I1291')
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND S.SERVICE_TYPE NOT IN ('ACCESS_HW','TERMINAL_HW')
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND NOT EXISTS (SELECT 1 FROM SERVICE_TICKET_POSITION STP WHERE  
+                       STP.SERVICE_SUBSCRIPTION_ID = SS.SERVICE_SUBSCRIPTION_ID
+                       AND STP.USAGE_MODE_VALUE_RD = '4'
+                       AND STP.STATE_RD != 'CANCELED')
+        </dynamic>
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveHardwareDepService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveHardwareDepService */  
+        SS2.SERVICE_CODE , SS2.SERVICE_SUBSCRIPTION_ID, S.ALT_BILLING_NAME_1 AS SERVICE_BILLING_NAME,
+        SS1.SERVICE_SUBSCRIPTION_ID AS SERVICE_SUBSCRIPTION_DEP_ID
+        FROM SERVICE_SUBSCRIPTION SS1, SERVICE_SUBSCRIPTION SS2, SERVICE S
+        WHERE 
+        SS1.SERVICE_SUBSCRIPTION_ID = #value#
+        AND SS1.PRODUCT_SUBSCRIPTION_ID = SS2.PRODUCT_SUBSCRIPTION_ID
+        AND SS2.SERVICE_CODE = S.SERVICE_CODE
+        AND SS2.STATE_RD NOT IN ('CANCELED','TERMINATED')
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                            S.SERVICE_CODE = S1.SERVICE_CODE
+                            AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND S.SERVICE_TYPE IN ('ACCESS_HW','TERMINAL_HW')
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveOpenOrdersForService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND) FetchProductBundle.onl.RetrieveOpenOrdersForService */  
+            EO.ORDER_ID , EO.ORDER_POSITION_NUMBER
+        FROM 
+            EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EOD.SUPPORTED_OBJECT_ID = #value#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM EXTERNAL_ORDER EO2
+                                WHERE EO.ORDER_ID = EO2.ORDER_ID
+                                AND EO.ORDER_POSITION_NUMBER = EO2.ORDER_POSITION_NUMBER
+                                AND EFFECTIVE_DATE &lt; SYSDATE)
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveCompletedOrder" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveCompletedOrder */  
+        EOD.SUPPORTED_OBJECT_ID,EO.CLOSE_REASON_RD
+        FROM 
+        EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EO.ORDER_ID = #orderId#
+        AND EO.ORDER_POSITION_NUMBER = #orderPosNum#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM EXTERNAL_ORDER EO2
+                                WHERE EO.ORDER_ID = EO2.ORDER_ID
+                                AND EO.ORDER_POSITION_NUMBER = EO2.ORDER_POSITION_NUMBER
+                                AND EFFECTIVE_DATE &lt; SYSDATE)
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveSelectedDestinations" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveSelectedDestinations */  
+        SD.BEGIN_NUMBER
+        FROM 
+        PRICE_PLAN_SUBSCRIPTION PPS, SELECTED_DESTINATION SD
+        WHERE 
+        PPS.PRODUCT_SUBSCRIPTION_ID = #value#
+        AND PPS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN_SUBSCRIPTION PPS2 WHERE 
+                        PPS.PRICE_PLAN_SUBSCRIPTION_ID = PPS2.PRICE_PLAN_SUBSCRIPTION_ID
+                        AND PPS2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS.PRICE_PLAN_SUBSCRIPTION_ID = SD.PRICE_PLAN_SUBSCRIPTION_ID
+        AND SD.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SELECTED_DESTINATION SD2 WHERE 
+                        SD.SELECTED_DESTINATION_ID = SD2.SELECTED_DESTINATION_ID
+                        AND SD2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND SD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveCustomerOrderBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveCustomerOrderBundle */  
+        DISTINCT BI.BUNDLE_ID FROM 
+        CUSTOMER_ORDER CO, SERVICE_TICKET_POSITION STP, BUNDLE_ITEM BI,BUNDLE B
+        WHERE CO.CUSTOMER_TRACKING_ID = #value#
+        AND STP.CUSTOMER_ORDER_ID = CO.CUSTOMER_ORDER_ID
+        AND BI.SUPPORTED_OBJECT_ID = STP.SERVICE_SUBSCRIPTION_ID 
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+        BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.BUNDLE_ID = B.BUNDLE_ID 
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+        B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "FetchProductBundle.onl.RetrieveAllocatedId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveAllocatedId */  
+        ACI.CCB_ID FROM 
+        ALLOCATED_CCB_ID ACI
+        WHERE ACI.CCB_ID = #value#
+        AND ACI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ALLOCATED_CCB_ID ACI1 WHERE
+                    ACI.CCB_ID = ACI1.CCB_ID 
+                    AND ACI.TYPE = ACI1.TYPE 
+                    AND ACI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND ACI.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveDialupSelectedDestination" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveDialupSelectedDestination */  
+        CSC.SERVICE_SUBSCRIPTION_ID 
+        FROM 
+        ACCESS_NUMBER AN,CONFIG_SERVICE_CHARACTERISTIC CSC, SELECTED_DESTINATION SD, 
+        PRICE_PLAN_SUBSCRIPTION PPS, SERVICE_SUBSCRIPTION SS 
+        WHERE SS.SERVICE_SUBSCRIPTION_ID = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PPS.PRODUCT_SUBSCRIPTION_ID
+        AND PPS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRICE_PLAN_SUBSCRIPTION PPS2 WHERE 
+                                    PPS.PRICE_PLAN_SUBSCRIPTION_ID = PPS2.PRICE_PLAN_SUBSCRIPTION_ID
+                                    AND PPS2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND PPS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PPS.PRICE_PLAN_SUBSCRIPTION_ID = SD.PRICE_PLAN_SUBSCRIPTION_ID
+        AND SD.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SELECTED_DESTINATION SD2 WHERE 
+                                    SD.SELECTED_DESTINATION_ID = SD2.SELECTED_DESTINATION_ID
+                                    AND SD2.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND SD.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AN.START_RANGE_STRING = SD.BEGIN_NUMBER
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveOnlineService" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveOnlineService */  
+        SS.SERVICE_SUBSCRIPTION_ID 
+        FROM 
+        SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS WHERE 
+        PS.CUSTOMER_NUMBER = #customerNumber#
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                            PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID
+        AND SS.SERVICE_CODE = 'I1040'
+        AND NOT EXISTS (SELECT 1 FROM BUNDLE_ITEM BI WHERE BI.BUNDLE_ID = #bundleId# 
+                        AND BI.BUNDLE_ITEM_TYPE_RD IN ('ONLINE_SERVICE','DSLONL_SERVICE')
+                        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) 
+                                        FROM BUNDLE_ITEM BI1 WHERE
+                                        BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                        AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+                        AND BI.EFFECTIVE_STATUS  = 'ACTIVE')
+        AND NOT EXISTS ( SELECT 1 FROM BUNDLE_ITEM BI2 WHERE  BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+                        AND BI2.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) 
+                                        FROM BUNDLE_ITEM BI3 WHERE
+                                        BI2.BUNDLE_ITEM_ID = BI3.BUNDLE_ITEM_ID 
+                                        AND BI3.EFFECTIVE_DATE &lt; SYSDATE)
+                        AND BI2.EFFECTIVE_STATUS  = 'ACTIVE')    
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveOnenetForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveOnenetForBundle */
+            ONENET_ID 
+        FROM ONENET_SITE OS 
+        WHERE OS.BUNDLE_ID = #value#
+        AND OS.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OS.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ONENET_SITE OS1 WHERE 
+                                 OS.SITE_ID = OS1.SITE_ID 
+                                 AND OS1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+    
+    <select id = "FetchProductBundle.onl.RetrieveDefaultLicences" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveOnenetForBundle */
+        S.SERVICE_CODE,S.NAME, 0 AS QUANTITY 
+        FROM SERVICE S 
+        WHERE 
+        SERVICE_TYPE = #serviceType#
+        AND S.EFFECTIVE_STATUS = 'ACTIVE'
+        AND NOT EXISTS (SELECT 1 FROM SERVICE_SUBSCRIPTION SS1 WHERE 
+                        S.SERVICE_CODE = SS1.SERVICE_CODE
+                        AND SERVICE_SUBSCRIPTION_ID IN (SELECT SERVICE_SUBSCRIPTION_ID 
+                                                    FROM SERVICE_SUBSCRIPTION_DEP SSD
+                                                    WHERE SERVICE_SUBSCRIPTION_DEP_ID = #parentSerSuId#))
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                 S.SERVICE_CODE = S1.SERVICE_CODE
+                                 AND S1.EFFECTIVE_DATE &lt;= SYSDATE)
+    </select>
+
+    <select id = "FetchProductBundle.onl.RetrieveInitialTicketForService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* FetchProductBundle.onl.RetrieveInitialTicketForService */
+        STP.USAGE_MODE_VALUE_RD 
+        FROM SERVICE_TICKET_POSITION STP 
+        WHERE 
+        STP.SERVICE_SUBSCRIPTION_ID = #value#
+        AND STP.STATE_RD NOT IN ('CANCELED','REJECTED')
+        AND STP.USAGE_MODE_VALUE_RD IN ('1','5','6')
+    </select>
+
+</sqlMap>
+                                    

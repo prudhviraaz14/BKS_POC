@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vodafone.de/ccm/BKS-Types-001" xmlns:som="http://www.arcor.net/orderSchema" targetNamespace="http://www.vodafone.de/ccm/BKS-Types-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd"/>
+	<xs:element name="BKS-Types_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>
+				Änderungshistorie
+				0.1	15.04.2016 	Marcin Leja			- Initial version. 
+			</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ================ BKS Internal Complex Types ================================= -->
+	<xs:complexType name="lineCreationPacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="lineCreation" type="som:lineCreation"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+			<xs:element name="status" type="som:string30" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="lineChangePacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="lineChange" type="som:lineChange"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+			<xs:element name="status" type="som:string30" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="terminationPacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="termination" type="som:termination"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+			<xs:element name="status" type="som:string30" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="relocationPacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="relocation" type="som:relocation"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+			<xs:element name="status" type="som:string30" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="contractPartnerChangePacket">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="orderID" type="som:string16" minOccurs="0"/>
+			<xs:element name="contractPartnerChange" type="som:providerChange"/>
+			<xs:element name="barcode" type="som:string16" minOccurs="0"/>
+			<xs:element name="status" type="som:string30" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "effonl.RetrieveCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveCustomer */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM
+        CUSTOMER C, ENTITY E WHERE  
+        C.CUSTOMER_NUMBER = #value# 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_FLAG = 'N'  
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'       
+    </select>
+                
+                
+    <select id = "effonl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveRootCustomer */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_FLAG = 'N'  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+
+    <select id = "onl.RetrieveCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveCustomer */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM
+        CUSTOMER C, ENTITY E WHERE  
+        C.CUSTOMER_NUMBER = #value# 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2
+                         WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'       
+    </select>
+                
+                
+    <select id = "onl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveRootCustomer */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_DATE =  
+                  (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                     WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                       AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                  )  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+</sqlMap>

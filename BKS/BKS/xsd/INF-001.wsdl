@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+History of Changes:
+Vers.    Date              Author             Comment
+====    =========  ===========  ===================================================
+0.1 		28.03.2017	Reto Renner      Initial version for SBus JMS service 
+
+NOTE:  WSDL for information only (no loading into SBus possible)
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" 
+xmlns:soapjms="http://www.w3.org/2008/07/soap/bindings/JMS/" xmlns:wsdlbase="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" 
+xmlns:inf="http://www.dialogika.de/infport/schema/basic/v1" xmlns:tns="http://www.vodafone.de/ESB/Service/SBUS/INF-001.wsdl" 
+xmlns:ns="http://www.vodafone.de/ESB/Schema/Common/BaseTypes-ESB-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/INF-001.wsdl">
+	<wsdl:import namespace="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" location="../../Base/BaseAbstract-001.wsdl"/>
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://www.dialogika.de/infport/schema/basic/v1" schemaLocation="basic.xsd"/>
+		</schema>
+	</wsdl:types>
+	<wsdl:message name="ActionRequest">
+		<wsdl:part name="ActionRequest" element="inf:actionRequest"/>
+	</wsdl:message>
+	<wsdl:message name="ActionResponse">
+		<wsdl:part name="ActionResponse" element="inf:response"/>
+	</wsdl:message>
+	<wsdl:portType name="INFPortType">
+		<wsdl:operation name="ActionRequest">
+			<wsdl:input name="ActionRequest" message="tns:ActionRequest"/>
+			<wsdl:output name="ActionResponse" message="tns:ActionResponse"/>
+			<wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+			<wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="INFJMSBinding" type="tns:INFPortType">
+		<wsoap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!--<wsoap12:binding style="document" transport="http://www.w3.org/2008/07/soap/bindings/JMS/"/>-->
+		<wsdl:operation name="ActionRequest">
+			<wsoap12:operation soapAction="/INF-001/ActionRequest" soapActionRequired="true" style="document"/>
+			<soapjms:targetService>inf</soapjms:targetService>
+			<wsdl:input>
+				<wsoap12:body parts="ActionRequest" use="literal"/>
+				<wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<wsoap12:body parts="ActionResponse" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="functionalESBException">
+				<wsoap12:fault name="functionalESBException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="technicalESBException">
+				<wsoap12:fault name="technicalESBException" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="INFService">
+		<wsdl:port name="INFServiceJMSEndpoint" binding="tns:INFJMSBinding">
+			<wsoap12:address location="jms:queue:endpointQeue"/>
+			<!-- optional: replaces "wsoap12:address": -->
+			<!--
+            <jms:address
+                destinationStyle="queue"
+                jndiDestinationName="endpointQeue"
+                jndiConnectionFactoryName="jmsFactory">
+            </jms:address>
+            -->
+		</wsdl:port>
+	</wsdl:service>
+	<!-- xmlns:jms="http://cxf.apache.org/transports/jms" -->
+</wsdl:definitions>

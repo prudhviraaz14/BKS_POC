@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Andre (Vodafone D2 GmbH) -->
+<!-- $Id$ -->
+<wsdl:definitions xmlns:tns="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomer-001.wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wsdlbase="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomerAbstract-001.wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomer-001.wsdl">
+	<wsdl:documentation>Version  Date        Author             Comment
+	-------  ---------   ---------          ----------------------------------------------------------------------------------------------------------
+	1.0     2013-10-28	 Andre Genser       Initial version
+	</wsdl:documentation>
+	<wsdl:import namespace="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomerAbstract-001.wsdl" location="VFZHCustomerAbstract-001.wsdl"/>
+	<wsdl:import namespace="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" location="../../../Base/BaseAbstract-001.wsdl"/>
+	<wsdl:binding name="VFZHCustomerEndpointBinding" type="ns:VFZHCustomerPortType">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="SearchByFNN">
+			<soap12:operation soapAction="/VFZHCustomer-001/SearchByFNN" soapActionRequired="true"/>
+			<wsdl:input>
+				<soap12:body parts="SearchByFNNRequest" use="literal"/>
+				<soap12:header message="wsdlbase:appMonDetailsStrictHeader" part="AppMonDetailsStrict" use="literal" wsdl:required="true"/>
+				<soap12:header message="wsdlbase:controllObject" part="ControllObject" use="literal" wsdl:required="false"/>
+				<soap12:header message="wsdlbase:auditObject" part="AuditObject" use="literal" wsdl:required="false"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body parts="SearchByFNNResponse" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="functionalESBException">
+				<soap12:fault name="functionalESBException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="technicalESBException">
+				<soap12:fault name="technicalESBException" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="VFZHCustomer">
+		<wsdl:port name="VFZHCustomerEndpoint" binding="tns:VFZHCustomerEndpointBinding">
+			<soap12:address location="http://www.vodafone.de/ESB/Service/EAI/VFZHCustomer-001"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

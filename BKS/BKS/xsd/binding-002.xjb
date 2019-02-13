@@ -1,0 +1,34 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:ci="http://www.arcor.de/aaw/aawSprache/tools/jaxbPlugin/code-injector"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	version="2.0">
+
+	<jaxb:globalBindings>
+		<xjc:serializable	/>	
+		<jaxb:javaType
+			xmlType="xs:dateTime"
+			name="com.domainlanguage.time.TimePoint"
+			parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseTimestamp"
+			printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printTimestamp" />
+				
+		<jaxb:javaType 
+			xmlType="xs:date"
+			name="com.domainlanguage.time.CalendarDate"
+			parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseDate"
+			printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printDate" />
+					
+		<jaxb:javaType 
+			xmlType="xs:integer"
+			name="java.math.BigDecimal"
+		      parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseNumber"
+		      printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printNumber" />
+		          	
+		<jaxb:javaType 
+			xmlType="xs:boolean"
+			name="java.lang.Boolean"
+			parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseBoolean"
+			printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printBoolean" />
+	</jaxb:globalBindings>
+	
+</jaxb:bindings>

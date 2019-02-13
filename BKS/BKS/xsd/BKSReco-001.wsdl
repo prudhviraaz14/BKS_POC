@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2010 (http://www.altova.com) von vodafone (Vodafone AG & Co. KG) bearbeitet -->
+<!-- 
+History of Changes:
+Vers.    Date              Author             Comment
+====    =========  ===========  ===================================================
+0.1		2011-05-20		Thomas Schneider  seperate endpoint for reconcialtion BKS
+       							derived from BKSReco-001.xsd V 0.4
+0.2		2011-06-08		Reto Renner			Namespaces changed
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapjms="http://www.w3.org/2008/07/soap/bindings/JMS/" xmlns:wsdlbase="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" xmlns:bks="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001" xmlns:tns="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001.wsdl" xmlns:ns="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-CommonTypes-001" xmlns:ns1="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" xmlns:ns2="http://www.vodafone.de/ESB/Schema/Common/BaseTypes-ESB-001" xmlns:ns3="http://www.arcor.net/EPSM-CommonTypes-APE-001" xmlns:ns4="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:ns5="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" xmlns:ns6="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:ns7="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:ns8="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:ns9="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" xmlns:ns10="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" xmlns:ns11="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-ProductData-001" xmlns:ns12="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" xmlns:ns13="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" xmlns:ns14="http://www.arcor.net/EPSM-CommonTypes-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001.wsdl">
+	<wsdl:import namespace="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl" location="BaseAbstract-001.wsdl"/>
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="http://www.vodafone.de/ESB/Service/SBUS/BKSRECO/BKSReco-001" schemaLocation="BKSReco-001.xsd"/>
+		</schema>
+	</wsdl:types>
+	<wsdl:message name="GetFNPCustomerRecoDataRequest">
+		<wsdl:part name="GetFNPCustomerRecoDataRequest" element="bks:GetFNPCustomerRecoDataRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetFNPCustomerRecoDataResponse">
+		<wsdl:part name="GetFNPCustomerRecoDataResponse" element="bks:GetFNPCustomerRecoDataResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="BKSPortType">
+		<wsdl:operation name="GetFNPCustomerRecoData">
+			<wsdl:input name="GetFNPCustomerRecoDataRequest" message="tns:GetFNPCustomerRecoDataRequest"/>
+			<wsdl:output name="GetFNPCustomerRecoDataResponse" message="tns:GetFNPCustomerRecoDataResponse"/>
+			<wsdl:fault name="functionalESBException" message="wsdlbase:functionalESBException"/>
+			<wsdl:fault name="technicalESBException" message="wsdlbase:technicalESBException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BKSJMSBinding" type="tns:BKSPortType">
+		<wsoap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<!--<wsoap12:binding style="document" transport="http://www.w3.org/2008/07/soap/bindings/JMS/"/>-->
+		<wsdl:operation name="GetFNPCustomerRecoData">
+			<wsoap12:operation soapAction="/BKSReco-001/GetFNPCustomerRecoData" soapActionRequired="true" style="document"/>
+			<soapjms:targetService>BKS</soapjms:targetService>
+			<wsdl:input>
+				<wsoap12:body parts="GetFNPCustomerRecoDataRequest" use="literal"/>
+				<wsoap12:header message="wsdlbase:appMonDetailsHeader" part="AppMonDetails" use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<wsoap12:body parts="GetFNPCustomerRecoDataResponse" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="functionalESBException">
+				<wsoap12:fault name="functionalESBException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="technicalESBException">
+				<wsoap12:fault name="technicalESBException" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetFNPCustomerDataService">
+		<wsdl:port name="GetFNPCustomerDataJMSEndpoint" binding="tns:BKSJMSBinding">
+			<wsoap12:address location="jms:queue:endpointQeue"/>
+			<!-- optional: replaces "wsoap12:address": -->
+			<!--
+				<jms:address
+				destinationStyle="queue"
+				jndiDestinationName="endpointQeue"
+				jndiConnectionFactoryName="jmsFactory">
+				</jms:address>
+			-->
+		</wsdl:port>
+	</wsdl:service>
+	<!-- Hallo Reto, hier vielleicht korrigieren oder ganz loeschen -->
+	<!-- xmlns:jms="http://cxf.apache.org/transports/jms" -->
+</wsdl:definitions>

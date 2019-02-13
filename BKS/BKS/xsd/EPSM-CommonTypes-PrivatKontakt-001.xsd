@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001" xmlns:kontaktdaten="http://www.arcor.net/EPSM-CommonTypes-Kontaktdaten-001" xmlns:privatKontakt="http://www.arcor.net/EPSM-CommonTypes-PrivatKontakt-001" targetNamespace="http://www.arcor.net/EPSM-CommonTypes-PrivatKontakt-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktdaten-001" schemaLocation="EPSM-CommonTypes-Kontaktdaten-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+	<xs:element name="EPSM_PrivatKontakt_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 08.02.2008  11:31</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="PrivatKontakt">
+		<xs:annotation>
+			<xs:documentation>Angaben zu Privatkontaktdaten</xs:documentation>
+		</xs:annotation>
+			<xs:complexContent>
+			<xs:extension base="kontaktdaten:Kontaktdaten">
+				<xs:sequence/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

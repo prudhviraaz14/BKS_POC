@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskunde-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:jurperson="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskunde-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-JuristischePerson-002" schemaLocation="EPSM-CommonTypes-JuristischePerson-002.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_PruefeBestandskunde_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+Aenderungshistorie:
+Version 0.5 - 25.10.2007 - Reto Renner	- EPSM-CommonTypes-KOntaktrufnummer-001.xsd anstat EPSM-CommonTypes-Rufnummer-001.xsd verwendet
+Version 0.4 - 02.08.2007 - Reto Renner	- Verwendung Element gesamtrufnummer anstatt rufnummer, Nutzung weiterhin Major-Version 001 der CommonTypes Adresse, Kunde und JuristischePerson 
+Version 0.3 - 31.07.2007 - Reto Renner	- Nutzung der Major-Version 002 der CommonTypes Adresse, Kunde und JuristischePerson 
+Version 0.2 - 26.07.2007 - Reto Renner	- Struktur KundennummernListe in PruefeBestandskundeOutput zugefügt
+Version 0.1 - 23.07.2007 - Reto Renner	- initiale Version
+</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<xs:complexType name="KundennummernListe">
+		<xs:annotation>
+			<xs:documentation>Liste von Kundennummern</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="kundennummer" type="common:Kundennummer" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="PruefeBestandskundeService">
+		<xs:annotation>
+			<xs:documentation>Typdefinition Dienst pruefeBestandskunde</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="PruefeBestandskundeInput" type="PruefeBestandskundeInput"/>
+					<xs:element name="PruefeBestandskundeOutput" type="PruefeBestandskundeOutput">
+						<xs:annotation>
+							<xs:documentation>Handelt es sich eindeutig um einen Bestandskunden, so beinhaltet das Element result den Wert "true. In diesem Fall wird seine Kundenummer mit zurückgegeben. Beinhaltet das Element result den Wert "false", so ist eine weitere Aufschlüsselung im Element "errorCode" (und eine entsprechende textuelle Beschreibung im Element errorText) gegeben:
+							
+1 ... es handelt sich eindeutig um keinen Bestandskunden
+2 ... es ist nicht ermittelbar, ob Bestandskunde oder nicht. In diesem Fall kann eine oder mehrere Kundennummern zurückgegeben werden.
+
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PruefeBestandskundeInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="adresse" type="adresse:Adresse">
+						<xs:annotation>
+							<xs:documentation>Es werden vom Endpunkt lediglich folgende Felder ausgewertet:
+- plz
+- ort
+- ortszusatzstrasse
+- hausnummer
+- hausnummerzusatz
+- postfach
+Die Angabe der Felder ist optional.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="rufnummer" type="rufnummer:Kontaktrufnummer"/>
+					<xs:element name="firmenname" type="jurperson:Firmenname"/>
+					<xs:element name="rechtsform" type="jurperson:Rechtsform"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PruefeBestandskundeOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="kundennummernListe" type="KundennummernListe" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

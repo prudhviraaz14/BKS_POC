@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    <select id = "GetSOMCustomerHierarchyDataFKP.effonl.RetrieveChildCustomers" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* GetSOMCustomerHierarchyDataFKP.effonl.RetrieveChildCustomers */  
+        CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM  
+                (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_FLAG = 'N'
+                AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+                )  
+        START WITH ASSOCIATED_CUSTOMER_NUMBER  = #value# 
+        CONNECT BY ASSOCIATED_CUSTOMER_NUMBER = PRIOR CUSTOMER_NUMBER
+        UNION
+        SELECT CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C1
+        WHERE C1.CUSTOMER_NUMBER  = #value# 
+            AND C1.EFFECTIVE_FLAG = 'N'
+    </select>
+    
+    <select id = "GetSOMCustomerHierarchyDataFKP.onl.RetrieveChildCustomers" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetSOMCustomerHierarchyDataFKP.onl.RetrieveChildCustomers */  
+             CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_DATE =  
+                (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                   WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                   AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                )  
+            AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+            )  
+        START WITH ASSOCIATED_CUSTOMER_NUMBER  = #value# 
+        CONNECT BY ASSOCIATED_CUSTOMER_NUMBER = PRIOR CUSTOMER_NUMBER
+        UNION
+        SELECT CUSTOMER_NUMBER, ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C1
+        WHERE C1.CUSTOMER_NUMBER  = #value# 
+            AND C1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C3  
+                                WHERE C3.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                AND C3.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)) 
+    </select>
+     
+</sqlMap>
+                                    

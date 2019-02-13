@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2010 (http://www.altova.com) von Reto Renner (Vodafone AG & Co. KG) bearbeitet -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:bks="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-001"
+    xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001"
+    xmlns:bkstypes="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001"
+    xmlns:sbuscommon="http://www.arcor.net/EPSM-CommonTypes-001"
+    targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-001"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001"
+        schemaLocation="CommonTypes-ESB-001.xsd"/>
+    <import namespace="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001"
+        schemaLocation="EPSM-BksTypes-001.xsd"/>
+    <import namespace="http://www.arcor.net/EPSM-CommonTypes-001"
+        schemaLocation="EPSM-CommonTypes-001.xsd"/>
+    <annotation>
+        <documentation>XML schema definition for endpoint BKS
+History of Changes:
+Vers.	Date					Author					Comment
+====	==========		===========	===================================================
+0.1 		2009-11-05			Rusbe Makuie		Initial draft version
+0.2		2009-28-01			Reto Renner		Formal changes, using standard include files and deleted not used type defs
+0.3		2010-19-03			Reto Renner		Element companyData added in GetCustomerDataRequest
+0.4             2010-22-03                      Thomas Schneider        requestType, userPassword, conpanySuffixName and several comments added. 
+			</documentation>
+    </annotation>
+    <!-- ================ Endpoint Specific Operations =====================================-->
+    <element name="GetCustomerInfoRequest">
+        <annotation>
+            <documentation>Description of input document</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="requestType" default="ICS">
+                    <annotation>
+                        <documentation>type of request that is send. ICS - integrated customer search, searches access_number or customer name and returns whether customer is know in CCM. CPD - customer and product data will return detailed customer and product data. will be intoduced with CPCOM v1b</documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="string">
+                            <enumeration value="ICS"/>
+                        </restriction>
+                    </simpleType>
+                </element>         
+                <choice>
+                    <element name="customerNumber" type="sbuscommon:Kundennummer">
+                        <annotation>
+                            <documentation>CCM customer number</documentation>
+                        </annotation>
+                    </element>
+                    <element name="barcode" type="sbuscommon:Barcode">
+                        <annotation>
+                            <documentation>currently not requested</documentation>
+                        </annotation>
+                    </element>
+                    <element name="accessNumber" type="common:ComplexPhoneNumber">
+                        <annotation>
+                            <documentation>fixedNetPhoneNumber</documentation>
+                        </annotation>
+                    </element>
+                    <element name="personData" type="bkstypes:PersonDataQueryInput">
+                        <annotation>
+                            <documentation>search object for individual customers</documentation>
+                        </annotation>
+                    </element>
+                    <element name="companyData" type="bkstypes:CompanyDataQueryInput">
+                        <annotation>
+                            <documentation>search object for corporate and SOHO customers, will be introduced with IT-k-000028075 for CPCOM v1a</documentation>
+                        </annotation>
+                    </element>
+                </choice>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="GetCustomerInfoResponse">
+        <annotation>
+            <documentation>Description of output document</documentation>
+        </annotation>
+        <complexType>
+            <complexContent>
+                <extension base="common:ResultDetailsObject">
+                    <sequence>
+                        <element name="customers" type="bkstypes:CustomerData" nillable="false"
+                            minOccurs="0" maxOccurs="20"/>
+                    </sequence>
+                </extension>
+            </complexContent>
+        </complexType>
+    </element>
+</schema>

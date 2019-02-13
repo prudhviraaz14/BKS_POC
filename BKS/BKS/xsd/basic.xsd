@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.dialogika.de/infport/schema/basic/v1" elementFormDefault="qualified"  
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:basic="http://www.dialogika.de/infport/schema/basic/v1" xmlns:com="http://www.dialogika.de/infport/schema/common/v1">
+
+	<import namespace="http://www.dialogika.de/infport/schema/common/v1" schemaLocation="common.xsd" />
+	<import namespace="http://www.dialogika.de/infport/schema/fn/r2017" schemaLocation="infportWS-FN-2017.xsd" />
+	<import namespace="http://www.dialogika.de/infport/schema/sn/r2017" schemaLocation="infportWS-SN-2017.xsd" />
+	<import namespace="http://www.dialogika.de/infport/schema/cu/r2017" schemaLocation="infportWS-CU-2017.xsd" />
+
+	<element name="actionRequest" type="basic:ctBasicActionRequest" />
+	<complexType name="ctBasicActionRequest">
+		<sequence>
+			<element name="idSet" type="basic:ctIDSet" maxOccurs="1" minOccurs="1"></element>
+			<element name="data" type="basic:ctBasicData" maxOccurs="1" minOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<element name="response" type="basic:ctBasicResponse" />
+	<complexType name="ctBasicResponse">
+		<sequence>
+			<element name="returnCode" type="basic:stReturnCode"></element>
+		</sequence>
+	</complexType>
+
+	<element name="errorResponse" type="basic:ctErrorResponse" />
+	<complexType name="ctErrorResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="errorMessage" type="basic:stErrorMessage" minOccurs="0" maxOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<element name="isAliveRequest" type="basic:ctAliveRequest" />
+	<complexType name="ctAliveRequest">
+	</complexType>
+	<element name="isAliveResponse" type="basic:ctErrorResponse" />
+	<complexType name="ctAliveResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ctBasicData" abstract="true" />
+
+	<complexType name="ctIDSet">
+		<sequence>
+			<element name="mandant" type="basic:stMandant" maxOccurs="1" minOccurs="1"></element>
+			<element name="userId" type="basic:stUserId" maxOccurs="1" minOccurs="0"></element>
+			<element name="password" type="basic:stPassword" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+
+
+	<simpleType name="stMandant">
+		<restriction base="string">
+			<maxLength value="30"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stPassword">
+		<restriction base="string">
+			<maxLength value="30"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stUserId">
+		<restriction base="string">
+			<maxLength value="255"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stReturnCode">
+		<restriction base="string">
+			<maxLength value="30"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stErrorMessage">
+		<restriction base="string" />
+	</simpleType>
+
+</schema>

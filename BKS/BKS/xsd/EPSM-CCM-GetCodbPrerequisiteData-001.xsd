@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-GetCodbPrerequisiteData-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-GetCodbPrerequisiteData-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+    <!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+    <xs:element name="EPSM_CCM_GetCodbPrerequisiteData_Endpunkt_Dokumentation">
+        <xs:annotation>
+            <xs:documentation>
+                Aenderungshistorie:
+                Version 0.1 - 15.10.2008 - Rusbe Makuie	- initiale Version
+                Version 0.2 - 15.10.2009 - Rusbe Makuie	- Account number added to output.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Bezugsdokumente">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="Realisierendes_System">
+                    <xs:annotation>
+                        <xs:documentation>
+						</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- ================================endpoint specific simple types================= -->
+    <!-- ================================endpoint specific complex types================= -->
+    <!-- ================================endpoint specific services=====================-->
+    <xs:complexType name="GetCodbPrerequisiteDataService">
+        <xs:annotation>
+            <xs:documentation>Typdefinition Dienst GetCodbPrerequisiteData</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="base:ProviderService">
+                <xs:choice>
+                    <xs:element name="GetCodbPrerequisiteDataInput" type="GetCodbPrerequisiteDataInput"/>
+                    <xs:element name="GetCodbPrerequisiteDataOutput" type="GetCodbPrerequisiteDataOutput">
+                        <xs:annotation>
+                            <xs:documentation>
+							   This service is getting contract data for a service subscription 
+							</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="GetCodbPrerequisiteDataInput">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="base:InputData">
+                <xs:sequence>
+                    <xs:element name="serviceSubscriptionId" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+								The service subscription id for the main access service.
+							</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="AccessNumberType">
+        <xs:annotation>
+            <xs:documentation>Informationen zum Admin-C</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="countryCode" type="xs:string"/>
+            <xs:element name="cityCode" type="xs:string"/>
+            <xs:element name="baseNumber" type="xs:string"/>
+            <xs:element name="startExtension" type="xs:string" minOccurs="0"/>
+            <xs:element name="endExtension" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="GetCodbPrerequisiteDataOutput">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="base:OutputData">
+                <xs:sequence>
+                    <xs:element name="productCode" type="xs:string" minOccurs="0"/>
+                    <xs:element name="productName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="pricingStructureCode" type="xs:string" minOccurs="0"/>
+                    <xs:element name="pricingStructureName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="productVersionCode" type="xs:string" minOccurs="0"/>
+                    <xs:element name="contractNumber" type="xs:string" minOccurs="0"/>
+                	<xs:element name="accountNumber" type="xs:string" minOccurs="0"/>
+                    <xs:element name="tariffOptions" type="xs:string" minOccurs="0" maxOccurs="10"/>
+                    <xs:element name="accessNumbers" type="AccessNumberType" minOccurs="0" maxOccurs="10"/>
+                    <xs:element name="serviceCode" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

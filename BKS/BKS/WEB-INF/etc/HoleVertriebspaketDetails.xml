@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveCustomerBundles" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveCustomerBundles */   B.BUNDLE_ID FROM BUNDLE B WHERE CUSTOMER_NUMBER = #value#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+		AND B.STATE_RD = 'COMPLETE'
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveServiceByCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveServiceByCustomer */  SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS,SERVICE S, BUNDLE_ITEM BI WHERE 
+        PS.CUSTOMER_NUMBER = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.EFFECTIVE_FLAG = 'N' 
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 2 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveUnbundledServiceByCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveUnbundledServiceByCustomer */  SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS,SERVICE S WHERE 
+        PS.CUSTOMER_NUMBER = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.EFFECTIVE_FLAG = 'N' 
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 2 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveExactAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveAccessNumber" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE , SS.PRODUCT_SUBSCRIPTION_ID
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND (AN.START_RANGE_STRING > #shortnumber# AND AN.START_RANGE_STRING &lt;= #accessnumber#  
+                AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3     
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveCustomerData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveCustomerData */  AC.ACCOUNT_NUMBER, AC.MANUAL_SUSPEND_INDICATOR, C.CATEGORY_RD, C.CLASSIFICATION_RD,
+        C.USER_PASSWORD, C.POST_IDENT_INDICATOR, E.NAME, E.FORENAME, E.BIRTH_DATE, E.SALUTATION_DESCRIPTION, E.SURNAME_PREFIX_DESCRIPTION,
+                E.ENTITY_TYPE, E.ORGANIZATION_TYPE_RD, E.INCORPORATION_NUMBER_ID, E.INCORPORATION_TYPE_RD, E.INCORPORATION_CITY_NAME,
+                A.STREET_NAME, A.STREET_NUMBER ,A.STREET_NUMBER_SUFFIX, A.POSTAL_CODE ,A.CITY_NAME,A.CITY_SUFFIX_NAME
+        FROM ACCOUNT AC, CUSTOMER C, ENTITY E, ADDRESS A WHERE 
+        C.CUSTOMER_NUMBER = #value# 
+        AND C.CUSTOMER_NUMBER = AC.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND AC.EFFECTIVE_FLAG = 'N'
+        AND A.EFFECTIVE_FLAG = 'N'
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND E.PRIMARY_ADDRESS_ID = A.ADDRESS_ID
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveRootCustomer */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_FLAG = 'N'  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveBundleItems */   DISTINCT SS.SERVICE_CODE ,SS.SERVICE_SUBSCRIPTION_ID, SS.PRODUCT_SUBSCRIPTION_ID   
+        FROM BUNDLE_ITEM BI1,
+             BUNDLE_ITEM BI2, 
+             SERVICE_SUBSCRIPTION SS 
+        WHERE 
+        BI1.SUPPORTED_OBJECT_ID = #value# 
+        AND BI1.EFFECTIVE_FLAG = 'N' 
+        AND BI1.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI1.BUNDLE_ID = BI2.BUNDLE_ID 
+        AND BI1.SUPPORTED_OBJECT_ID != BI2.SUPPORTED_OBJECT_ID
+        AND BI2.EFFECTIVE_FLAG = 'N' 
+        AND BI2.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+        AND SS.STATE_RD IN ('SUBSCRIBED','SUSPENDED') 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveOFContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveOFContractData */   
+                PC.PRODUCT_CODE,PC.PRICING_STRUCTURE_CODE,PC.PRODUCT_VERSION_CODE,
+                OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,
+                OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,
+                OF1.CONTRACT_NUMBER,SS.SERVICE_SUBSCRIPTION_ID
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                ORDER_FORM_PRODUCT_COMMIT PC,
+                ORDER_FORM OF1 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N' AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED') 
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+        AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                    OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                    OF2.STATE_RD = 'SIGNED')
+        AND OF1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OF1.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveSDContractData */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE,
+                PC.PRODUCT_VERSION_CODE
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N' 
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveChildServices" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveChildServices */  SERVICE_CODE 
+        FROM SERVICE_SUBSCRIPTION SS, 
+             SERVICE_SUBSCRIPTION_DEP SD WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+		AND SS.STATE_RD = 'SUBSCRIBED'
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveConfiguredValues" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveConfiguredValues */  CSC.SERVICE_CHARACTERISTIC_CODE, CV.CONFIGURED_VALUE_STRING
+        FROM CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        CV.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value#
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveAccessNumberChars" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveAccessNumberChars */  CSC.SERVICE_CHARACTERISTIC_CODE, AN.RETENTION_PERIOD_RD, AN.MASKING_DIGITS_RD, AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value#
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveAddresses" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveAddresses */  CSC.SERVICE_CHARACTERISTIC_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX,
+               AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, AD.POSTAL_CODE
+        FROM ADDRESS AD, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        AD.ADDRESS_ID = CSC.ADDRESS_ID
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value#
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveBandwidthService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveBandwidthService */  S.SERVICE_CODE  
+        FROM     SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE IN ('V0115','V0116','V0117','V0118','V0133','V0174',
+                           'V0175','V0176','V0177','V0178','V0179','V0180',
+                           'V018A','V018B','V018C','V018D','V018G','V018H',
+                           'I1220','I1221','V018N','V017E','V017J','V017K',
+                           'V017L','V017M','V018J','V018O','V018P','V018Q',
+                           'V018R') 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND s.state_rd in ('SUBSCRIBED', 'SUSPENDED') 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveMainAccessService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveMainAccessService */  S.SERVICE_SUBSCRIPTION_ID  
+        FROM     SERVICE_SUBSCRIPTION S 
+        WHERE  
+         S.PRODUCT_SUBSCRIPTION_ID IN (SELECT PRODUCT_SUBSCRIPTION_ID 
+                                FROM     SERVICE_SUBSCRIPTION WHERE 
+                                SERVICE_SUBSCRIPTION_ID = #value#) 
+        and S.SERVICE_SUBSCRIPTION_ID != #value# 
+        and S.STATE_RD IN ('SUBSCRIBED', 'SUSPENDED') 
+        and S.SERVICE_CODE in ( SELECT SERVICE_CODE FROM SERVICE WHERE SERVICE_TYPE = 'MAIN_ACCESS')
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveCondition" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveCondition */  CV.CONFIGURED_VALUE_STRING  
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+                SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE = 'V0046' 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND S.STATE_RD In ('SUBSCRIBED','SUSPENDED') 
+        AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        AND CSC.EFFECTIVE_FLAG = 'N' AND csc.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0096' 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveHardwareCharacteristic" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.effonl.RetrieveHardwareCharacteristic */  CV.CONFIGURED_VALUE_STRING , CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION S  
+        WHERE  
+        S.SERVICE_CODE IN ('V0114','V011A','I1350','V011C') 
+        AND S.PRODUCT_SUBSCRIPTION_ID = #prodSubId# 
+        AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND S.STATE_RD IN ('PURCHASED','RENTED_LEASED')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        AND CSC.EFFECTIVE_FLAG = 'N' AND csc.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('V0112','V0114') 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS') 
+        AND ROWNUM &lt; 11
+		ORDER BY S.SERVICE_SUBSCRIPTION_ID,CSC.SERVICE_CHARACTERISTIC_CODE
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.effonl.RetrieveAllChildServices" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* HoleVertriebspaketDetails.effonl.RetrieveAllChildServices */
+		     SS.SERVICE_CODE,SSP.SERVICE_CODE PARENT_SERVICE_CODE,SS.SERVICE_SUBSCRIPTION_ID 
+		FROM SERVICE_SUBSCRIPTION SS, 
+		     SERVICE_SUBSCRIPTION SSP, 
+		     SERVICE_SUBSCRIPTION_DEP SD WHERE 
+		SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+		AND SSP.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_DEP_ID
+		AND SS.STATE_RD = 'SUBSCRIBED'
+		AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveCustomerBundles" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveCustomerBundles */   B.BUNDLE_ID FROM BUNDLE B WHERE CUSTOMER_NUMBER = #value#
+        AND EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                B.BUNDLE_ID = B1.BUNDLE_ID AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+		AND B.STATE_RD = 'COMPLETE'
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveServiceByCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveServiceByCustomer */  SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS,SERVICE S, BUNDLE_ITEM BI WHERE 
+        PS.CUSTOMER_NUMBER = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI2 WHERE 
+        BI.BUNDLE_ITEM_ID = BI2.BUNDLE_ITEM_ID)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 2 
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveUnbundledServiceByCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveUnbundledServiceByCustomer */  SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM SERVICE_SUBSCRIPTION SS, PRODUCT_SUBSCRIPTION PS,SERVICE S WHERE 
+        PS.CUSTOMER_NUMBER = #value#
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID
+        AND SS.SERVICE_CODE = S.SERVICE_CODE
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND S.SERVICE_TYPE = 'MAIN_ACCESS'
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 2 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+RULE HoleVertriebspaketDetails.onl.RetrieveExactAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM 
+                                          CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                          CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                          AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveAccessNumber" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE  , SS.PRODUCT_SUBSCRIPTION_ID
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND (AN.START_RANGE_STRING > #shortnumber# AND AN.START_RANGE_STRING &lt;= #accessnumber#  
+                AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                                        WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                                        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS') 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveCustomerData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveCustomerData */  AC.ACCOUNT_NUMBER, AC.MANUAL_SUSPEND_INDICATOR, C.CATEGORY_RD, C.CLASSIFICATION_RD,
+        C.USER_PASSWORD, C.POST_IDENT_INDICATOR, E.NAME, E.FORENAME, E.BIRTH_DATE, E.SALUTATION_DESCRIPTION, E.SURNAME_PREFIX_DESCRIPTION,
+                E.ENTITY_TYPE, E.ORGANIZATION_TYPE_RD, E.INCORPORATION_NUMBER_ID, E.INCORPORATION_TYPE_RD, E.INCORPORATION_CITY_NAME,
+                A.STREET_NAME, A.STREET_NUMBER ,A.STREET_NUMBER_SUFFIX, A.POSTAL_CODE ,A.CITY_NAME,A.CITY_SUFFIX_NAME
+        FROM ACCOUNT AC, CUSTOMER C, ENTITY E, ADDRESS A WHERE 
+        C.CUSTOMER_NUMBER = #value# 
+        AND C.CUSTOMER_NUMBER = AC.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                 WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                   AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ACCOUNT AC1 
+                                 WHERE AC.ACCOUNT_NUMBER = AC1.ACCOUNT_NUMBER  
+                                   AND AC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND A.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS A1 
+                                 WHERE A.ADDRESS_ID = A1.ADDRESS_ID 
+                                   AND A.ENTITY_ID = A1.ENTITY_ID 
+                                   AND A1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND E.PRIMARY_ADDRESS_ID = A.ADDRESS_ID
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveRootCustomer */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_DATE =  
+                  (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                     WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                       AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                  )  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveBundleItems" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveBundleItems */   DISTINCT SS.SERVICE_CODE ,SS.SERVICE_SUBSCRIPTION_ID, SS.PRODUCT_SUBSCRIPTION_ID 
+        FROM BUNDLE_ITEM BI1,
+             BUNDLE_ITEM BI2, 
+             SERVICE_SUBSCRIPTION SS 
+        WHERE 
+        BI1.SUPPORTED_OBJECT_ID = #servSubId# 
+        AND BI1.EFFECTIVE_DATE = (select MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI11 WHERE 
+                                         BI11.SUPPORTED_OBJECT_ID = BI1.SUPPORTED_OBJECT_ID 
+                                         AND BI11.EFFECTIVE_DATE &lt;= sysdate)
+        AND BI1.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI1.BUNDLE_ID = BI2.BUNDLE_ID 
+        AND BI2.SUPPORTED_OBJECT_ID != BI1.SUPPORTED_OBJECT_ID 
+        AND BI2.EFFECTIVE_DATE = (select MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI21 WHERE 
+                                         BI21.SUPPORTED_OBJECT_ID = BI2.SUPPORTED_OBJECT_ID 
+                                         AND BI21.EFFECTIVE_DATE &lt;= sysdate) 
+        AND BI2.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB' 
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND BI2.SUPPORTED_OBJECT_ID = SS.SERVICE_SUBSCRIPTION_ID 
+        AND SS.STATE_RD IN ('SUBSCRIBED','SUSPENDED') 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveOFContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveOFContractData */   
+                PC.PRODUCT_CODE,PC.PRICING_STRUCTURE_CODE,PC.PRODUCT_VERSION_CODE,
+                OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,
+                OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,
+                OF1.CONTRACT_NUMBER,SS.SERVICE_SUBSCRIPTION_ID
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                ORDER_FORM_PRODUCT_COMMIT PC,
+                ORDER_FORM OF1 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+        AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD = 'SIGNED')
+        AND OF1.EFFECTIVE_STATUS = 'ACTIVE'
+        AND OF1.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveSDContractData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveSDContractData */   PC.PRODUCT_CODE,  
+                PC.PRICING_STRUCTURE_CODE,
+                PC.PRODUCT_VERSION_CODE
+        FROM 
+                SERVICE_SUBSCRIPTION ss,
+                PRODUCT_SUBSCRIPTION PS,
+                SERV_DELIV_CONT_PRODUCT_COMMIT PC 
+        WHERE  
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                        PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                         PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND PC2.STATE_RD = 'SIGNED')
+        AND PC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND PC.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveChildServices" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveChildServices */  SERVICE_CODE 
+        FROM SERVICE_SUBSCRIPTION SS, 
+             SERVICE_SUBSCRIPTION_DEP SD WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+		AND SS.STATE_RD = 'SUBSCRIBED'
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveConfiguredValues" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveConfiguredValues */  CSC.SERVICE_CHARACTERISTIC_CODE, CV.CONFIGURED_VALUE_STRING
+        FROM CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        CV.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value#
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveAccessNumberChars" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveAccessNumberChars */  CSC.SERVICE_CHARACTERISTIC_CODE, AN.RETENTION_PERIOD_RD, AN.MASKING_DIGITS_RD, AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value#
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveAddresses" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveAddresses */  CSC.SERVICE_CHARACTERISTIC_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX,
+               AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, AD.POSTAL_CODE
+        FROM ADDRESS AD, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        AD.ADDRESS_ID = CSC.ADDRESS_ID
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                 WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                   AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                   AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value#
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveBandwidthService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveBandwidthService */  S.SERVICE_CODE  
+        FROM     SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE IN ('V0115','V0116','V0117','V0118','V0133','V0174',
+                           'V0175','V0176','V0177','V0178','V0179','V0180',
+                           'V018A','V018B','V018C','V018D','V018G','V018H',
+                           'I1220','I1221','V018N','V017E','V017J','V017K',
+                           'V017L','V017M','V018J','V018O','V018P','V018Q',
+                           'V018R') 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND s.state_rd in ('SUBSCRIBED', 'SUSPENDED') 
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveMainAccessService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveMainAccessService */  S.SERVICE_SUBSCRIPTION_ID  
+        FROM     SERVICE_SUBSCRIPTION S 
+        WHERE  
+         S.PRODUCT_SUBSCRIPTION_ID IN (SELECT PRODUCT_SUBSCRIPTION_ID 
+                                FROM     SERVICE_SUBSCRIPTION WHERE 
+                                SERVICE_SUBSCRIPTION_ID = #value#) 
+        and S.SERVICE_SUBSCRIPTION_ID != #value# 
+        and S.STATE_RD IN ('SUBSCRIBED', 'SUSPENDED') 
+        and S.SERVICE_CODE in ( SELECT SERVICE_CODE FROM SERVICE WHERE SERVICE_TYPE = 'MAIN_ACCESS')
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveCondition" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveCondition */  CV.CONFIGURED_VALUE_STRING  
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+                SERVICE_SUBSCRIPTION S, SERVICE_SUBSCRIPTION_DEP SD  
+        WHERE  
+        S.SERVICE_CODE = 'V0046' 
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value# 
+        AND S.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID 
+        AND S.STATE_RD In ('SUBSCRIBED','SUSPENDED') 
+        AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND csc.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0096' 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS')
+    </select>
+
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveHardwareCharacteristic" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* HoleVertriebspaketDetails.onl.RetrieveHardwareCharacteristic */  CV.CONFIGURED_VALUE_STRING, CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM    CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION S  
+        WHERE  
+        S.SERVICE_CODE IN ('V0114','V011A','I1350','V011C') 
+        AND S.PRODUCT_SUBSCRIPTION_ID = #prodSubId#
+        AND S.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND S.STATE_RD IN ('PURCHASED','RENTED_LEASED')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+        WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+        AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.SERVICE_CHARACTERISTIC_CODE  IN ('V0112','V0114') 
+        AND csc.completion_date != TO_DATE('01.01.1901 01:00:01', 'DD.MM.YYYY HH24:MI:SS') 
+        AND ROWNUM &lt; 11
+		ORDER BY S.SERVICE_SUBSCRIPTION_ID,CSC.SERVICE_CHARACTERISTIC_CODE
+    </select>
+    
+    <select id = "HoleVertriebspaketDetails.onl.RetrieveAllChildServices" parameterClass = "String" resultClass="java.util.HashMap">
+		SELECT /* HoleVertriebspaketDetails.onl.RetrieveAllChildServices */
+		     SS.SERVICE_CODE,SSP.SERVICE_CODE PARENT_SERVICE_CODE,SS.SERVICE_SUBSCRIPTION_ID 
+		FROM SERVICE_SUBSCRIPTION SS, 
+		     SERVICE_SUBSCRIPTION SSP, 
+		     SERVICE_SUBSCRIPTION_DEP SD WHERE 
+		SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+		AND SSP.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_DEP_ID
+		AND SS.STATE_RD = 'SUBSCRIBED'
+		AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+    </select>
+    
+</sqlMap>
+                                    

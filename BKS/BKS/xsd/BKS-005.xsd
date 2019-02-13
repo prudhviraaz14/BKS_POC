@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 bearbeitet (http://www.altova.com) von Servicebus (Arcor AG & Co. KG) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bks="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-005" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:bkstypes="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" xmlns:sbuscommon="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:sidcom="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" xmlns:sidmd="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-005" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<import namespace="http://www.vodafone.de/LinkDB/EPSM-BksTypes-001" schemaLocation="EPSM-BksTypes-001.xsd"/>
+	<import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" schemaLocation="SIDCOM-GetCustomerInfo-001.xsd"/>
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+	<annotation>
+		<documentation>XML schema definition for endpoint BKS
+History of Changes:
+Vers.	Date					Author					Comment
+====	==========	=============	=========================================
+0.1		2011-04-14		Thomas Schneider  Initial draft version derived from BKS004 version 0.3.2
+                                                                 service getFNPcustomerData with new version and added
+                                                                 NGCS service.
+0.2		2011-04-18		Reto Renner			xmlns:bks and targetNamespace changed to 005
+0.3       2011-05-20      Thomas Schneider   IT-k-000030635: added BundleID as serialNumber  to GetFNPCustomerDataRequest
+                                                                Request Types: CPD, GAP ICP need to be supported
+			</documentation>
+	</annotation>
+	<!-- ================ Data type Definitions===== =====================================-->
+	<!-- ================ Endpoint Specific Operations =====================================-->
+	<element name="GetFNPCustomerDataRequest">
+		<annotation>
+			<documentation>BKS SOAP service provided for BSS systems  ePOS and Amdocs Ordering</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="requestType" default="ICS">
+					<annotation>
+						<documentation>type of request that is send. "ICS" - integrated customer search, searches access_number or customer name and returns whether customer is know in CCM. IT 27142 - CPCOM 1b "CPD" - customer and product data will return detailed customer and product data. IT 27142 - CPCOM 1b "CID" - will return master data only: CustomerInformation.Data and CustomerInformation.customerInformationStatus. IT 27143 CPCOM V1 Phase 2 "GAP" - returns assigned  products: only productOfferingSubscriptions. IT 27143 CPCOM V1 Phase 2 "GOL" returns all open orders: openOrder IT 27143 CPCOM V1 Phase 2 "ICP" Internal Customer and Product search: internal system call to BKS quering customer_number, access_number or kind of fuzzy search on person or comany data IT 27144 Phase 3a</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="ICS"/>
+							<enumeration value="CPD"/>
+							<enumeration value="CID"/>
+							<enumeration value="GAP"/>
+							<enumeration value="GOL"/>
+							<enumeration value="ICP"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="customerNumber" type="sbuscommon:Kundennummer" minOccurs="0">
+					<annotation>
+						<documentation>CCM customer number</documentation>
+					</annotation>
+				</element>
+				<element name="accessNumber" type="common:ComplexPhoneNumber" minOccurs="0">
+					<annotation>
+						<documentation>fixedNetPhoneNumber</documentation>
+					</annotation>
+				</element>
+				<element name="queryLevel" minOccurs="0">
+					<annotation>
+						<documentation>If search is done by accessNumber "accessNumber" restricts the productOfferings returned to the one the accessNumber belongs to. "customer" returns all productOfferings of the customer</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="accessNumber"/>
+							<enumeration value="customer"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="personData" type="bkstypes:PersonDataQueryInput" minOccurs="0">
+					<annotation>
+						<documentation>search object for individual customers</documentation>
+					</annotation>
+				</element>
+				<element name="barcode" type="sbuscommon:Barcode" minOccurs="0">
+					<annotation>
+						<documentation>IT-k-000028695: barcode can be searched using requestType 'CPD'. BKS returns all products / bundles associated to the barcode.</documentation>
+					</annotation>
+				</element>
+				<element name="companyData" type="bkstypes:CompanyDataQueryInput" minOccurs="0">
+					<annotation>
+						<documentation>search object for corporate and SOHO customers, will be introduced with IT-k-000028075 for CPCOM v1a</documentation>
+					</annotation>
+				</element>
+				<element name="serialNumber" type="string" minOccurs="0">
+					<annotation>
+						<documentation>bundleID</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="GetFNPCustomerDataResponse">
+		<annotation>
+			<documentation>customer and product data in SID COM format</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="sidcomVersion" type="string">
+					<annotation>
+						<documentation>The version of the SIDCOM XSD.</documentation>
+					</annotation>
+				</element>
+				<element name="sid" type="sidcom:CustomerInformation" maxOccurs="unbounded">
+					<annotation>
+						<documentation>The SIDCOM XSD.</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="GetFNPCustomerNGCSDataRequest">
+		<annotation>
+			<documentation>BKS SOAP service provided for OSS system NGCS</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="requestType" default="ICP">
+					<annotation>
+						<documentation>"ICP" Internal Customer and Product search: internal system call to BKS quering customer_number, access_number or kind of fuzzy search on person or comany data</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="ICP"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="customerNumber" type="sbuscommon:Kundennummer" minOccurs="0">
+					<annotation>
+						<documentation>CCM customer number</documentation>
+					</annotation>
+				</element>
+				<element name="accessNumber" type="common:ComplexPhoneNumber" minOccurs="0">
+					<annotation>
+						<documentation>fixedNetPhoneNumber</documentation>
+					</annotation>
+				</element>
+				<element name="queryLevel" minOccurs="0">
+					<annotation>
+						<documentation>If search is done by accessNumber "accessNumber" restricts the productOfferings returned to the one the accessNumber belongs to. "customer" returns all productOfferings of the customer</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="accessNumber"/>
+							<enumeration value="customer"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="personData" type="bkstypes:PersonDataQueryInput" minOccurs="0">
+					<annotation>
+						<documentation>search object for individual customers</documentation>
+					</annotation>
+				</element>
+				<element name="barcode" type="sbuscommon:Barcode" minOccurs="0">
+					<annotation>
+						<documentation>IT-k-000028695: barcode can be searched using requestType 'CPD'. BKS returns all products / bundles associated to the barcode.</documentation>
+					</annotation>
+				</element>
+				<element name="companyData" type="bkstypes:CompanyDataQueryInput" minOccurs="0">
+					<annotation>
+						<documentation>search object for corporate and SOHO customers, will be introduced with IT-k-000028075 for CPCOM v1a</documentation>
+					</annotation>
+				</element>
+				<element name="serviceSubscriptionId" minOccurs="0">
+					<annotation>
+						<documentation>CCB service_subscription_id Dienstenutzung represented by serialNumber on product level in SID format.</documentation>
+					</annotation>
+					<simpleType>
+						<restriction base="string">
+							<maxLength value="16"/>
+						</restriction>
+					</simpleType>
+				</element>
+				<element name="TASI" type="sbuscommon:Tasi" minOccurs="0">
+					<annotation>
+						<documentation>TASI: unique ID to identify service used in network documentation systems. Search is provided on those where TASI is stored in table access_number</documentation>
+					</annotation>
+				</element>
+				<element name="networkAccessID" type="string" minOccurs="0">
+					<annotation>
+						<documentation>search on all networks access ids stored in CCB table account, like router names or IP addresses.</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="GetFNPCustomerNGCSDataResponse">
+		<annotation>
+			<documentation>returns customer and product data in SID COM format</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="sidcomVersion" type="string">
+					<annotation>
+						<documentation>The version of the SIDCOM XSD.</documentation>
+					</annotation>
+				</element>
+				<element name="sid" type="sidcom:CustomerInformation" maxOccurs="unbounded">
+					<annotation>
+						<documentation>The SIDCOM XSD.</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

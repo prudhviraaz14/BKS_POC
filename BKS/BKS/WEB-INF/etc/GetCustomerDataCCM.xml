@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	
+    <select id = "effonl.RetrieveCustomerCustData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveCustomerCustData */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM
+        CUSTOMER C, ENTITY E WHERE  
+        C.CUSTOMER_NUMBER = #value# 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_FLAG = 'N'  
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'       
+    </select>	
+	 <select id = "onl.RetrieveCustomerCustData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveCustomerCustData */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM
+        CUSTOMER C, ENTITY E WHERE  
+        C.CUSTOMER_NUMBER = #value# 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+		        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'       
+    </select>
+                
+	
+    <select id = "effonl.RetrieveCustomerExactAccessNumberCustData" parameterClass = "String" resultClass="java.util.HashMap">
+      SELECT /* effonl.RetrieveCustomerExactAccessNumberCustData */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM CUSTOMER C, ENTITY E 
+      WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+      AND C.CUSTOMER_NUMBER IN ( SELECT AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #accessnumber# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED'))
+      AND C.EFFECTIVE_FLAG = 'N'
+    </select>
+    <select id = "onl.RetrieveCustomerExactAccessNumberCustData" parameterClass = "String" resultClass="java.util.HashMap">
+      SELECT /*+RULE onl.RetrieveCustomerExactAccessNumberCustData */ C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM CUSTOMER C, ENTITY E 
+      WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+      AND C.CUSTOMER_NUMBER IN ( SELECT AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING =  #accessnumber# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                          CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                          AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED'))
+      AND C.EFFECTIVE_STATUS = 'ACTIVE'       
+	  AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+		        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)
+    </select>	
+    
+	
+    <select id = "effonl.RetrieveCustomerAccessNumberCustData" parameterClass = "java.util.HashMap"  resultClass="java.util.HashMap">
+       SELECT /* effonl.RetrieveCustomerAccessNumberCustData */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM CUSTOMER C, ENTITY E 
+       WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+       AND C.CUSTOMER_NUMBER IN (SELECT AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS 
+		  WHERE TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+          AND (AN.START_RANGE_STRING > #shortnumber#
+		     AND AN.START_RANGE_STRING &lt;= #accessnumber#    
+             AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#  ) 
+             AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+             AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+             AND CSC.EFFECTIVE_FLAG = 'N' 
+             AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+             AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+             AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED') )
+      AND C.EFFECTIVE_FLAG = 'N'			   
+    </select>
+	<select id = "onl.RetrieveCustomerAccessNumberCustData" parameterClass = "java.util.HashMap"  resultClass="java.util.HashMap">
+       SELECT /* onl.RetrieveCustomerAccessNumberCustData */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM CUSTOMER C, ENTITY E 
+       WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+       AND C.CUSTOMER_NUMBER IN (SELECT AN.CUSTOMER_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS 
+		  WHERE TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+          AND (AN.START_RANGE_STRING > #shortnumber#
+		     AND AN.START_RANGE_STRING &lt;= #accessnumber#    
+             AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#  ) 
+             AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+             AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+             AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                          CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                          AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+             AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+             AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+             AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED') )
+       AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+		        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)	   
+    </select>
+	
+	
+	<select id = "effonl.RetrieveCustomerForBarCode" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveCustomerForBarCode */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM
+        CUSTOMER C, ENTITY E WHERE  
+        C.CUSTOMER_NUMBER IN (SELECT CO.CUSTOMER_NUMBER FROM CUSTOMER_ORDER CO WHERE CO.CUSTOMER_TRACKING_ID = #barCode#)
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_FLAG = 'N' 
+    </select>			
+	<select id = "onl.RetrieveCustomerForBarCode" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveCustomerForBarCode */  C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM
+        CUSTOMER C, ENTITY E WHERE  
+        C.CUSTOMER_NUMBER IN (SELECT CO.CUSTOMER_NUMBER FROM CUSTOMER_ORDER CO WHERE CO.CUSTOMER_TRACKING_ID = #barCode#)
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'       
+	    AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+		        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)
+    </select>	
+	
+		
+	
+	<select id = "effonl.RetrieveCustomerPesonData" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+	   SELECT /* effonl.RetrieveCustomerPesonData */   C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM CUSTOMER C, ENTITY E 
+       WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER     
+       AND C.EFFECTIVE_FLAG = 'N'	
+       AND E.CUSTOMER_NUMBER IS NOT NULL
+       AND E.CUSTOMER_NUMBER in (SELECT  ACS.CSA_CUSTOMER_NUMBER FROM  ACS_ACCESS.ACS_CUSTOMER_ADDRESS ACS 
+           where ACS.CSA_NAME LIKE #familyName#
+           and ACS.CSA_POSTAL_CODE = #zipCode#
+           and ACS.CSA_STREET_NAME LIKE #street#
+           and ( #firstName#  IS NULL OR ACS.CSA_FORENAME LIKE #firstName2# ))
+        AND ( #dateOfBirth# IS NULL OR E.BIRTH_DATE = #dateOfBirth2# )   
+    </select>
+	
+	
+	<select id = "onl.RetrieveCustomerPesonData" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+	   SELECT /* onl.RetrieveCustomerPesonData */   C.CUSTOMER_NUMBER, C.CATEGORY_RD , C.CLASSIFICATION_RD , E.ENTITY_TYPE FROM CUSTOMER C, ENTITY E 
+       WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+       AND E.NAME LIKE #familyName#
+       AND C.EFFECTIVE_STATUS='ACTIVE'
+	   AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+		        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)
+       AND E.CUSTOMER_NUMBER IS NOT NULL
+       AND E.ENTITY_ID IN (SELECT ADR.ENTITY_ID FROM  ADDRESS ADR
+         WHERE ADR.ENTITY_ID = E.ENTITY_ID
+         AND ADR.POSTAL_CODE = #zipCode#
+         AND ADR.STREET_NAME LIKE #street# )
+      AND ( #firstName# IS NULL OR E.FORENAME LIKE #firstName2#)
+      AND ( #dateOfBirth# IS NULL OR E.BIRTH_DATE = #dateOfBirth2# )  
+    </select>
+		
+    <select id = "effonl.RetrieveCustomerCompanyData" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveCustomerCompanyData */   
+        C.CUSTOMER_NUMBER, C.CATEGORY_RD, C.CLASSIFICATION_RD, 
+        E.ENTITY_TYPE, E.INCORPORATION_NUMBER_ID, E.INCORPORATION_TYPE_RD
+        FROM CUSTOMER C, ENTITY E 
+        WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER     
+        AND C.EFFECTIVE_FLAG = 'N'	
+        AND E.CUSTOMER_NUMBER IS NOT NULL
+        AND E.CUSTOMER_NUMBER in (SELECT  ACS.CSA_CUSTOMER_NUMBER FROM  ACS_ACCESS.ACS_CUSTOMER_ADDRESS ACS 
+        where ACS.CSA_NAME LIKE #name#
+        and ACS.CSA_POSTAL_CODE = #zipCode#
+        and ACS.CSA_STREET_NAME = #street#)
+        AND ( #orgSufixName# IS NULL OR E.ORGANIZATION_SUFFIX_NAME = #orgSufixName# )
+    </select>
+    
+    
+    <select id = "onl.RetrieveCustomerCompanyData" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveCustomerCompanyData */   
+            C.CUSTOMER_NUMBER, C.CATEGORY_RD, C.CLASSIFICATION_RD, 
+            E.ENTITY_TYPE, E.INCORPORATION_NUMBER_ID, E.INCORPORATION_TYPE_RD
+        FROM CUSTOMER C, ENTITY E 
+        WHERE  C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND E.NAME = #name#
+        AND C.EFFECTIVE_STATUS='ACTIVE'
+        AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+        WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)
+        AND E.CUSTOMER_NUMBER IS NOT NULL
+        AND E.ENTITY_ID IN (SELECT ADR.ENTITY_ID FROM  ADDRESS ADR
+        WHERE ADR.ENTITY_ID = E.ENTITY_ID
+        AND ADR.POSTAL_CODE = #zipCode#
+        AND ADR.STREET_NAME = #street# 
+        AND ( #streetNo# IS NULL OR ADR.STREET_NUMBER = #streetNo#)
+        AND ( #streetNoSuffix# IS NULL OR ADR.STREET_NUMBER_SUFFIX = #streetNoSuffix#))
+        AND ( #orgSufixName# IS NULL OR E.ORGANIZATION_SUFFIX_NAME = #orgSufixName#)
+    </select>
+    
+    <select id = "effonl.RetrieveOwnerContact" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveOwnerContact */ E.BIRTH_DATE  FROM CONTACT_ROLE CR, ENTITY E WHERE
+        CR.CONTACT_ROLE_TYPE_RD = 'INHABER'
+        AND CR.CUSTOMER_NUMBER = #value#
+        AND CR.ENTITY_ID = E.ENTITY_ID
+        AND E.BIRTH_DATE IS NOT NULL
+        AND CR.EFFECTIVE_FLAG = 'N'
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "onl.RetrieveOwnerContact" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveOwnerContact */ E.BIRTH_DATE  FROM CONTACT_ROLE CR, ENTITY E WHERE
+        CR.CONTACT_ROLE_TYPE_RD = 'INHABER'
+        AND CR.CUSTOMER_NUMBER = #value#
+        AND CR.ENTITY_ID = E.ENTITY_ID
+        AND E.BIRTH_DATE IS NOT NULL
+        AND CR.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONTACT_ROLE CR2 WHERE 
+                                    CR2.EFFECTIVE_DATE &lt;= SYSDATE AND 
+                                    CR2.CONTACT_ROLE_ID=CR.CONTACT_ROLE_ID)
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "effonl.RetrieveRootCustomerCustData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveRootCustomerCustData */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_FLAG = 'N'  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'                                  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>		
+	<select id = "onl.RetrieveRootCustomerCustData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveRootCustomerCustData */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_DATE =  
+                  (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                     WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                       AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                  )  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+     	
+	
+	<select id = "effonl.RetrievePersonData" parameterClass = "string"  resultClass="java.util.HashMap">
+	    SELECT /* effonl.RetrievePersonData */  EN.NAME, EN.FORENAME, EN.SALUTATION_DESCRIPTION, EN.TITLE_DESCRIPTION,
+		       EN.SURNAME_PREFIX_DESCRIPTION,EN.NOBILITY_PREFIX_DESCRIPTION,
+		       EN.BIRTH_DATE FROM ENTITY EN
+        WHERE EN.CUSTOMER_NUMBER = #customerNumber#
+    </select>		
+	<select id = "onl.RetrievePersonData" parameterClass = "string"  resultClass="java.util.HashMap">
+	    SELECT /* onl.RetrievePersonData */  EN.NAME, EN.FORENAME, EN.SALUTATION_DESCRIPTION, EN.TITLE_DESCRIPTION,
+		       EN.SURNAME_PREFIX_DESCRIPTION,EN.NOBILITY_PREFIX_DESCRIPTION,
+		       EN.BIRTH_DATE FROM ENTITY EN
+        WHERE EN.CUSTOMER_NUMBER = #customerNumber#
+    </select>
+	
+	
+    <select id = "effonl.RetrieveAddressData" parameterClass = "string"  resultClass="java.util.HashMap">
+        SELECT /* effonl.RetrieveAddressData */  A.POSTAL_CODE,A.CITY_NAME,A.CITY_SUFFIX_NAME,A.COUNTRY_RD,A.STREET_NAME,A.STREET_NUMBER,A.STREET_NUMBER_SUFFIX,A.POST_OFFICE_BOX FROM ADDRESS A
+        WHERE A.ADDRESS_ID IN (SELECT E.PRIMARY_ADDRESS_ID FROM ENTITY E WHERE E.CUSTOMER_NUMBER=#customerNumber#)
+        AND A.EFFECTIVE_FLAG='N'
+    </select>  
+    <select id = "onl.RetrieveAddressData" parameterClass = "string"  resultClass="java.util.HashMap">
+        SELECT /* onl.RetrieveAddressData */  A.POSTAL_CODE,A.CITY_NAME,A.CITY_SUFFIX_NAME,A.COUNTRY_RD,A.STREET_NAME,A.STREET_NUMBER,A.STREET_NUMBER_SUFFIX,A.POST_OFFICE_BOX FROM ADDRESS A
+        WHERE A.ADDRESS_ID IN (SELECT E.PRIMARY_ADDRESS_ID FROM ENTITY E WHERE E.CUSTOMER_NUMBER=#customerNumber#)
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'       
+		AND A.EFFECTIVE_DATE = (SELECT MAX(A2.EFFECTIVE_DATE) FROM ADDRESS A2
+		        WHERE A2.ADDRESS_ID = A.ADDRESS_ID)
+    </select>	
+	
+	
+    <select id = "effonl.RetrieveEmailData" parameterClass = "string"  resultClass="java.util.HashMap">         
+        SELECT /* effonl.RetrieveEmailData */  AI.EMAIL_ADDRESS FROM ACCESS_INFORMATION AI
+        WHERE AI.ACCESS_INFORMATION_ID IN (SELECT E.PRIMARY_ACCESS_INFORMATION_ID FROM ENTITY E WHERE E.CUSTOMER_NUMBER=#customerNumber#)
+        AND AI.EMAIL_ADDRESS IS NOT NULL
+        AND AI.EFFECTIVE_FLAG='N'
+    </select>
+   <select id = "onl.RetrieveEmailData" parameterClass = "string"  resultClass="java.util.HashMap">         
+        SELECT /* onl.RetrieveEmailData */  AI.EMAIL_ADDRESS FROM ACCESS_INFORMATION AI
+        WHERE AI.ACCESS_INFORMATION_ID IN (SELECT E.PRIMARY_ACCESS_INFORMATION_ID FROM ENTITY E WHERE E.CUSTOMER_NUMBER=#customerNumber#)
+        AND AI.EMAIL_ADDRESS IS NOT NULL
+        AND AI.EFFECTIVE_STATUS = 'ACTIVE'    
+        AND AI.EFFECTIVE_DATE = (SELECT MAX(AI2.EFFECTIVE_DATE) FROM ACCESS_INFORMATION AI2
+		        WHERE AI2.ACCESS_INFORMATION_ID = AI.ACCESS_INFORMATION_ID)
+    </select>	
+ 
+	
+	<select id = "effonl.RetrievePhoneNumberData" parameterClass = "string"  resultClass="java.util.HashMap">  
+	    SELECT /* effonl.RetrievePhoneNumberData */  AN.ACCESS_NUMBER,AN.TYPE_RD FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS  
+        WHERE AN.CUSTOMER_NUMBER=#customerNumber# 
+        AND  TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')        
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND SS.STATE_RD IN ('SUBSCRIBED','SUSPENDED','ORDERED')
+    </select>
+    <select id = "onl.RetrievePhoneNumberData" parameterClass = "string"  resultClass="java.util.HashMap">  
+	    SELECT /* onl.RetrievePhoneNumberData */  AN.ACCESS_NUMBER,AN.TYPE_RD FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS  
+        WHERE AN.CUSTOMER_NUMBER=#customerNumber# 
+        AND  TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')        
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = (SELECT MAX(CSC2.EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC2
+		        WHERE CSC2.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID)
+        AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND SS.STATE_RD IN ('SUBSCRIBED','SUSPENDED','ORDERED')
+    </select>
+	
+	
+	<select id = "effonl.RetrieveCompanyData" parameterClass = "string"  resultClass="java.util.HashMap">
+	    SELECT /* effonl.RetrieveCompanyData */  EN.NAME,EN.ORGANIZATION_TYPE_RD,EN.INCORPORATION_NUMBER_ID,
+		EN.INCORPORATION_CITY_NAME,EN.INCORPORATION_TYPE_RD FROM ENTITY EN
+        WHERE EN.CUSTOMER_NUMBER =  #customerNumber#
+    </select>
+	<select id = "onl.RetrieveCompanyData" parameterClass = "string"  resultClass="java.util.HashMap">
+	    SELECT /* onl.RetrieveCompanyData */  EN.NAME,EN.ORGANIZATION_TYPE_RD,EN.INCORPORATION_NUMBER_ID,
+		EN.INCORPORATION_CITY_NAME,EN.INCORPORATION_TYPE_RD FROM ENTITY EN
+        WHERE EN.CUSTOMER_NUMBER =  #customerNumber#
+    </select>
+	
+	
+    <select id = "effonl.RetrieveContactData" parameterClass = "string"  resultClass="java.util.HashMap">
+	    SELECT /* effonl.RetrieveContactData */  CR.CONTACT_ROLE_TYPE_RD,EN.NAME, EN.FORENAME, EN.SALUTATION_DESCRIPTION, EN.TITLE_DESCRIPTION,
+		EN.SURNAME_PREFIX_DESCRIPTION,EN.NOBILITY_PREFIX_DESCRIPTION,EN.BIRTH_DATE  FROM CONTACT_ROLE CR, ENTITY EN
+        WHERE CR.CUSTOMER_NUMBER = #customerNumber#
+        AND CR.ENTITY_ID = EN.ENTITY_ID
+        AND CR.EFFECTIVE_FLAG = 'N'
+    </select>	
+	 <select id = "onl.RetrieveContactData" parameterClass = "string"  resultClass="java.util.HashMap">
+	    SELECT /* onl.RetrieveContactData */  CR.CONTACT_ROLE_TYPE_RD,EN.NAME, EN.FORENAME, EN.SALUTATION_DESCRIPTION, EN.TITLE_DESCRIPTION,
+		EN.SURNAME_PREFIX_DESCRIPTION,EN.NOBILITY_PREFIX_DESCRIPTION,EN.BIRTH_DATE  FROM CONTACT_ROLE CR, ENTITY EN
+        WHERE CR.CUSTOMER_NUMBER = #customerNumber#
+        AND CR.ENTITY_ID = EN.ENTITY_ID
+        AND CR.EFFECTIVE_STATUS = 'ACTIVE'       
+		AND CR.EFFECTIVE_DATE = (SELECT MAX(CR2.EFFECTIVE_DATE) FROM CONTACT_ROLE CR2
+		        WHERE CR2.CONTACT_ROLE_ID = CR.CONTACT_ROLE_ID)
+    </select>	
+	
+</sqlMap>

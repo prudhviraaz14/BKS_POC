@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2010 (http://www.altova.com) von R (Vodafone AG & Co. KG) bearbeitet -->
+<!-- Mit XMLSpy v2010 (http://www.altova.com) von R (Vodafone AG & Co. KG) bearbeitet -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bks="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback-004" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:ns1="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback-004" xmlns:sidcom="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" xmlns:sidmd="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/CALLBACK/GetFNPCustomerRecoDataCallback-004" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-GetCustomerInfo-001" schemaLocation="SIDCOM-GetCustomerInfo-001.xsd"/>
+	<import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+	<annotation>
+		<documentation>XML schema definition for endpoint Callback
+History of Changes:
+Vers.	Date					Author					Comment
+====	==========	===========		===================================================
+0.1 		2011-01-24		Reto Renner			Initial version based on template
+0.2		2011-01-26		Reto Renner			TraceIdentifyer added
+0.3		2011-03-03		Reto Renner			GetRecoFNPCustomerDataCallbackRequest renamed to GetFNPCustomerRecoDataCallbackRequest
+0.4       2011-04-04        Thomas Schneider Allow empty SID if no product found.
+			</documentation>
+	</annotation>
+	<!-- ================ Endpoint Specific Simple Types =================================== -->
+	<!-- ================ Endpoint Specific Complex Types ================================= -->
+	<complexType name="TraceIdentifier">
+		<annotation>
+			<documentation>used to transfer multiple data blocks which belong to the same MultipleResponse-Message due to 4 MB size limit</documentation>
+		</annotation>
+		<sequence>
+			<element name="callbackMessageNumber" type="integer">
+				<annotation>
+					<documentation>Actual number of message; first message starts with 1</documentation>
+				</annotation>
+			</element>
+			<element name="lastCallbackMessage" type="boolean">
+				<annotation>
+					<documentation>Last message identifyer:
+true .... this is the last mesage
+false ... this is not last message
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	<!-- ================ Endpoint Specific Operations =====================================-->
+	<element name="GetFNPCustomerRecoDataCallbackRequest">
+		<annotation>
+			<documentation>Structure of callbackservice</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="traceIdentifier" type="bks:TraceIdentifier">
+					<annotation>
+						<documentation>Trace identifier of the message</documentation>
+					</annotation>
+				</element>
+				<sequence>
+					<element name="sidcomVersion" type="string">
+						<annotation>
+							<documentation>The version of the SIDCOM XSD.</documentation>
+						</annotation>
+					</element>
+					<element name="sid" type="sidcom:CustomerInformation" minOccurs="0" maxOccurs="unbounded">
+						<annotation>
+							<documentation>The SIDCOM XSD.</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

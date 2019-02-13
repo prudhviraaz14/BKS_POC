@@ -1,0 +1,847 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:com="http://www.vodafone.de/ESB/Service/SBUS/COM/COM-PROV-001" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/COM/COM-PROV-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+  <annotation>
+    <documentation>
+      XML schema definition for endpoint COM-PROV
+      History of Changes:
+      0.1 2010-05-10 Reto Renner Initial draft version
+      0.2 2010-05-21 Andreas Burghardt GenerateNewMicRequest/Response defined
+      0.3 2010-05-27 Andreas Burghardt changes to GenerateNewMicRequest (msisdn, functionId, micChangeType, micGenerationAccessType)
+      0.4 2010-07-16 Reto Renner Element callbackService added
+      0.5 2010-10-29 Heiko Barthel IT-28170 TV Center 1c, added tvPin, adultPin and setTopBoxPin
+      0.6 2010-12-07 Andreas Burghardt getCurrentSOMRequest/Response defined
+      0.7 2011-01-12 Reto Renner Changed service name
+      0.8 2011-02-21 Om Mishra IT-29492 Making 'accessType' as deprecated but keep it for compatibility reasons.
+      1.0 2011-04-05 Marcel Khil IT-k-30497: made 'functionId' and 'tvCenterFunctionId' optional and improved docu
+      1.1 2011-04-17 Gesa Prien IT-28575 Add 'gicChangeType', set 'micChangeType' to optional, add accessType 'sipTrunk'
+      1.2 2011-08-12 Marcel Khil IT-28900 Defined CheckOrderEnrichedRequest and
+      CheckOrderEnrichedResponse
+      1.3 2011-08-12 Gerd Mathar IT-30701 Added GetOrderDetailsRequest/-Response for new
+      service getOrderDetails
+      1.4 2011-09-19 Gerd Mathar IT-28900 Added new service GetPendingOrdersForCustomer
+      1.5 2012-02-13 Gerd Mathar PN8710 Changed type of CheckOrderEnrichedRequest/orderId to "com:String16"
+      1.6 2012-05-22 Marcel Khil PN9727 Introduce timestamp field in CheckOrderEnrichedResponse
+      1.7 2012-07-02 Kunal Badgujar IT-31787 Introducing new filter 'EXCLUDE_PRECOMPLETED_CCM_ORDERPOSITIONS' in OrderFilter
+      1.8 2012-08-07 Chetan Goyani IT-31752 Added request/response for new service PrefetchPendingOrders
+      1.9 2012-10-10 Mandeep Singh IT-32436 Added element bundleId in GetPendingOrdersForCustomerRequest
+      1.10 2012-10-17 Mandeep Singh PN-10767 Added orderFilter to service PrefetchPendingOrderRequest
+      1.11 2013-02-28 Hans Becker IT-32575 Added request/response pairs for new services GetOrderState, SendFraudResult and ValidateSomOrder
+      1.12 2013-11-20 Neha Khombare PPM 64612-123327 Added a new element somVersion in GetOrderDetailsRequest
+    </documentation>
+  </annotation>
+  <!-- ================ Endpoint Specific Simple Types =================================== -->
+  <simpleType name="PinChangeType">
+    <restriction base="string">
+      <enumeration value="Add"/>
+      <enumeration value="Replace"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="AccessType">
+    <restriction base="string">
+      <enumeration value="ipBitstream"/>
+      <enumeration value="isdn"/>
+      <enumeration value="ngn"/>
+      <enumeration value="businessDSL"/>
+      <enumeration value="sipTrunk"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="ServiceSubscriptionId">
+    <restriction base="com:String16"/>
+  </simpleType>
+  <simpleType name="String16">
+    <restriction base="string">
+      <maxLength value="16"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="OrderOutputFormat">
+    <restriction base="string">
+      <enumeration value="SOM"/>
+      <enumeration value="SIDCOM"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="String40">
+    <restriction base="string">
+      <maxLength value="40"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="PositiveInteger4">
+    <restriction base="positiveInteger">
+      <totalDigits value="4"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="Integer10">
+    <restriction base="integer">
+      <totalDigits value="10"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="CustomerNumber">
+    <annotation>
+      <documentation>A twelve digit number</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[0-9]{12}"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="OrderFilter">
+    <annotation>
+      <documentation> A list of supported filters to be applied to the list of pending orders.</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="EXCLUDE_PRECOMPLETED_CCM"/>
+      <enumeration value="EXCLUDE_PRECOMPLETED_CCM_ORDERPOSITIONS"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="WorkflowStateType">
+    <restriction base="string">
+      <enumeration value="WAIT_FRAUD"/>
+      <enumeration value="WAITING_OPM"/>
+      <enumeration value="OTHER"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="FraudResult">
+    <restriction base="string">
+      <enumeration value="FRAUD_OK"/>
+      <enumeration value="FRAUD_CANCEL"/>
+    </restriction>
+  </simpleType>
+  
+  <!-- ================ Endpoint Specific Complex Types ================================= -->
+  <complexType name="Msisdn">
+    <sequence>
+      <element name="cc" type="common:CountryCode"/>
+      <element name="ndc" type="common:LocalAreaCode">
+        <annotation>
+          <documentation>without leading '0' e.g.: 172</documentation>
+        </annotation>
+      </element>
+      <element name="sn" type="common:SinglePhoneNumber"/>
+    </sequence>
+  </complexType>
+  <complexType name="Som">
+    <annotation>
+      <documentation>The complete SOM XML document</documentation>
+    </annotation>
+    <sequence>
+      <any namespace="##any" processContents="lax" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="SOMorSIDCOM">
+    <annotation>
+      <documentation>An order as a SOM or SIDCOM XML document.</documentation>
+    </annotation>
+    <sequence>
+      <any namespace="##any" processContents="lax" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="SomWithVersion">
+    <annotation>
+      <documentation>The complete SOM XML document with a version attribute</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="com:Som">
+        <attribute name="version"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Parameter">
+    <annotation>
+      <documentation>A parameter with name as attribute and value as content</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="name" type="string" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <!-- ================ Endpoint Specific Operations ===================================== -->
+  <element name="GenerateNewMicRequest">
+    <annotation>
+      <documentation>
+        This service request initiates a modem installation code (MIC) generation
+        (for Business-DSL, ISDN, NGN and BitStream only). The elements orderId, customerId, accessId,
+        functionId, micChangeType, desiredDate are mandatory in order to generate a new MIC.
+        Beginning with release 1.37 the service name is a bit misleading, because it cannot only be
+        used to order a new MIC (Modem Installation Code aka iadPin), but also tvPin, adultPin and/or setTopBoxPin.
+        It is supported to initiate generation of all four different PIN types with a single order.
+        If an additional SMS should be sent to the customer, smsDelivery and msisdn have to be provided.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="callbackService" type="common:CallbackService">
+          <annotation>
+            <documentation>Name of the specific callback service of the provider of this service</documentation>
+          </annotation>
+        </element>
+        <element name="orderId" type="common:OrderId">
+          <annotation>
+            <documentation>A new orderId for the PIN generation, e.g.: ARC1234567890</documentation>
+          </annotation>
+        </element>
+        <element name="customerId" type="common:CustomerId"/>
+        <element name="accessId" type="com:ServiceSubscriptionId">
+          <annotation>
+            <documentation>ccbId of the main access service</documentation>
+          </annotation>
+        </element>
+        <element name="accessType" type="com:AccessType" minOccurs="0">
+          <annotation>
+            <documentation>PIN generation only for Business-DSL, ISDN, NGN, BitStream and SIP Trunk. Ignored since release 1.38
+              because the access is determined from BKS.
+            </documentation>
+          </annotation>
+        </element>
+        <sequence minOccurs="0">
+          <element name="functionId" type="com:ServiceSubscriptionId" minOccurs="0">
+            <annotation>
+              <documentation>ccbId of the internet function, only used if COM cannot determine the ccbId from BKS</documentation>
+            </annotation>
+          </element>
+          <element name="micChangeType" type="com:PinChangeType" minOccurs="0">
+            <annotation>
+              <documentation>'Replace' if the existing MIC (aka iadPin) should be replaced</documentation>
+            </annotation>
+          </element>
+          <element name="gicChangeType" type="com:PinChangeType" minOccurs="0">
+            <annotation>
+              <documentation>'Replace' if the existing GIC should be replaced, 'Add' otherwise</documentation>
+            </annotation>
+          </element>
+        </sequence>
+        <sequence minOccurs="0">
+          <element name="tvCenterFunctionId" type="com:ServiceSubscriptionId" minOccurs="0">
+            <annotation>
+              <documentation>ccbId of the tvCenter function, only used if COM cannot determine the ccbId from BKS</documentation>
+            </annotation>
+          </element>
+          <element name="tvPinChangeType" type="com:PinChangeType" minOccurs="0">
+            <annotation>
+              <documentation>'Replace' if the existing TV PIN should be replaced</documentation>
+            </annotation>
+          </element>
+          <element name="adultPinChangeType" type="com:PinChangeType" minOccurs="0">
+            <annotation>
+              <documentation>'Replace' if the existing Adult PIN should be replaced</documentation>
+            </annotation>
+          </element>
+          <element name="setTopBoxChangeType" type="com:PinChangeType" minOccurs="0">
+            <annotation>
+              <documentation>'Replace' if the existing SetTopBox PIN (aka SIC or TIC) should be replaced</documentation>
+            </annotation>
+          </element>
+        </sequence>
+        <element name="desiredDate" type="date">
+          <annotation>
+            <documentation>The actual date or a date in the future</documentation>
+          </annotation>
+        </element>
+        <element name="smsDelivery" type="boolean" minOccurs="0">
+          <annotation>
+            <documentation>Provide 'true' if the new PINs should be sent to the customer via SMS in addition to the letter.</documentation>
+          </annotation>
+        </element>
+        <element name="msisdn" type="com:Msisdn" minOccurs="0"/>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="GenerateNewMicResponse">
+    <annotation>
+      <documentation>
+        This response is just an acknowledgement of initiating the credit assesment process. For receiving the
+        result of this service there must implement the a specific call back service. requestAccepted is true if the request was
+        accepted by COM. If false result code and result description elements are returned.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="requestAccepted" type="boolean"/>
+        <element name="resultCode" minOccurs="0">
+          <annotation>
+            <documentation>Result code</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string"/>
+          </simpleType>
+        </element>
+        <element name="resultDesc" minOccurs="0">
+          <annotation>
+            <documentation>Result description</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string"/>
+          </simpleType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ================ getCurrentSOM Request / Response =====================================-->
+  <element name="GetCurrentSomRequest">
+    <annotation>
+      <documentation>
+        This service gets an orderId in the service request and sends back the corresponding SOM in the
+        service response. Optionally the resulting SOM could be converted to the somVersion provided in the somVersion request parameter.
+        If no somVersion is provided, the SOM is given in the version it was created.
+        Response is always the latest version of the SOM i.e with enrichments etc.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="orderId" type="com:String16">
+          <annotation>
+            <documentation>An existing orderId, e.g.: ARC1234567890, does normally match to the barcode but there are cases where the orderId
+              has post or prefixes, e.g. ARC1234567890_B. It is searched only exactly the orderId.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="somVersion" type="com:String16" minOccurs="0">
+          <annotation>
+            <documentation>The somVersion the SOM should be converted to, e.g.: 3.0, 3.1, 3.22. If not set the SOM is returned in the version it was created.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="GetCurrentSomResponse">
+    <annotation>
+      <documentation>Response getCurrentSom</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="som" type="com:Som" minOccurs="0">
+          <annotation>
+            <documentation>Corresponding SOM to orderId in the request.</documentation>
+          </annotation>
+        </element>
+        <element name="resultCode" minOccurs="0">
+          <annotation>
+            <documentation>Result code</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string"/>
+          </simpleType>
+        </element>
+        <element name="resultDesc" minOccurs="0">
+          <annotation>
+            <documentation>Result description</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string"/>
+          </simpleType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ================ CheckOrderEnriched Request / Response =====================================-->
+  <element name="CheckOrderEnrichedRequest">
+    <annotation>
+      <documentation>This service gets an OrderID in the request and
+        COM checks if the order was already enriched or not
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="orderId" type="com:String16" minOccurs="1">
+          <annotation>
+            <documentation> the orderId that has to be checked
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="CheckOrderEnrichedResponse">
+    <complexType>
+      <sequence>
+        <element name="orderId" type="com:String16" minOccurs="1">
+          <annotation>
+            <documentation> the Requested OrderId</documentation>
+          </annotation>
+        </element>
+        <element name="isEnriched" type="boolean" minOccurs="1">
+          <annotation>
+            <documentation>the enriched check result (true =
+              enriched, false = not enriched)
+            </documentation>
+          </annotation>
+        </element>
+        <element name="enrichmentTimestamp" type="dateTime" minOccurs="0">
+          <annotation>
+            <documentation>the timestamp on when the enrichment was done</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ================ somOrderByBarcode Request / Response =====================================-->
+  <element name="SomOrderByBarcodeRequest">
+    <annotation>
+      <documentation>
+        This service gets an barcode in the service request and sends back the corresponding SOM or SOM´s in the
+        service response. Optionally the resulting SOM could be converted to the somVersion provided in the somVersion request parameter.
+        If no somVersion is provided, the SOM is given in the version it was created.
+        Response is always the latest version of the SOM i.e with enrichments etc.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="barcode" type="com:String16">
+          <annotation>
+            <documentation>An existing barcode, e.g.: ARC1234567890, does normally match to the orderId but there are cases where the orderId
+              has post or prefixes to the barcode, e.g. ARC1234567890_B. There may be different orderId´s with the same barcode.
+              The orderId´s with the same barcode usually differ by their post or prefixes.
+              Therefore there can be more than one order returned with this request.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="somVersion" type="com:String16" minOccurs="0">
+          <annotation>
+            <documentation>The somVersion the SOM should be converted to, e.g.: 3.0, 3.1, 3.22. If not set the SOM is returned in the version it was created.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="SomOrderByBarcodeResponse">
+    <annotation>
+      <documentation>Response somOrderByBarcode</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="som" type="com:Som" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Corresponding SOM to barcode in the request.</documentation>
+          </annotation>
+        </element>
+        <element name="resultCode" minOccurs="0">
+          <annotation>
+            <documentation>Result code</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string"/>
+          </simpleType>
+        </element>
+        <element name="resultDesc" minOccurs="0">
+          <annotation>
+            <documentation>Result description</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string"/>
+          </simpleType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ============= getOrderDetails Request / Response ================ -->
+  <element name="GetOrderDetailsRequest">
+    <annotation>
+      <documentation>
+        This service getOrderDetails retrieves a specific order from the CODB. The
+        retrieved order is included, partly or in total, depending on the input parameters,
+        into the response along with some supplementary data. The format of the included order
+        will be SOM or SIDCOM, again depending on the input parameters.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="orderID" type="com:String16">
+          <annotation>
+            <documentation>An existing orderId, e.g.: ARC1234567890, does normally match to the
+              barcode but there are cases where the orderId has post or prefixes, e.g.
+              ARC1234567890_B. Only the exact orderId is searched for.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="orderPositionNumber" type="com:PositiveInteger4" minOccurs="0">
+          <annotation>
+            <documentation>Optional. If set, response data will refer to the specified order
+              position and the returned order details will be limited to it.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="serviceSubscriptionID" type="com:ServiceSubscriptionId" minOccurs="0">
+          <annotation>
+            <documentation>Optional, only together with orderPositionNumber. If set, only
+              order details related to this specific service subscription ID will be returned.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="returnUnenrichedOrder" type="boolean" minOccurs="0">
+          <annotation>
+            <documentation>If set to false, an un-enriched order will not be
+              included in the response.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="orderOutputFormat" type="com:OrderOutputFormat">
+          <annotation>
+            <documentation>Selects the desired output format of the order, supported values
+              are "SOM" and "SIDCOM".
+            </documentation>
+          </annotation>
+        </element>
+        <element name="somVersion" type="com:String16" minOccurs="0">
+          <annotation>
+            <documentation>Optional, sending system can mention expected somVersion. For example “3.9”, “4.0”, “4.1”. Considered only if output format is SOM. </documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="GetOrderDetailsResponse">
+    <annotation>
+      <documentation>Response getOrderDetails</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="stateID" type="com:Integer10" minOccurs="0">
+          <annotation>
+            <documentation>The ID of the current workflow state of the order / order position.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="stateName" type="com:String40" minOccurs="0">
+          <annotation>
+            <documentation>The name of the current workflow state of the order / order position.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="stateType" type="com:String16">
+          <annotation>
+            <documentation>The TYPE_RD field of the current workflow state of the order / order
+              position.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="workFlowID" type="com:Integer10" minOccurs="0">
+          <annotation>
+            <documentation>The ID of the workflow of the current state of the order / order
+              position.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="enriched" type="boolean">
+          <annotation>
+            <documentation>Whether the order / order position has passed the typical
+              enrichment states in COM.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="somVersion" type="com:String16" minOccurs="0">
+          <annotation>
+            <documentation>Optional, only set if orderDetails is set and the output format is SOM.
+              The SOM version number the order details are delivered in orderDetails.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="sidcomVersion" type="com:String16" minOccurs="0">
+          <annotation>
+            <documentation>Optional, only set if orderDetails is set and the output format is SIDCOM.
+              The SIDCOM version number the order details are delivered in orderDetails.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="orderDetails" type="com:SOMorSIDCOM" minOccurs="0">
+          <annotation>
+            <documentation>Optional, will be set if input parameter returnUnenrichedOrder is
+              true or if it is false and the order has already been enriched. If
+              orderDetails is set, it will contain the complete order or a slimmed-down version depending on input
+              parameters. The format is determined by orderOutputFormat.
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ============= getPendingOrdersForCustomer Request / Response ================ -->
+  <element name="GetPendingOrdersForCustomerRequest">
+    <annotation>
+      <documentation>Input data for service GetPendingOrdersForCustomer </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="customerNumber" type="com:CustomerNumber">
+          <annotation>
+            <documentation>The customer number to retrieve pending orders for.</documentation>
+          </annotation>
+        </element>
+        <element name="orderFilter" type="com:OrderFilter" minOccurs="0">
+          <annotation>
+            <documentation>A filter to apply to the list of pending orders. Only matching ones will be returned.</documentation>
+          </annotation>
+        </element>
+        <element name="bundleId" type="com:ServiceSubscriptionId" minOccurs="0"/>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="GetPendingOrdersForCustomerResponse">
+    <annotation>
+      <documentation>Output data for service GetPendingOrdersForCustomer.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="orders">
+          <complexType>
+            <sequence>
+              <element name="som" type="com:SomWithVersion" minOccurs="0" maxOccurs="unbounded">
+                <annotation>
+                  <documentation>
+                    The pending orders matching the filter criterion given in the request,
+                    in SOM format with a version attribute.
+                  </documentation>
+                </annotation>
+              </element>
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <!-- ============= prefetchPendingOrders Request / Response ================ -->
+  <element name="PrefetchPendingOrdersRequest">
+    <annotation>
+      <documentation>Input data for service prefetchPendingOrdersService</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="customerNumber" type="com:CustomerNumber">
+          <annotation>
+            <documentation>Fixed net customer number to search for orders</documentation>
+          </annotation>
+        </element>
+        <element name="orderFilter" type="com:OrderFilter" minOccurs="0">
+          <annotation>
+            <documentation>A filter to apply to the list of pending orders. Only matching ones will be returned.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="PrefetchPendingOrdersResponse">
+    <annotation>
+      <documentation>Output data for service prefetchPendingOrdersService</documentation>
+    </annotation>
+    <complexType>
+      <annotation>
+        <documentation></documentation>
+      </annotation>
+      <sequence>
+        <element name="orderList">
+          <complexType>
+            <annotation>
+              <documentation>Orderlist contains pending orders for given customer</documentation>
+            </annotation>
+            <sequence>
+              <element name="order" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                  <annotation>
+                    <documentation>Order level data with orderId and barcode</documentation>
+                  </annotation>
+                  <sequence>
+                    <element name="orderPosition" minOccurs="0" maxOccurs="unbounded">
+                      <complexType>
+                        <annotation>
+                          <documentation>Order position level data</documentation>
+                        </annotation>
+                        <sequence>
+                          <element name="desiredDate" type="date" minOccurs="0">
+                            <annotation>
+                              <documentation>Date, when the order position shall be fulfilled</documentation>
+                            </annotation>
+                          </element>
+                          <element name="orderReceivedData" type="date" minOccurs="0">
+                            <annotation>
+                              <documentation>Date of entry of order position, will be shown in KBA</documentation>
+                            </annotation>
+                          </element>
+                          <element name="orderType" type="string" minOccurs="0">
+                            <annotation>
+                              <documentation>Depending on the type, the result will be shown as new node in contract tree (lineCreation) or merged into an existing one (lineChange) or ignored.</documentation>
+                            </annotation>
+                          </element>
+                          <element name="ccbId" minOccurs="0">
+                            <annotation>
+                              <documentation>ccbId of the bundle (type=B). This is used to match the order position on a bundle from the prefetch output</documentation>
+                            </annotation>
+                            <complexType>
+                              <simpleContent>
+                                <extension base="string">
+                                  <attribute name="type" type="string" fixed="B" use="required"/>
+                                </extension>
+                              </simpleContent>
+                            </complexType>
+                          </element>
+                          <element name="locationAddress" minOccurs="0">
+                            <annotation>
+                              <documentation>The address can be used to select a bundle from the list of all bundles</documentation>
+                            </annotation>
+                            <complexType>
+                              <sequence>
+                                <element name="street" type="string" minOccurs="0"/>
+                                <element name="streetNumber" type="string" minOccurs="0"/>
+                                <element name="postalCode" type="string" minOccurs="0"/>
+                                <element name="city" type="string" minOccurs="0"/>
+                                <element name="country" type="string" minOccurs="0"/>
+                              </sequence>
+                            </complexType>
+                          </element>
+                          <element name="content" minOccurs="0">
+                            <complexType>
+                              <sequence>
+                                <element name="parameter" type="com:Parameter" minOccurs="0" maxOccurs="unbounded"></element>
+                              </sequence>
+                            </complexType>
+                          </element>
+                          <element name="mainAccessNumber" minOccurs="0">
+                            <annotation>
+                              <documentation>The first phone number that can be found. It can be used to select a bundle from the list of all bundles.</documentation>
+                            </annotation>
+                            <complexType>
+                              <sequence>
+                                <element name="countryCode" type="common:CountryCode"/>
+                                <element name="localAreaCode" type="common:LocalAreaCode"/>
+                                <element name="number" type="common:PilotNumber"/>
+                              </sequence>
+                            </complexType>
+                          </element>
+                          <element name="functions" minOccurs="0">
+                            <complexType>
+                              <sequence>
+                                <element name="function" minOccurs="0" maxOccurs="unbounded">
+                                  <complexType>
+                                    <sequence>
+                                      <element name="parameter" type="com:Parameter" minOccurs="0" maxOccurs="unbounded"/>
+                                    </sequence>
+                                    <attribute name="type" type="string"/>
+                                    <attribute name="ccbId" type="string">
+                                      <annotation>
+                                        <documentation>Identifier used to map the data on the productEntries loaded from EFFONL</documentation>
+                                      </annotation>
+                                    </attribute>
+                                  </complexType>
+                                </element>
+                              </sequence>
+                            </complexType>
+                          </element>
+                        </sequence>
+                        <attribute name="number" type="com:PositiveInteger4">
+                          <annotation>
+                            <documentation>Order position number</documentation>
+                          </annotation>
+                        </attribute>
+                      </complexType>
+                    </element>
+                  </sequence>
+                  <attribute name="orderId" type="com:String16">
+                    <annotation>
+                      <documentation>Unique identifier, that can be used to load the order with all details</documentation>
+                    </annotation>
+                  </attribute>
+                  <attribute name="barcode" type="common:OrderId">
+                    <annotation>
+                      <documentation>the barcode associated with the order</documentation>
+                    </annotation>
+                  </attribute>
+                </complexType>
+              </element>
+            </sequence>
+            <attribute name="customerNumber" type="com:CustomerNumber">
+              <annotation>
+                <documentation>customer number as defined in the request</documentation>
+              </annotation>
+            </attribute>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  
+<!-- ============= GetOrderState Request / Response ================ -->
+  <element name="GetOrderStateRequest">
+    <annotation>
+      <documentation>Input data for service GetOrderState </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="orderId" type="com:String16">
+          <annotation>
+            <documentation>An existing orderId, e.g.: ARC1234567890, does normally match to the barcode but there are cases where the orderId
+              has post- or prefixes, e.g. ARC1234567890_B. It is searched only exactly the orderId.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="orderPositionNumber" type="com:PositiveInteger4">
+          <annotation>
+            <documentation>A position of the order</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="GetOrderStateResponse">
+    <annotation>
+      <documentation>Output data for service GetOrderState.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="state" type="com:WorkflowStateType">
+          <annotation>
+            <documentation>Information whether the order / order position is in the given workflow state type.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+<!-- ============= SendFraudResult Request ================ -->
+  <element name="SendFraudResultRequest">
+    <annotation>
+      <documentation>Input data for service NotifyFraud.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="orderId" type="com:String16">
+          <annotation>
+            <documentation>An existing orderId, e.g.: ARC1234567890, does normally match to the barcode but there are cases where the orderId
+              has post or prefixes, e.g. ARC1234567890_B. It is searched only exactly the orderId.
+            </documentation>
+          </annotation>
+        </element>
+        <element name="orderPositionNumber" type="com:PositiveInteger4">
+          <annotation>
+            <documentation>The order position number used to notify a FRAUD result.</documentation>
+          </annotation>
+        </element>
+        <element name="fraudResult" type="com:FraudResult">
+          <annotation>
+            <documentation>
+              The fraud result, i.e. FRAUD_OK or FRAUD_NOK
+            </documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  
+<!-- ============= ValidateSomOrder Request / Response ================ -->
+  <element name="ValidateSomOrderRequest">
+    <annotation>
+      <documentation>Input data for service ValidateSomOrder </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="som" type="com:Som"/>
+        <element name="sendingSystem" type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="ValidateSomOrderResponse">
+    <annotation>
+      <documentation>Marker response with no content for the success case. In case of failure an exception is thrown.</documentation>
+    </annotation>
+    <complexType>
+      <sequence></sequence>
+    </complexType>
+  </element>
+
+</schema>

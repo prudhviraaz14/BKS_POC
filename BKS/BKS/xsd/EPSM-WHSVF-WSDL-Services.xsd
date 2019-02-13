@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" xmlns:commontypes="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-CommonTypes-001" targetNamespace="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-CommonTypes-001" schemaLocation="EPSM-WHSVF-CommonTypes-001.xsd"/>
+	<xs:element name="WHSVF-WSDL-Services_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>
+				Änderungshistorie
+				0.1	24.09.2008 	Reto Renner			- Initial Draft 
+			</xs:documentation>
+			<xs:appinfo>
+				<version>0.1</version>
+			</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<!-- ========================================= Service Types KIAS =========================================== -->
+	<xs:complexType name="CustomerDataKIASRequest">
+		<xs:annotation>
+			<xs:documentation>
+			input data for GetCustomerData from KIAS 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="marketCode" type="commontypes:MarketCode" minOccurs="0"/>
+			<xs:element name="ban" type="commontypes:Ban" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerDataKIASResponse">
+		<xs:annotation>
+			<xs:documentation>
+			output data for GetCustomerData from KIAS, if no result found the list customers is empty.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="commontypes:ResultDetailsObject">
+				<xs:sequence>
+					<xs:element name="customers" type="commontypes:CustomerData" nillable="false" minOccurs="0" maxOccurs="20"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ========================================= Service Types CCM =========================================== -->
+	<xs:complexType name="CustomerDataCCMRequest">
+		<xs:annotation>
+			<xs:documentation>
+			input data for GetCustomerData from CCM as a choice in order to keep the wsdl lean
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="customerNumber" type="commontypes:CustomerNumber"/>
+			<xs:element name="barcode" type="commontypes:Barcode"/>
+			<xs:element name="accessNumber" type="commontypes:ComplexPhoneNumber"/>
+			<xs:element name="personData" type="commontypes:PersonDataQueryInput"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="CustomerDataCCMResponse">
+		<xs:annotation>
+			<xs:documentation>
+			output data for GetCustomerData from CCM, if no result found the list customers is empty.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="commontypes:ResultDetailsObject">
+				<xs:sequence>
+					<xs:element name="customers" type="commontypes:CustomerData" nillable="false" minOccurs="0" maxOccurs="20"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ====================================== Service Elements ============================================== -->
+	<xs:element name="customerDataCCMRequest" type="CustomerDataCCMRequest"/>
+	<xs:element name="customerDataCCMResponse" type="CustomerDataCCMResponse"/>
+	<xs:element name="customerDataKIASRequest" type="CustomerDataKIASRequest"/>
+	<xs:element name="customerDataKIASResponse" type="CustomerDataKIASResponse"/>
+	<xs:element name="pingRequest" type="commontypes:BaseMessageType"/>
+	<xs:element name="pingResponse" type="commontypes:ResultDetailsObject"/>
+</xs:schema>

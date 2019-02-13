@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-GetCustomerDataCCM-001" 
+xmlns:whsvf="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-GetCustomerDataCCM-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-WSDL-Services" schemaLocation="EPSM-WHSVF-WSDL-Services.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="CCM-GetCustomerDataCCM_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+Aenderungshistorie:
+0.1	25.09.2008 	Reto Renner	- Initiale Version
+</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>Dieses Dokument basiert auf und referenziert folgende Dokumente:
+
+</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>Diese Schnittstelle wird durch das CCM realisiert</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="GetCustomerDataCCMService">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="getCustomerDataCCMInput" type="GetCustomerDataCCMInput"/>
+					<xs:element name="getCustomerDataCCMOutput" type="GetCustomerDataCCMOutput">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetCustomerDataCCMInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="customerDataCCMRequest" type="whsvf:CustomerDataCCMRequest">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetCustomerDataCCMOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="customerDataCCMResponse" type="whsvf:CustomerDataCCMResponse" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

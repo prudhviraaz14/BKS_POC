@@ -1,0 +1,163 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:ci="http://www.arcor.de/aaw/aawSprache/tools/jaxbPlugin/code-injector"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	version="2.0">
+
+	<jaxb:globalBindings>
+		<xjc:serializable	/>	
+		<jaxb:javaType
+			xmlType="xs:dateTime"
+			name="com.domainlanguage.time.TimePoint"
+			parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseTimestamp"
+			printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printTimestamp" />
+				
+		<jaxb:javaType 
+			xmlType="xs:date"
+			name="com.domainlanguage.time.CalendarDate"
+			parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseDate"
+			printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printDate" />
+					
+		<jaxb:javaType 
+			xmlType="xs:integer"
+			name="java.math.BigDecimal"
+		      parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseNumber"
+		      printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printNumber" />
+		          	
+		<jaxb:javaType 
+			xmlType="xs:boolean"
+			name="java.lang.Boolean"
+			parseMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.parseBoolean"
+			printMethod="de.arcor.aaw.auftragsmodell.util.DataTypeConverter.printBoolean" />
+	</jaxb:globalBindings>
+	
+	<jaxb:bindings schemaLocation="auftragsmodell-001.xsd">
+		<jaxb:bindings node="/xs:schema">
+			<jaxb:schemaBindings>
+				<jaxb:package name="de.arcor.aaw.auftragsmodell" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+	</jaxb:bindings>
+		
+    
+	<jaxb:bindings schemaLocation="metainformationen-002.xsd">
+		<jaxb:bindings node="/xs:schema">
+			<jaxb:schemaBindings>
+				<jaxb:package name="de.arcor.aaw.auftragsmodell.metainformationen" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+	</jaxb:bindings>
+				
+	<jaxb:bindings schemaLocation="EPSM-ASK-001.xsd">
+		<jaxb:bindings node="/xs:schema">
+			<jaxb:schemaBindings>
+				<jaxb:package name="de.arcor.aaw.auftragsmodell.ask" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>	
+	</jaxb:bindings>
+	
+	<jaxb:bindings schemaLocation="EPSM-CommonTypes-001.xsd">
+		<jaxb:bindings node="/xs:schema">
+			<jaxb:schemaBindings>
+				<jaxb:package name="de.arcor.aaw.auftragsmodell.ask" />
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+	</jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-PruefeBestandskunde-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+           <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+                
+    <jaxb:bindings schemaLocation="EPSM-CCM-PruefeBestandskundenRanger-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+                
+    <jaxb:bindings schemaLocation="EPSM-CCM-ErmittleKundenArt-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-GetSomMasterData-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-FetchFunctionDetails-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-GetCustomerDataCCM-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-ErmittleVertriebspacketWert-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+    
+    <jaxb:bindings schemaLocation="EPSM-CCM-PruefeServiceProviderNeukunde-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+             <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-GetCodbPrerequisiteData-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-GetServiceInformation-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-GetDetailsForAddedFunction-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-GetCcbId-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-HoleVertriebspaketDetails-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="EPSM-CCM-PrefetchVertriebspaketDetails-001.xsd " node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+ 	     	
+    <jaxb:bindings schemaLocation="EPSM-BKS-ProductBundle-001.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="de.arcor.aaw.kernAAW.bks.services" />
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 4 U (http://www.xmlspy.com) by Javed Ashraf A (Vodafone Ireland Ltd) -->
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Andre (Vodafone D2 GmbH) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:comeai="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-EAI-001" targetNamespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-EAI-001" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.1">
+	<annotation>
+		<documentation>
+			History of Changes:
+			Vers.	Date			Author			Comment
+			====	==========		===========		===================================================
+			1.0		2010-08-05		Andre Genser	Initial version
+		</documentation>
+	</annotation>
+	<simpleType name="VoidType">
+		<restriction base="string"/>
+	</simpleType>
+	<simpleType name="SubscriberNumberType" final="restriction">
+		<restriction base="xsd:string">
+			<maxLength value="20"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BANType">
+		<restriction base="xsd:string"/>
+	</simpleType>
+	<simpleType name="MMOMarketCodeType" final="restriction">
+		<restriction base="string">
+			<enumeration value="MMO"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="MarketCodeType" final="restriction">
+		<restriction base="xsd:string">
+			<maxLength value="3"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="ACNType" final="restriction">
+		<restriction base="string">
+			<maxLength value="12"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="APIDType">
+		<restriction base="xsd:string"/>
+	</simpleType>
+	<complexType name="BanListType">
+		<sequence>
+			<element name="ban" type="comeai:BANType" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<simpleType name="CustomerIDType">
+		<restriction base="string">
+			<maxLength value="30"/>
+		</restriction>
+	</simpleType>
+	<complexType name="AcnListType">
+		<sequence>
+			<element name="acn" type="comeai:ACNType" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<simpleType name="SubOrderIdType" final="restriction">
+		<annotation>
+			<documentation>Must be unique across the order, Enables order tracking for this specific entity. Currently used for hardware products.</documentation>
+		</annotation>
+		<restriction base="string">
+			<maxLength value="10"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="orderIdType" final="restriction">
+		<annotation>
+			<documentation>Type for Order Id</documentation>
+		</annotation>
+		<restriction base="string">
+			<maxLength value="16"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="MSISDNType">
+		<restriction base="string">
+			<maxLength value="17"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="BICType">
+		<restriction base="xsd:string">
+			<pattern value="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IBANType">
+		<restriction base="xsd:string">
+			<pattern value="[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CountryCodeType">
+		<restriction base="xsd:string">
+			<pattern value="[A-Z]{2,2}"/>
+		</restriction>
+	</simpleType>
+</schema>

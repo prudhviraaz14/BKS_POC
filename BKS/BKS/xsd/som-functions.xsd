@@ -1,0 +1,3906 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/orderSchema" elementFormDefault="qualified">
+  <annotation>
+    <documentation><![CDATA[
+Part of the XML schema definition for SOM (Simple Order Model)
+WARNING:
+This XSD denotes the structure of the SOM and its elements.
+It does NOT indicate which parts are mandatory or optional in the different use cases.
+
+Change history:
+      0.1 25.11.2009 - Gregor Emmerich initial delivery COM_133.01.00.00
+      0.2 04.12.2009 - Gregor Emmerich - removed include of som-common to please more strict validator
+      0.3 14.12.2009 - Gregor Emmerich - pricingStructureBillingName fixed to string of length 40
+                           productCode, productBillingName, productVersionCode,
+                           mainAccessServiceCode now ExistConfString5
+                                         tarifOptionBillingName removed at contractFunctionConfig
+      0.4 14.12.2009 - Gregor Emmerich - subRange6..9 added to accessNumberRange
+                                         dialOutPrefix added to portingAccessNumberRanges
+      0.5 14.01.2010 - Gregor Emmerich - added attribute action to tariffOptionsList
+      0.51 20.01.2010 - Gregor Emmerich - subventionIndicator changed type to boolean
+      0.52 28.01.2010 - Gregor Emmerich - added contractExpirationDate to contractFunctionConfig
+      0.53 28.01.2010 - Gregor Emmerich - added processAfterNodeRefId at function
+      0.54 28.01.2010 - Gregor Emmerich - added skeletonContractNodeRefID at seat
+      0.55 25.01.2010 - Gregor Emmerich - added skeletonContractNodeRefID to seat
+      0.56 02.02.2010 - Stefan Walter - introduced abstract type "accessFunction" according to the
+                            design document
+      0.57 25.02.2010 - Gregor Emmerich - add dtagId to directoryEntryConfiguration
+      0.58 25.02.2010 - Gregor Emmerich - type of adslInternetConfiguration/allowBandwidthDowngrade
+                                              changed from string to boolean as in sdslInternetConfiguration
+      0.59 03.03.2010 - Gregor Emmerich - subventionIndicator back to string instead of boolean
+      0.60 04.03.2010 - Gregor Emmerich - lineOwner firstName optional
+Since 1.0:
+      2010-01-22 - Heiko Barthel - added IT-26334 features: subOrderId added to function
+                                   voicePremiumConfiguration, voiceBasisConfiguration
+      2010-02-03 - Gregor Emmerich - some changes from 1.33 implemented
+      2010-02-18 - Heiko Barthel - added tariffOptionsList to voiceConfiguration
+      2010-02-25 - Heiko Barthel - added "providerTrackingNumber" to "safetyPackage" function
+      2010-03-02 - Heiko Barthel - added "keepExistingVoIPNumbers" to type "portingAccessNumbers", added "hardwareType", 'directoryEntryConfiguration' enhanced to support extended entry
+      2010-03-17 - Jadranko Mrkonjic - added tvCenter-Function-Specification
+      2010-04-13 - Heiko Barthel - IT-27626 changed 'customerCallbackNumber' type from accessNumber to string
+                                   IT-27626 added 'targetServiceDeliveryContractNodeRefID' to 'contractFunction'
+                                   IT-27626 added 'targetAccessID' to 'accessFunction'
+                                   IT-27626 added 'fixedIPAddressChangeType' to 'adslInternetConfiguration' and 'sdslInternetConfiguration', fixedIPAddressIndicator obsolated
+      2010-04-14 - Heiko Barthel - added 'subventionCode' and made 'subventionIndicator' deprecated
+Since 3.0:
+      2010-05-05 - Heiko Barthel - IT-26056 added 'phoneNumbersList' to 'voiceConfiguration' in order to support terminations for all functions
+      2010-05-19 - Heiko Barthel - IT-26056 added 'keepExistingNumbers' and added docu, added 'multimediaConfiguration' and use from iptv and vod
+      2010-05-26 - Heiko Barthel - added 'tariffOptionsList' to 'safetyPackageConfiguration' after review comment by Anton Rasch (approved by Alexander Borho)
+                                   added docu for 'orderReason'
+      2010-05-27 - Jadranko Mrkonjic - added 'earlyTerminationFeeServiceCode' to all functions which also have charges and credits. 
+      2010-05-27 - Thomas Vogt - fixed type of 'autoExtensionIndicator' (changed from date to string as it was before Rev:10711 (added some formattings))
+      2010-05-31 - Jadranko Mrkonjic - changed 'earlyTerminationFeeServiceCode's-type from 'string5' to 'ExistConfString5'
+      2010-06-01 - Jadranko Mrkonjic - added 'carrier' to portingAccessNumbers-Type.
+      2010-06-01 - Heiko Barthel - requested by Heiko Huptasch: 'directoryEntry' is now a 'dependentFunction', 'directoryEntryConfiguration' is now optional
+      2010-06-02 - Jadranko Mrkonjic - added documentation to portingMode with value-range to 'portingAccessNumbers'-Element.
+      2010-06-08 - Heiko Barthel - IT-26056 added portingMode for each accessNumber separately
+      2010-06-15 - Joerg Winter - IT-27626 multiple 'providerTrackingNumber' (maxOccurs='unbounded')
+      2010-06-29 - Heiko Barthel - type 'multimediaConfiguration' not abstract anymore
+Since 3.1:
+      2010-07-14 - Joerg Winter - IT-28260 added 'simSerialNumber' to 'hardwareConfiguration'
+                                           added 'uplift' to 'hardwareConfiguration'
+                                           added 'aspKey' to 'safetyPackage'
+      2010-07-21 - Joerg Winter - IT-27143 CR02 added 'serviceIdentifier' to 'accessFunction'
+                                  IT-27143 renamed 'uplift' to 'monthlyUpliftIndicator'
+                                  IT-28260 removed 'aspKey' from 'safetyPackage', use existing field 'activationKey'
+      2010-08-02 - Hans Becker - IT-28170 added 'imei' and 'hardwareActionCode' to 'hardwareConfiguration'
+                                 IT-27143 added 'monthlySurchargeStartDate' to 'hardwareConfiguration'
+                                 IT-27143 renamed 'monthlyUpliftIndicator' to 'monthlySurchargeIndicator'
+                                 IT-28260 added 'blockingList' to 'voiceConfiguration'
+      2010-08-04 - Hans Becker - IT-28260 added voipAccount1 - voipAccount10 in portingAccessNumbers
+                                          hygiene
+      2010-08-05 - Hans Becker - IT-28260 added acceptOutdoorBandwidth to adslInternetConfiguration
+                                          renamed hardwareActionCode to sapActionCode and added conditionsList to hardware
+      2010-08-05 - Hans Becker - IT-27143 removed serviceIdentifier, since CR02 is not in scope
+      2010-08-09 - Heiko Barthel - IT-28260 added element enrichFromNodeRefId to access
+                                            moved productCommitmentNumber from function to functionConfiguration
+                                            removed monthlySurcharge*; use conditionsList instead.
+      2010-08-12 - Heiko Barthel - IT-28823 added 'MsisdnEligibilityCheckData' to 'convergedSeatConfiguration' and 'mobileSeatConfiguration'
+                                   Review comment by Alex Borho: removed productCommitmentNumber from configuration and changed occurrence at function to respect existing and configured
+      2010-08-16 - Hans Becker - IT-28260 added 'basicLTE' and 'comfortLTE' to 'ConnectionType' type
+                   Heiko Barthel - changed 'MsisdnEligibilityCheckData'
+      2010-08-23 - Gesa Prien - IT-28066 added completionStatusOldCcbId and completionStatusNewCcbId to function, 
+                                         changed type of processingStatus from string16 to string30
+      2010-08-26 - Jadranko Mrkonjic - IT-27143 added instantAccess-function and instantAccessConfiguration
+                                                added compensationFeeIndicator to hardwareConfiguration
+      2010-09-02 - Gesa Prien - fixed error in documentation for 'processingStatus'
+      2010-09-08 - Joerg Winter - using abstract type for 'imsi' to add 'action' attribute
+Since 3.2:
+      2010-10-19 - Joerg Winter - PN-2873 (SPN-COM-000105519) enlarged 'productBillingName' to 60 characters
+      2010-11-09 - Joerg Winter - IT-27813 added element 'sapOrderId'
+      2010-11-09 - Joerg Winter - IT-27783 added elements for TLA: 'deliveryNoteNumber', 'deliveryDate', 'deliveryCompany', 'defectCode' and 'defectText'
+      2010-11-12 - Gesa Prien - IT-28170 added elements 'setTopBoxPinChange', 'tvPinChange', 'adultPinChange', 'multimediaAccount' to 'tvCenterBundledConfiguration',
+                                         removed unused 'tvCenterStandaloneConfiguration'
+                                IT-28251 added 'tvCenterOrderVariant' to 'tvCenter'
+      2010-11-15 - Joerg Winter - removed unused 'msisdnStatus', 'imsi' from 'fixedSeatConfiguration'
+      2010-11-17 - Gesa Prien - IT-28251 removed existing/configured from 'tvCenterOrderVariant'
+      2010-11-18 - Joerg Winter - IT-28713 added 'simSwapReason' to 'hardwareConfiguration'
+      2010-11-23 - Gesa Prien - IT-28251 use 'multimediaAccountChangeType' instead of 'tvCenterOrderVariant', move element from 'tvCenter' to 'tvCenterBundledConfiguration' (review Alex Borho)
+      2010-11-24 - Joerg Winter - IT-27144 'extraNumbers': removed 'refAccessID', moved 'remarks' down to '...Configuration'
+                                  added 'otherFunction' for generic functions of any kind
+      2010-11-29 - Joerg Winter - PN-3077 (SPN-COM-000106148) added 'conditionsList' to 'convergedSeatConfiguration', 'fixedSeatConfiguration ' and 'mobileSeatConfiguration'
+Since 3.21:
+      2010-12-06 - Joerg Winter - revoked change of 3.2: removed 'msisdnStatus' from 'fixedSeatConfiguration'
+      2010-12-21 - Gesa Prien - IT-27783 'otherFunction' extends 'accessFunction' instead of 'function'
+Since 3.22:
+      2010-12-22 - Gesa Prien - IT-29840 added 'contractStartDate' to 'contractFunction'
+      2010-12-23 - Gesa Prien - IT-27144 added 'activationKeyChangeType' to 'safetyPackageConfiguration',
+                                         added 'selectedDestinations' to 'voiceBasisConfiguration' and 'voicePremiumConfiguration'
+Since 3.24:
+      2011-02-15 - Joerg Winter - PN-4198 added attribute 'action' to 'RemovableExistConfAccessNumberRange'
+Since 3.3:
+      2011-01-21 - Gesa Prien - IT-28190 added 'fttxInternetConfiguration' to 'internet'
+      2011-01-25 - Gesa Prien - IT-28190 added 'sendConfirmationLetterIndicator' to 'tvCenterBundledConfiguration'
+      2011-02-01 - Joerg Winter - restricted all unlimited strings to 100 characters maximum
+      2011-02-10 - Joerg Winter - added attribute 'role' to 'functionConfiguration'
+      2011-03-03 - Joerg Winter - IT-k-30164 added 'contactRoleRefIdList' to 'function'
+      2011-03-10 - Joerg Winter - PN-4700 removed deprecated element 'subventionIndicator'
+      2011-03-10 - Gesa Prien - PN-4644 added 'simSerialNumber' to 'fttxInternetConfiguration'
+      2011-03-14 - Joerg Winter - PN-4521 added 'accessNumberChangeAnnouncementIndicator' to 'voiceConfiguration'
+Since 3.31:
+      2011-04-19 - Joerg Winter - IT-k-30364 extended element 'pricingStructureBillingName' from 40 to 60 characters 
+Since 3.32:
+      2011-04-28 - Joerg Winter - PN-5441 made structure 'numberRangeConfiguration' to base on 'functionConfiguration'
+                                      (attribute role required)
+Since 3.4:
+      2011-03-16 - Joerg Winter - related to PN-4719 made 'ID' attribute mandatory in abstract 'function' structure
+      2011-03-23 - Joerg Winter - IT-28575 added 'remarks', 'installationAddress' and 'installationAddressNodeRefId'
+                                               to 'installationSvcConfiguration'
+                                           added 'disableInternetUsageIndicator' to 'adslInternetConfiguration' and 'sdslInternetConfiguration'
+                                           added 'sipTrunkSiteConfiguration' to 'voice'
+      2011-04-05 - Joerg Winter - IT-29445 added 'tvCenterOptionsList' to 'tvCenterBundledConfiguration'
+                                  IT-28575 renamed 'mailboxAliasList' to 'sipTrunkMailboxAliasList' in 'sipTrunkSiteConfiguration'
+                                           moved 'pricePlanCode' and 'pricePlanOptionValue' to 'pricePlanList'
+                                               in 'discountConfiguration'
+                                           removed 'siteGroupCode' from 'sipTrunkSiteConfiguration'
+                                           changed inheritance for 'discountFunction' from 'dependentFunction' to 'contractFunction'
+      2011-04-11 - Joerg Winter - IT-29445 removed 'tvCenterOptionsList' from 'tvCenterBundledConfiguration'
+      2011-04-27 - Joerg Winter - IT-29627 added optional description elements to 'DSLBandwidth' and 'hardwareServiceCode'
+      2011-05-18 - Joerg Winter - IT-30580 changed 'installationSvc' to use link to contact role ('installationContactRoleRef')
+                                           instead of address and node reference
+      2011-05-30 - Joerg Winter - IT-28575 renamed element 'sipTrunkSiteConfiguration' to 'sipTrunkS2MConfiguration'
+      2011-05-31 - Joerg Winter - IT-k-30648 added element 'hardwareRecipient' to 'hardwareConfiguration'
+      2011-06-22 - Joerg Winter - PN-6015 added 'directoryEntryText' to 'directoryEntryConfiguration'
+      2011-06-28 - Joerg Winter - PN-6015 changed element 'directoryEntryText' to 360 characters
+Since 3.41:
+      2011-07-18 - Joerg Winter - PN-6286 made elements 'allowPartialCancel' an existing/configured type
+Since 3.42:
+      2011-08-02 - Joerg Winter - PN-6465 added element 'language' to 'tvCenterBundledConfiguration'
+      2011-08-02 - Joerg Winter - PN-6273 added elements 'previousCompletionStatusOldCcbId' and 'previousCompletionStatusNewCcbId' to all functions
+Since 3.43:
+      2011-08-11 - Joerg Winter - PN-6603 restricted element 'banPassword' to 20 characters
+Since 3.5:
+      2011-06-22 - Joerg Winter - IT-28575 added 'SIP' to list of 'hardwareType'
+      2011-06-29 - Joerg Winter - IT-29445 added 'tvCenterOptionsList' and 'reasonForConfigurationChange' to 'tvCenterBundledConfiguration'
+      2011-09-28 - Joerg Winter - PN-6898 added value 'S2M' to simpleType 'ConnectionType'
+                                              and added this element to complex type 'sipTrunkS2MConfiguration'
+Since 3.51:
+      2011-10-19 - Joerg Winter - IT-k-31152 changed element 'remarks' in 'adslInternetConfiguration', 'sdslInternetConfiguration',
+                                                 'ipCentrexSiteConfiguration', 'voicePremiumConfiguration',
+                                                 'voiceBasisConfiguration' and 'sipTrunkS2MConfiguration' to 1024 characters
+Since 3.6:
+      2011-08-25 - Gesa Prien - IT-28900 added 'portRemainingNumbersIndicator' to 'portingAccessNumbers', 'portingAccessNumberRanges',
+                                             'singleNumberConfiguration', 'numberRangeConfiguration'
+      2011-09-06 - Joerg Winter - IT-28900 made 'fixedAccessNumber' and 'mobileAccessNumber' in 'FixedAndMobilePhoneNumbersList' optional
+                                           removed 'portRemainingNumbersIndicator' from 'portingAccessNumberRanges',
+                                               'singleNumberConfiguration' and 'numberRangeConfiguration'
+      2011-09-20 - Joerg Winter - IT-28900 added 'selectedDestinationsRefId' to 'adslInternetConfiguration'
+      2011-10-13 - Joerg Winter - restricted minimumDurationPeriod/value to numeric(4) and minimumDurationPeriod/unit to 16 characters
+      2011-10-18 - Joerg Winter - IT-28900 added optional attribute 'action' with value 'remove' to 'adslInternetConfiguration/DSLBandwidth'
+      2011-12-14 - Gesa Prien - ITk-31489 added 'cancellationReasonCodeOldCcbId' and 'cancellationReasonCodeNewCcbId' to 'function'
+Since 3.7:
+      2011-12-21 - Gesa Prien - IT-30283 added 'keepProductSubscriptionIndicator' to 'contractFunctionConfig'
+      2012-01-27 - Joerg Winter - IT-k-31598 added 'initialContractStartDate' to 'contractFunction'
+      2012-01-30 - Joerg Winter - PN-xxxx restricted elements in 'hardwareRecipient': 'salutationDescription' and
+                                              'forename' to 30 characters, 'name' to 60 characters
+Since 3.8:
+      2012-04-16 - Gesa Prien - IT-31545 moved 'acceptOutdoorBandwidth' next to the other bandwidth fields in 'adslInternetConfiguration', 
+                                             added 'maxTechnicalBandwidth' to 'adslInternetConfiguration'
+      2012-04-16 - Gesa Prien - IT-31157 changed type of element 'refFunctionID' from 'refFunctionID' to 'ExistConfStringId',
+                                             added 'voiceS0Configuration' to 'voice',
+                                             added types for function 'extraLine': 'ExtraLine', 'AccessAddOnFunction', 
+                                                 'ExtraTalLineConfiguration' and 'ExtraS0LineConfiguration'
+      2012-04-24 - Joerg Winter - IT-31830 added 'cancellationDateOldCcbId' and 'cancellationDateNewCcbId' to 'function'
+      2012-04-27 - Gesa Prien - IT-31157 changed element and type 'voiceS0Configuration' to '[v|V]oicePBXConfiguration',
+                                             added todos for inheriting 'ipCentrexSiteConfiguration' and 'sipTrunkS2MConfiguration'
+                                                 from 'VoicePBXConfiguration'
+      2012-06-12 - Gesa Prien - IT-31157 PCR01 removed 'specialTimeWindow' from 'adsl/sdsl/fttxInternetConfiguration',
+                                               removed 'projectOrderIndicator' from 'adsl/sdsl/fttxInternetConfiguration'
+                                                   and 'voiceConfiguration',
+                                               removed 'fixedOrderDateIndicator' from 'adsl/sdsl/fttxInternetConfiguration'
+                                                   and 'portingAccessNumberRanges' and 'portingAccessNumbers'
+      2012-07-20 - Chetan Goyani - IT-32245 added 'desiredCountriesList' to 'voicePBXConfiguration'                                                   
+Since 3.9:
+      2012-08-07 - Joerg Winter (Gesa Prien) - IT-31752 added 'activeBillingIndicator' and 'newActiveBillingIndicator' to 'functionConfiguration'
+      2012-08-09 - Gesa Prien - IT-31752 renamed 'activeBillingIndicator' and 'newActiveBillingIndicator' 
+                                             to 'billingEnabledIndicatorOldCcbId' and 'billingEnabledIndicatorNewCcbId'
+      2012-08-14 - Gesa Prien - IT-31752 moved 'billingEnabledIndicatorOldCcbId' and 'billingEnabledIndicatorNewCcbId'
+                                             from 'functionConfiguration' to 'function'
+      2012-08-22 - Gesa Prien - IT-31752 removed 'billingEnabledIndicatorOldCcbId' and 'billingEnabledIndicatorNewCcbId'
+                                             from 'function'
+Since 3.91:
+      2013-02-28 - Chetan Goyani - IT k-32609 added terminationReasonCode and detailedTerminationReason to function                                             
+Since 4.0:
+      2013-01-31 - Chetan Goyani - IT 32434 added 'serviceLevel' to 'voiceConfiguration', 'adslInternetConfiguration', 
+                                                                        'sdslInternetConfiguration' and 'fttxInternetConfiguration'    
+Since 4.1:
+      2013-05-22 - Neha Khombare - IT 32546 added 'portingMode1', 'portingMode2', 'portingMode3' to portingAccessNumberRanges
+                                            deprecated portingMode from portingAccessNumberRanges
+                                            deprecated sipTrunkS2MConfiguration
+      2013-07-10 - Neha Khombare - IT 32546 added carrier element in portingAccessNumberRanges
+Since 4.2:
+      2013-08-20 - Neha Khombare - IT 31530 - Added wbciPrecoordination in singleNumberConfiguration, numberRangeConfiguration, 
+                                              portingAccessNumbers and portingAccessNumberRanges
+                                              Added releasingPortingIdentifier to the accessNumberRange.
+                                              Added dtagPbxAccountNumber to ExtraS0LineConfiguration
+      2013-11-06 - Hans Becker - IT-31530 - Added element oldWitaContractNumber to ExtraS0LineConfiguration
+      2013-11-07 - Hans Becker              Changed type of dtagPbxAccountNumber to string100  
+Since 4.3:
+      2013-12-30 - Prabhat Singh - PPM-90531 - Added 'serviceLevelLegalList' to  'voiceConfiguration', 'adslInternetConfiguration', 
+                                                                        'sdslInternetConfiguration' and 'fttxInternetConfiguration'
+      2013-12-31 - Prabhat Singh - PPM-105978 - Changed type of 'maxTechnicalBandwidth' to 'RemovableExistConfString100'  from 'ExistConfString100' 
+      2014-01-07 - Marcel Khil   - PPM-100743 - Added new type transmissionType for tvCenterBundledConfiguration.  
+      2014-04-30 - Prabhat Singh - PPM-105069 - Added element 'ipV6Variant' to adslInternetConfiguration, sdslInternetConfiguration and fttxInternetConfiguration.
+Since 4.4:
+      2014-07-31 - Prabhat Singh - Added documentation for element 'installationPackage'
+      2014-07-31 - Prabhat Singh - Added documentation for element 'extraNumbers'
+Since 16.0:
+      2015-01-06 - Prabhat Singh - Added documentation for 'fixedIPAddress'      
+      2015-03-17 - Prabhat Singh - PPM 124244_153216-PCR 55 - Added elements 'hierarchyInclusionIndicator', 'discountGroup' to discountConfiguration  
+      2015-05-07 - Prabhat Singh - PPM PPM-124244-153216 - PCR 55 changed type of optionValue to 'string7' from 'string5'
+Since 17.0:
+      2015-06-15 - Prabhat Singh - PPM 116590_2 - added quantity and quantityOfPartiallyExchangedHardware to type hardwareConfiguration
+                                                  added voiceONBConfiguration to type voice
+                                                  added new types VoiceONBConfiguration, ExistConfLicencesList, ExistConfLicenceOptionsList, LicencesList, LicenceOptionsList, Licence          
+Since 18.0:
+      2015-07-17 - Prabhat Singh - PPM 132323 - added rentedHardwareConfiguration into hardware
+      2015-09-08 - Prabhat Singh - PPM 116590_3 - added 'suppressNetworkDeactivationIndicator' and 'skipPreCoordinationIndicator' to functionConfiguration                                                  
+      2015-11-16 - Ulrich Quester - PPM 116590_179351 - removed 'skipPreCoordinationIndicator' from functionConfiguration
+Since 19.0:
+      2016-01-21 - Prabhat Singh - PPM- 159238 - added new function 'mobileUsage'
+      2016-01-21 - Prabhat Singh - PPM - 159238 - added 'callForwarding' to voicePremiumConfiguration and voiceBasisConfiguration 
+      2016-04-05 - Prabhat Singh - PPM - 159238 - changed type of billingAccountNumber to  ExistConfString35 to consolidate the definition of billingAccountNumber in SOM XSDs
+Since 20.0:
+      2016-05-17 - Prabhat Singh - PPM-189902 - added 'processingHints' to function
+      2016-06-08 - Prabhat Singh - PPM-159238_215503 added socCodeList to mobileUsageConfiguration
+Since 21.0:
+      2016-08-29 - Prabhat Singh - PPM-155469 - elements DTAGCompletionDate, DTAGPaymentDate are changed to an ExistConf type in ExtraTalLineConfiguration
+      2016-09-08 - Apoorva Saini - ITk-33538 changed type of installationSvcConfiguration/remarks to 'tns:ExistConfString1000'      
+      2016-10-05 - Apoorva Saini - PN-30834 - Reverted the changes of PPM-155469
+      2016-10-13 - Neha Khombare - PPM-155469_xxxxx - Added new elements providerCompletionDate, providerPaymentDate
+                                                      and deprecate DTAGCompletionDate, DTAGPaymentDate
+Since 22.0:
+      2017-01-25 - Apoorva Saini - PPM-183970_245219 - Added element deliveryServiceId to type hardwareConfiguration
+Since 23.0:      
+      2017-05-10 - Apoorva Saini - PPM-207533 - Added element volumeCap to type adslInternetConfiguration
+      2017-05-22 - Apoorva Saini - PPM-233036 - Modified documentation for element 'fixedIPAddress' in adslInternetConfiguration
+      2017-06-16 - Apoorva Saini - PPM-207533-250699 - added 'hardwarePrice' to 'hardwareConfiguration', changed type of shippingCosts to PricableExistConfString100, changed type of pricingStructureCode to PricableExistConfString40
+      2017-07-19 - Apoorva Saini - IT-k-33852 - changed type of mainAccessServiceCode to'PricableExistConfString5'and type of DSLBandwidth to'PricableRemovableExistConfDescriptionString100'
+Since 24.0  
+      2017-09-01 - Apoorva Saini     - IT-k-33879 - Changed documentation of processingHints to add 'suppressDirEntryTerminationIndicator'
+      2017-09-28 - Hazarath Meravula - PPM-101666_242258 - DEPRECATED customerCallBackNumber in voiceConfiguration.
+Since 26.0  
+      2018-06-04 - Neha Khombare - PPM-230939 - changed documentation for suppressNetworkDeactivationIndicator
+Since 27.0  
+      2018-09-06 - Neha Khombare - PPM-320858 - Added 'fibreInternetconfiguration' to internet
+      
+]]></documentation>
+  </annotation>
+  <include schemaLocation="som-accesses.xsd"/>
+  <complexType name="function" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose:
+  How to distinguish between accesses and functions (German):
+  - Ein vorhandener Produktcode ist ein Hinweis auf die Natur der Function (aber nicht entscheidend). 
+  - Beschreibt Kundenwahrnehmbare Eigenschaften -- oder besser: bewußt durch den Benutzer nutzbare Eigenschaften 
+  - Diese Leistung wird an den Kunden verkauft. 
+  - Eigenschaften der Leistung werden beschrieben, nicht Eigenschaften des zugrunde liegenden Produktes 
+  - Dependent Functions sind definiert um Lifecycle Abhängigkeiten abzubilden
+  Begriff der xyConfiguration: 
+  - Informationen über Produkteigenschaften kommen in die Configuration 
+  - Auftragsbezogene Information in die Ebene darüber. Das sind i.W. status und ids. 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="processingType" type="tns:processingType" minOccurs="0"/>
+      <element name="processingHints" type="tns:ProcessingHintList" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Special instructions from/to external systems. No system can rely on a special behaviour based on such a value, if not explicitely discussed with SOM team!
+Values: keepISDNS0FeatureIndicator(value=true/false):to specifying that the customer uses ISDN hardware, suppressDirEntryTerminationIndicator(value=true/false): to indicate if directory entry is to be supressed while sending order to OPM.
+Since: BSS-20
+Filled by: Front ends
+Used by: COM and backends 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="processingStatus" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: accumulated processing status for both ccb ids, 
+Since: ?, in IT-28066 (1.36) type changed from string16 to string30 (reason: longest value 'partiallyCompletedOPM' can't be stored in string16)
+Filled by: COM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="completionStatusOldCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: partial processing status for old ccb id
+Since: IT-28066 (1.36)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="completionStatusNewCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: partial processing status for new ccb id
+Since: IT-28066 (1.36)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="previousCompletionStatusOldCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: previous partial processing status for old ccb id
+Since: PN-6273 (1.39)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="previousCompletionStatusNewCcbId" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: previous partial processing status for new ccb id
+Since: PN-6273 (1.39)
+Filled by: COM with data by CCM and OPM
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationReasonCodeOldCcbId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: cancellation reason for old ccb id
+Since: ITk-31489
+Filled by: OPM
+Used by: FIF, OMTS, DWH/VTS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationReasonCodeNewCcbId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: cancellation reason for new ccb id
+Since: ITk-31489
+Filled by: OPM
+Used by: FIF, OMTS, DWH/VTS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationDateOldCcbId" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Date, when the function has been cancelled. The function may be devided into
+    two technical fulfilment parts (e.g. for a change of technology there is an activation
+    and a deactivation). Therefore we have cancellationDateNewCcbId reflecting an
+    activation or change and cancellationDateOldCcbId reflecting a deactivation. The date
+    will be filled by COM in response to a cancellation either from OPM or COM.
+Since: IT-31830 (1.43)
+Filled by: COM
+Used by: DWH
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="cancellationDateNewCcbId" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: see cancellationDateOldCcbId
+Since: IT-31830 (1.43)
+Filled by: COM
+Used by: DWH
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="processAfterNodeRefId" type="tns:stringId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[For internal use between COM and OPM: indicates that the function should be executed after the execution of the referenced function/access</documentation>]]></documentation>
+        </annotation>
+      </element>
+      <element name="ccbId" type="tns:ccbId_S" minOccurs="0"/>
+      <element name="contractNumber" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: the contract number (Vertragsnummer)
+History:
+  Was changed from type string16 to ExistConfString16 beginning with version 3.1 (release 1.36)
+Since: ?
+Values: 
+Filled by: ?
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="productCommitmentNumber" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Links contractNumber and product subscription ID. For serviceDeliveryContracts there is more than one, but
+  a specific function has only ONE. (=Vertragsserviceschein)
+History:
+  Was changed from type string16 to ExistConfString16 beginning with version 3.1 (release 1.36)
+Since: ?
+Values: 
+Filled by: ?
+Used by: VTS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="subOrderId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Reference for POS
+Since: IT-26334
+Filled by: ePOS
+Used by: POS-FE
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="enrichFromNodeRefId" type="tns:stringId" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: References a node in the orderPosition (referenced by 'previousOrderRef') by the node ID.
+  Data from the referenced node are used to enrich this node. Only another function may be referenced!
+Since: IT-27143 (1.36)
+Filled by: Frontend
+Used by: COM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="contactRoleRefIdList" type="tns:ContactRoleRefIdList" minOccurs="0"/>
+      <element name="terminationReasonCode" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Holds the termination reason of a specific function that is terminated in a package change scenario.    
+Since: 1.44
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="detailedTerminationReason" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Holds a more detailed description of the termination reason.    
+Since: 1.44
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute name="ID" type="tns:ID" use="required"/>
+  </complexType>
+  <complexType name="dependentFunction" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Dependent functions (directoryEntry ... installationSvc) must always have a dependency to 1 'contractFunction'. 
+   This is specified in attribute 'refFunctionID'.    
+Since: 1.32
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:function">
+        <sequence>
+          <element name="refFunctionID" type="tns:ExistConfStringId" minOccurs="0"/>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="resultDate" type="date" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Stores the resultDate as returned by OPM after processing the function. Will then be stored via FIF in CCB. Must not be filled by the frontends.
+Since: 
+Filled by: OPM
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="contractFunction" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Only contract functions (incl. derived type AccessFunctions, so altogether: Internet ... SafetyPackage) can have 
+   contract related data such as pricingStructureCode or minimum-duration period. A hardware or directoryEntry function 
+   would never need such data. Note: These contract details (provided only when function is newly added or changed) 
+   are placed inside the functions' respective configuration elements.
+   Contract functions do not need a 'nodeRefId' to another function, since they are considered stand-alone. 
+   The frontends can optionally specify such a dependency to another contract function, e.g. to make 'safetyPackage' 
+   dependent on 'internet' during an activation scenario. That way, if 'internet' has to be cancelled in OPM for any reason, 
+   the 'safetyPackage' gets automatically cancelled also.
+   A contractFunction without reference to a serviceDeliveryContract is called "Auftragsformular".
+   A contractFunction with reference to a serviceDeliveryContract is called "Serviceschein".
+Since: 1.32
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:function">
+        <sequence>
+          <element name="contractStartDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: IT-29840
+Filled by: BKS
+Used by: AO
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="initialContractStartDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The first and initial start date for this contract, especially for discount and promotions.
+    May not always be the same as contractStartDate (see above).
+    Characteristic V0200
+Since: IT-k-31598 (1.42)
+Filled by: BKS
+Used by: CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serviceDeliveryContractCcbId" type="tns:nonTypedCcbId" minOccurs="0"/>
+          <element name="skeletonContractNodeRefID" type="tns:string100" minOccurs="0"/>
+          <element name="skeletonContractCcbId" type="tns:nonTypedCcbId" minOccurs="0"/>
+          <element name="serviceDeliveryContractNodeRefID" type="tns:string100" minOccurs="0"/>
+          <element name="targetServiceDeliveryContractNodeRefID" type="tns:string100" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="accessFunction" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Only access functions (voice ... seat) are directly linked to an access via their attributes 'refAccessID' 
+   and possibly 'targetAccessId'. 
+   In a technology change 'refAccessID' references the current access, 'targetAccessId' references the new one.
+Since: 1.32
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:contractFunction">
+        <attribute name="refAccessID" type="tns:stringId">
+          <annotation>
+            <documentation><![CDATA[Reference to current access]]></documentation>
+          </annotation>
+        </attribute>
+        <attribute name="targetAccessID" type="tns:stringId">
+          <annotation>
+            <documentation><![CDATA[
+In case of switching to a different access technology for this function, the *new* access is referenced
+  here. The formerly used access is stated in refAccessID, see above.
+]]></documentation>
+          </annotation>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AccessAddOnFunction" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Access add on functions (e.g. extraLine) must always have a dependency to 1 'access'. 
+   This is specified in attribute 'refAccessID'.    
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:function">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="refAccessID" type="tns:stringId" use="required"/>
+        <attribute name="targetAccessID" type="tns:stringId"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <simpleType name="FunctionConfigurationRole">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: An identifier to enable switching of functions, e.g. from voiceBasisConfiguration to voicePremiumConfiguration
+Since: 1.38
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="default">
+        <annotation>
+          <documentation>used for the existing function</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="target">
+        <annotation>
+          <documentation>used for the new function</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <complexType name="functionConfiguration" abstract="true">
+    <sequence>
+      <element name="productCode" type="tns:ExistConfString5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Product code as defined in the PSM for the product, which is used for the function.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="productBillingName" type="tns:ExistConfString60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Textual name of the product.
+Filled by: BKS
+Used by: Output Management
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="productVersionCode" type="tns:ExistConfString5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Product version code as defined in the PSM for the product, which is used for the function.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="mainAccessServiceCode" type="tns:PricableExistConfString5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Service code of the main access service as defined in PSM for the product. 
+Filled by: BKS
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="suppressNetworkDeactivationIndicator" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates to COM/OPM, that no deactivation of phone numbers in OPM should be triggered. This is only relevant for the ONB
+and businessVoip product.
+Filled by: BPA
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+    <attribute name="role" type="tns:FunctionConfigurationRole">
+      <annotation>
+        <documentation><![CDATA[
+See: XSD type definition FunctionConfigurationRole
+Since: 1.38
+Values:
+  default
+  target
+]]></documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <complexType name="dependentFunctionConfig" abstract="true">
+    <complexContent>
+      <extension base="tns:functionConfiguration"/>
+    </complexContent>
+  </complexType>
+  <complexType name="contractFunctionConfig" abstract="true">
+    <complexContent>
+      <extension base="tns:functionConfiguration">
+        <sequence>
+          <element name="pricingStructureCode" type="tns:PricableExistConfString40" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+KBA might send with value even if there were no changes.
+In case there is a change e.g. from mobileSeatConfiguration to convergedSeatConfiguration without any
+other modification, this shift would not show up in the SOM.
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="visTrackingPosition" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="pricingStructureBillingName" type="tns:ExistConfString60" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Textual name of the tariff of the function.
+Filled by: BKS
+Used by: Output Management
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="boardSignName" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Contract owner on Vodafone's part. Normally defaulted by FIF.
+Filled by: FIF (default), Frontends (exceptional cases)
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="boardSignDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Date, when the contract was signed by Vodafone. Normally defaulted by FIF.
+Filled by: FIF (default), Frontends (exceptional cases)
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="primaryCustSignName" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Name of the contract signer.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="primaryCustSignDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Date of the contract signature.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="minimumDurationPeriod" type="tns:minimumDurationPeriod" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The minimum period the customer is obliged to stay with the contract.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="autoExtension" type="tns:autoExtension" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: If the customer does not terminate the contract by the expiration date, the contract will be extended automatically according to the autoExtension parametes.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="noticePeriod" type="tns:noticePeriod" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The customer has to notice Vodafone about a termination of the contract in advance by the noticePeriod.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="contractExpirationDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Date when the contract binding expires.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="specialTerminationRight" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Indicator if the customer has a special legal right to cancel the contract within the notice period.
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="keepProductSubscriptionIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The Preselect product in CCB has one main access service for each access number. Customers may have more than one access number. 
+  It is unknown whether these numbers belong to one line (for instance an ISDN with three numbers) or to different lines.
+  If the keepProductSubscriptionIndicator is set to true, FIF will preserve the product subscription until the last access number 
+  (main access) is terminated.
+Since: 1.42, IT 30283
+Filled by: Frontend
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="seat">
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="convergedSeatConfiguration" type="tns:convergedSeatConfiguration" minOccurs="0">
+            <annotation>
+              <documentation>Multi-Teilnehmer</documentation>
+            </annotation>
+          </element>
+          <element name="fixedSeatConfiguration" type="tns:fixedSeatConfiguration" minOccurs="0">
+            <annotation>
+              <documentation>Festnetz-Teilnehmer (eng.: fixed line)</documentation>
+            </annotation>
+          </element>
+          <element name="mobileSeatConfiguration" type="tns:mobileSeatConfiguration" minOccurs="0">
+            <annotation>
+              <documentation>Mobil-Teilnehmer</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="seatConfiguration" abstract="true">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="maskingDigits" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="storageMaskingDigits" type="tns:ExistConfString100" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="fixedAccessNumber">
+    <annotation>
+      <documentation>to be used in seat configurations</documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:accessNumber" minOccurs="0"/>
+      <element name="configured" type="tns:accessNumber" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="mobileAccessNumber">
+    <annotation>
+      <documentation>to be used in seat configurations</documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:accessNumber" minOccurs="0"/>
+      <element name="configured" type="tns:accessNumber" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="msisdnStatus">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: to be used in seat configurations
+Since: 
+Values:
+  REQUESTED = number was requested in AIDA but not yet reserved
+  RESERVED = number was reserved
+  ACTIVATED = number is activated in OPM
+Filled by: KBA
+Used by: COM
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:string100" minOccurs="0"/>
+      <element name="configured" type="tns:string100" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="imsi">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: The IMSI is assigned by KIAS and written onto the SIM card. It *not* identical to the SIM serial number.
+         The IMSI is usually 15 digits.
+Reference: http://en.wikipedia.org/wiki/International_Mobile_Subscriber_Identity
+Used: To be used in seat configurations
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:string100" minOccurs="0"/>
+          <element name="configured" type="tns:string100" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="convergedSeatConfiguration">
+    <complexContent>
+      <extension base="tns:seatConfiguration">
+        <sequence>
+          <element name="fixedAccessNumber" type="tns:fixedAccessNumber" minOccurs="0"/>
+          <element name="mobileAccessNumber" type="tns:mobileAccessNumber" minOccurs="0"/>
+          <element name="msisdnStatus" type="tns:msisdnStatus" minOccurs="0"/>
+          <element name="imsi" type="tns:imsi" minOccurs="0"/>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="subsidizedHardwareIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="msisdnEligibilityCheckData" type="tns:ExistConfMsisdnEligibilityCheckData" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: PN-3077 (1.37)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="fixedSeatConfiguration">
+    <complexContent>
+      <extension base="tns:seatConfiguration">
+        <sequence>
+          <element name="fixedAccessNumber" type="tns:fixedAccessNumber" minOccurs="0"/>
+          <element name="msisdnStatus" type="tns:msisdnStatus" minOccurs="0"/>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="subsidizedHardwareIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: PN-3077 (1.37)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="mobileSeatConfiguration">
+    <complexContent>
+      <extension base="tns:seatConfiguration">
+        <sequence>
+          <element name="fixedAccessNumber" type="tns:fixedAccessNumber" minOccurs="0"/>
+          <element name="mobileAccessNumber" type="tns:mobileAccessNumber" minOccurs="0"/>
+          <element name="msisdnStatus" type="tns:msisdnStatus" minOccurs="0"/>
+          <element name="imsi" type="tns:imsi" minOccurs="0"/>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="subsidizedHardwareIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="msisdnEligibilityCheckData" type="tns:ExistConfMsisdnEligibilityCheckData" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: PN-3077 (1.37)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="hardware">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Represents a new piece of hardware (access-hardware or terminal-hardware) which might get ordered in the same order, 
+   i.e. under the same barcode. Only allowed with processingType='ADD'. Only allowed in ProviderChange, not in Termination orders 
+   (where all functions must have processingType='TERM' or 'IGNORE'). Do not use this function for existing hardware, 
+   since the relevant hardware gets cloned automatically in CCB. Use this function only for new hardware items to add.
+   New "Access hardware" (NAG's) should get ref to the access element; "terminal hardware" (Endgeräte) to the appropriate function element.                    
+   UPDATE:
+     A processing type CHANGE can happen in case of a technology change, where a piece of hardware is internally re-reregistered, but not
+     exchanged by the customer.
+Since: 1.31
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunction">
+        <sequence>
+          <element name="hardwareConfiguration" type="tns:hardwareConfiguration" minOccurs="0"/>
+          <element name="rentedHardwareConfiguration" type="tns:hardwareConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="hardwareConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+A 'hardwareConfiguration' element is mandatory for orders containing a 'hardware' function with processingType 'ADD'.
+Since: 1.31
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunctionConfig">
+        <sequence>
+          <element name="hardwareServiceCode" type="tns:ExistConfDescriptionString100" minOccurs="0"/>
+          <element name="hardwareType" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: the type of the hardware (to be found in plausibility list)
+Since: IT-26334
+Values:
+  EG (other hardware, EG=Endgeraet (German))
+  IAD (Internet Access Device)
+  TVEG (for additional TV hardware, e.g. powerline adapter or hard disc)
+  STB (=SetTopBox, since TVC)
+  SIP (SIP Trunk-Gateway)
+  Modem
+Filled by: ePOS (SIDCOM)
+Used by: POSconditionsList
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="articleNumber" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: ever
+Values:
+Filled by: Frontends (KBA, ePOS, ...)
+Used by: OutputManagement beside others
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="articleName" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Long name for the hardware
+Since: ever
+Values:
+Filled by:
+- for Netztabschlussgeraete or SIM-Card or IADPIN, OPM will send the articleName back
+- for Endgeraete, OPM never sends articleName
+- for hardware add, KBA or ePOS has to provide articleName
+  (if KBA does not know the articleName, it returns the articleNumber as articleName)
+Used by: OutputManagement for the letter to the customer
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serialNumber" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The printed serial number on the hardware (required for exchange process).
+Filled by: Frontends
+Used by: OPM(SAP)
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="quantity" type="tns:ExistConfNonNegativeInteger4" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: describes the amount of ordered hardware from the same hardware type
+Since:
+Filled by:
+Used by:
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="quantityOfPartiallyExchangedHardware" type="tns:NonNegativeInteger4" maxOccurs="1" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: describes the number of hardware that needs to be reordered for a hardware exchange scenario 
+Since:
+Filled by:
+Used by:
+]]></documentation>
+            </annotation>
+          </element>
+           <element name="hardwarePrice" type="tns:ExistConfPricingInfo" maxOccurs="1" minOccurs="0"/>
+          <element name="orderReason" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: If hardware with type STB or TVEG is provided the orderReason is set. V0989 (Bestellgrund optional)
+Since: IT-27700
+Values:
+  'Backendversand TV' (currently known to be used)
+  'Shopausgabe / Vorabversand TV' (currently known to be used)
+  'Doku - Kein Versand'
+  'Geräteanspruch subventioniert'
+  'Gerätenachbestellung'
+  'KSC Nachbestellung'
+  'Kundenrückgewinnung'
+  'Neuauftrag' (Default)
+  'Rückgabe Settop-Box'
+  'Selbstabholung'
+  'Storniert'
+  'Vorabtausch'
+  '1:1 Tausch'
+  'Neuversand nach Retour'
+Filled by: ePOS+ (sid2som)
+Used by: POS
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="subventionCode" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+    Service characteristic: V0114 (marked as mandatory, values: 0 (default) and 1);
+    Field is still named subventionIndicator in OPM
+Since: 
+Values:
+  '0' : false
+  '1' : true
+Filled by: 
+Used by: OPM
+Note: prior to SOM version 3.3, also: subventionIndicator => 0/false, 1/true; mapping reverse to 0/1 only
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="zeroChargeIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: In some scenarios new hardware is sent to the customer without being charged. For instance if a change of technology is inititiated by Vodafone.
+Values: true, false
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="shippingCosts" type="tns:PricableExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Information about shipping costs (whether will be charged or not) as a code
+Since: 
+Values: 'RG' (default), 'Versandkosten für ONSITE', 'keine', 'RGoVP'
+Filled by: KBA (by Frontend)
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="salutationDescription" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[Will sunset in the future, use hardwareRecipient structure]]></documentation>
+            </annotation>
+          </element>
+          <element name="forename" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[Will sunset in the future, use hardwareRecipient structure]]></documentation>
+            </annotation>
+          </element>
+          <element name="name" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[Will sunset in the future, use hardwareRecipient structure]]></documentation>
+            </annotation>
+          </element>
+          <element name="hardwareRecipient" type="tns:ExistConfHardwareRecipient" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Information about addressee
+Since: IT-k-30648 (1.39)
+Filled by: SOM-Editor, BKS
+Used by: FIF 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="hardwareMailingAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="simSerialNumber" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: REF: accesses/lteConfiguration
+Since: IT-28260 (1.36)
+Values: 
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="imei" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: International Mobile Equipment Identifier. Captured in ePOS+ for TV Center orders. Identifier of a Settop-Box.
+Maps to ServiceCharacteristic I1339 in CCB
+Since: IT-28170 (1.36)
+Values: arbitrary
+Filled by: ePOS+
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="sapActionCode" type="tns:ExistConfInteger" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Captured in KBA for TV Center reorders of existing customers. Maps to ServiceCharacteristic I1338 in CCB
+Since: IT-28170 (1.36)
+Values: Integer, 3 digits
+Filled by: KBA
+Used by: SAP
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="deliveryServiceId" type="tns:string10" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Encodes the freight carrier and delivery option.
+Since: PPM-245219 (BSS22)
+Values:
+Filled by: Frontend
+Used by: OPM (value is passed to SAP)
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Currently used for monthlySurcharge (Vxxxx)
+Since: IT-28168 (1.36)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="compensationFeeIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The compensationFee is saved in ccb in serviceCharacteristic I1335 and allowed values are Ja/Nein.
+ So this is a boolean flag.
+Since: IT-27143 (1.36)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="sapOrderId" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Internal order number in SAP (which is *not* the deliveryNoteNumber)
+Since: IT-27783
+Values: 
+Filled by: OPM
+Used by: all
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="deliveryNoteNumber" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Delivery number of the hardware device that has to be exchanged
+         (German: Lieferscheinnummer)
+Since: IT-27783
+Values: 
+Filled by: OPM
+Used by: all
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="deliveryDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Date of delivery of device that has to be exchanged
+         (German: Lieferscheindatum)
+Since: IT-27783
+Values: 
+Filled by: OPM, KBA (by SAP-Z42)
+Used by: all
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="deliveryCompany" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Name of freight carrier
+         THIS FIELD IS NOT USED. THE INFORMATION IS DETERMINED BY OMTS VIA A WEBSERVICE
+Since: IT-27783
+Values: TNT, DHL, etc.
+Filled by: OPM, KBA (by SAP-Z42)
+Used by: all
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="defectCode" type="tns:ExistConfString3" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Defect code; use only for '1:1 Tausch'
+Since: IT-27783
+Values: e.g. 199
+Filled by: KBA
+Used by: all
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="defectText" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Defect text description, KBA will send 50 chars max.; use only for '1:1 Tausch'
+Since: IT-27783
+Values: 
+Filled by: KBA, mandatory if defectCode=199 (sonstige Fehler/other faults)
+Used by: all
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="simSwapReason" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Text as reason for SIM card exchange
+Since: IT-28713
+Values: 
+Filled by: KBA
+Used by: OMTS
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfHardwareRecipient">
+    <sequence>
+      <element name="existing" type="tns:HardwareRecipient" minOccurs="0"/>
+      <element name="configured" type="tns:HardwareRecipient" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="HardwareRecipient">
+    <sequence>
+      <element name="salutationDescription" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Information about addressee
+Since: IT-k-30648 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="forename" type="tns:string30" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Information about addressee
+Since: IT-k-30648 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="name" type="tns:string60" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Information about addressee
+Since: IT-k-30648 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="installationSvc">
+    <complexContent>
+      <extension base="tns:dependentFunction">
+        <sequence>
+          <element name="installationSvcConfiguration" type="tns:installationSvcConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="installationSvcConfiguration">
+    <complexContent>
+      <extension base="tns:dependentFunctionConfig">
+        <sequence>
+          <element name="installationPackage" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Type of the installation package as defined in the service characteristic V0201 for service V0277.
+Since: 
+Filled by: POS-FE, KBA, CCM
+Used by: OPM, FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="quantity" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="signatureRequiredIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="desiredDate" type="tns:ExistConfDate" minOccurs="0"/>
+          <element name="contactPhoneNumber" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="sundayServiceIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString1000" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Memo field
+Since: IT-28575 (1.39)
+Filled by: POS-FE, KBA
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="installationContactRoleRef" type="tns:ExistConfStringId" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Links to an existing or newly created contact role
+Since: IT-30580 (1.39)
+Filled by: POS-FE, KBA
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="instantAccess">
+    <complexContent>
+      <extension base="tns:dependentFunction">
+        <sequence>
+          <element name="instantAccessConfiguration" type="tns:instantAccessConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="instantAccessConfiguration">
+    <complexContent>
+      <extension base="tns:dependentFunctionConfig">
+        <sequence>
+          <element name="instantAccessTariff" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: This is the tariff for the instantAccess. Service-code='V8042' and ServiceCharacteristic-code='V8004'
+  Currently known and allowed values are 
+    - nein
+    - Standard
+    - Volume
+    - Flat
+Since: IT-27143 (1.36)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="instantAccessVariant" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: This is the variant for the instantAccess. 
+  Currently known and allowed values are 
+    - Nein
+    - InstantAccess
+    - InstantAccess3
+    
+Since: IT-27143 (1.36)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="simID" type="tns:ExistConfString100" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="directoryEntry">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Represents the directory entry (also called telephone-book-entry, TBE) belonging to a voice function in the same orderPosition.
+Termination orders:                     
+  * For "voice" function with processingType TERM, a related directory entry gets terminated automatically in CCB also                    
+  * For "voice" function with processingType IGNORE, the related directory entry cannot be terminated separately by KBA today                   
+  * Any function "directoryEntry" under orderPosition "termination" would be ignored. TBD: Even allow it technically?                   
+ProviderChange orders:                      
+  SOM may contain a function "directoryEntry" with processingType:                    
+  * ADD: If customer had no directory entry, but wants one after Provider Change. Supply only "configured" elements                   
+  * TERM: If customer had an entry but no longer wants it. Supply only "existing" elements                    
+  * CHANGE: If customer had an entry and still wants one afterwards. Supply "existing" and "configured" values as in example                    
+  * but not IGNORE: Not allowed for ProviderChange orders, because the entire bundle is affected.                   
+  Note:                   
+  * Previous directory entries are always terminated in CCB and with DTAG! These services are not cloned by CCB!                    
+  * processingType CHANGE will order a new directory entry from DTAG to replace the terminated one                    
+  * If SOM contains no function "directoryEntry", the new Vodafone customer will definitely have no directory entry in the end 
+Since: 1.31
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunction">
+        <sequence>
+          <element name="directoryEntryConfiguration" type="tns:directoryEntryConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="directoryEntryConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+A 'directoryEntryConfiguration' element is mandatory for orders containing a 'directoryEntry' function with processingType either 'CHANGE' or 'ADD'
+Since: 1.31
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunctionConfig">
+        <sequence>
+          <element name="directoryEntryType" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>Einzeleintrag | Anlage</documentation>
+            </annotation>
+          </element>
+          <element name="inverseSearchIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>May only be filled if directoryEntryType='Einzeleintrag'</documentation>
+            </annotation>
+          </element>
+          <element name="titleDescription" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="forename" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="nobilityPrefixDescription" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="surnamePrefix" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="name" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="profession" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="industrialSectorRd" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="listedAddress" type="tns:RemovableExistConfAddress" minOccurs="0"/>
+          <choice minOccurs="0">
+            <element name="listedPhoneNumber" type="tns:ExistConfAccessNumber"/>
+            <element name="phoneBookNumberList">
+              <complexType>
+                <sequence>
+                  <element name="existing" minOccurs="0">
+                    <complexType>
+                      <sequence>
+                        <element name="phoneBookNumber" type="tns:PhoneBookNumber" minOccurs="0" maxOccurs="3"/>
+                      </sequence>
+                    </complexType>
+                  </element>
+                  <element name="configured" minOccurs="0">
+                    <complexType>
+                      <sequence>
+                        <element name="phoneBookNumber" type="tns:PhoneBookNumber" minOccurs="0" maxOccurs="3"/>
+                      </sequence>
+                    </complexType>
+                  </element>
+                </sequence>
+              </complexType>
+            </element>
+          </choice>
+          <element name="name2" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="forename2" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="publicationMedia" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="information" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <element name="keyword" type="tns:RemovableExistConfString100" minOccurs="0"/>
+          <!-- TODO: Clarify use of desiredDate -->
+          <element name="desiredDate" type="tns:ExistConfDate" minOccurs="0"/>
+          <element name="dtagId" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="directoryEntryText" type="tns:ExistConfString360" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+  German: OPM schreibt für eine Bestellung eines Standard-Telefonbucheintrags für Privatkunden den Eintrag (V0100)
+Since: PN-6015(SPN-COM-000113201) (1.39)
+Filled by: OPM
+Used by: CCM
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="internet">
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="adslInternetConfiguration" type="tns:adslInternetConfiguration" minOccurs="0"/>
+          <element name="sdslInternetConfiguration" type="tns:sdslInternetConfiguration" minOccurs="0"/>
+          <element name="fttxInternetConfiguration" type="tns:fttxInternetConfiguration" minOccurs="0"/>
+          <element name="fibreInternetConfiguration" type="tns:fibreInternetConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="adslInternetConfiguration">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <!--
+            <element name="visTrackingPosition" minOccurs="0">
+            <complexType>
+            <sequence>
+            <element name="existing" minOccurs="0" type="tns:string100"/>
+            <element name="configured" minOccurs="0" type="tns:string100"/>
+            </sequence>
+            </complexType>
+            </element>
+          -->
+          <element name="DSLBandwidth" type="tns:PricableRemovableExistConfDescriptionString100" minOccurs="0">
+            <annotation>
+              <documentation>If not present (or marked as removed): Schmalbandanschluss (V0115 is not Schmalband, V0115 is DSL with 128KB)</documentation>
+            </annotation>
+          </element>
+          <element name="volumeCap" type="tns:RemovableExistConfService" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+                Purpose: Indicates the information required for DSL & KPI transparency regulations, e.g. explicit contractual information about maximum data volume.
+                Since: PPM 207533 (BSS23)
+                Filled by: Front-end, BKS
+                Used by: OPM (sends it to OutputManagement)
+              ]]></documentation>
+            </annotation>
+          </element>
+          <element name="upstreamBandwidth" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+    Only valid if DSLBandwidth is not marked as removed
+Since: 
+Values:
+    SOM    OPM       Access
+    =====  ========  ===========
+    I1217  6000      businessDSL  adslInternet
+    I1218  16000     businessDSL  adslInternet
+    V0116  768       ipBitstream  adslInternet
+    V0118  1000      ipBitstream  adslInternet
+    V0117  1500      ipBitstream  adslInternet
+    V0174  2000      ipBitstream  adslInternet
+    V0175  3000      ipBitstream  adslInternet
+    V0178  6000      ipBitstream  adslInternet
+    V018C  16000     ipBitstream  adslInternet
+    V018D  20000     ipBitstream  adslInternet
+    V018G  25000     ipBitstream  adslInternet
+    V018H  50000     ipBitstream  adslInternet
+    V0133  384       isdn         adslInternet
+    V0116  768       isdn         adslInternet
+    V0118  1000      ngn          adslInternet
+    V0174  2000      isdn         adslInternet
+    V0175  3000      ipBitstream  adslInternet
+    V0178  6000      isdn         adslInternet
+    V018C  16000     isdn         adslInternet
+    V017E  1200      lte          adslInternet
+    V017J  3600      lte          adslInternet
+    V017K  7200      lte          adslInternet
+    V017L  21600     lte          adslInternet
+    V017M  50000     lte          adslInternet
+    V018J  1200 Outdoor    lte    adslInternet
+    V018O  3600 Outdoor    lte    adslInternet
+    V018P  7200 Outdoor    lte    adslInternet
+    V018Q  21600 Outdoor   lte    adslInternet
+    V018R  50000 Outdoor   lte    adslInternet
+    V0118  1000      ngn          adslInternet
+    V0174  2000      ngn          adslInternet
+    V0178  6000      ngn          adslInternet
+    V018C  16000     ngn          adslInternet
+    V018D  20000     ngn          adslInternet
+    V018G  25000     ngn          adslInternet
+    V018H  50000     ngn          adslInternet
+    V0174  dsl2000   ?            ?
+    V0115  old128    isdn         adslInternet
+    V0192  old384    isdn         adslInternet
+    V0193  old768    isdn         adslInternet
+    V0226  old1000   isdn         adslInternet
+    V0194  old1500   isdn         adslInternet
+    V0226  old1000   isdn         adslInternet
+    V0227  old2000   isdn         adslInternet
+    V0228  old3000   isdn         adslInternet
+    V0197  384       isdn         adslInternet
+    V0198  384       isdn         adslInternet
+    V0199  512       isdn         adslInternet
+    V0198  384       ngn          adslInternet
+    V0198  384       ipBitstream  adslInternet
+    V0197  384;1500  isdn         adslInternet (upstream;downstream)
+    V0198  384;2000  isdn         adslInternet (upstream;downstream)
+    V0199  512;3000  isdn         adslInternet (upstream;downstream)
+    V0198  384;2000  ngn          adslInternet (upstream;downstream)
+    V0198  384;2000  ipBitstream  adslInternet (upstream;downstream)
+Filled by: 
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="allowBandwidthDowngrade" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>Only valid if DSLBandwidth is not marked as removed</documentation>
+            </annotation>
+          </element>
+          <element name="desiredBandwidth" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>Only valid if DSLBandwidth is not marked as removed</documentation>
+            </annotation>
+          </element>
+          <element name="acceptOutdoorBandwidth" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>Only valid if DSLBandwidth is not marked as removed</documentation>
+            </annotation>
+          </element>
+          <element name="maxTechnicalBandwidth" type="tns:RemovableExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: the technical bandwidth provided by DTAG for an Annex J bit stream access. This is the maximum bandwidth that Vodafone 
+   can sell to its customer. In contrast to the other "bandwidth fields" no service codes are stored but real bandwidth parameter values.
+Since: IT-31545 (3.8)
+Currently known values: 2304, 3456, 5632, 8192, 11600, 13984, 16000
+Filled by: OPM
+Used by: OPM, CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="fixedIPAddressIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>Deprecated since IT-27626. Use fixedIPAddressChangeType instead.</documentation>
+            </annotation>
+          </element>
+          <element name="fixedIPAddressChangeType" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Controls IP address generation in OPM. COM passes it to OPM order, as new orderDetail "fixedIPAddressChangeType" (together with existing value for "fixedIPAddress") inside "internet" function node
+Since: IT-27626
+Values: "None", "Add", "Remove", and possibly "Replace" (if OPM supports the scenario)
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+Remarks: It makes no sense for KBA to set the new fixed IP address value directly, because that will be set (or overwritten) by OPM. KBA can only indicate that a change is requested.
+
+TODO: change from type string to an enumeration.
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="userAccountName" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="automaticMailingIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="instantAccessIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: used e.g. during line creation
+Since: 
+Filled by: ePOS (sid2som)
+Used by: POS-FE
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="simSerialNumber" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountID" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="chargesAndCreditsList" type="tns:chargesAndCreditsList_Type" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="earlyTerminationFeeServiceCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose:  The given service code results in a fee for the customer, which is due because the customer has terminated the contract before the minimum contract duration has been reached.
+Since: 
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: 
+Changed: IT-k-31152 (1.40): 100 to 1024 chars
+Filled by: 
+Used by: CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="dialInAccountName" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="fixedIPAddress" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The fixed IP address as requested per fixedIPAddressChangeType. Frontends should not provide this element, as it will be filled by OPM for a new fixed IP address or by COM/BKS for changes on the internet function.
+Values: The IP4 address as returned by OPM or subnetmask and IP address as returned by BKS. UNCONFIGURED – this value indicates a fixed IP has been ordered (and is paid for), but not yet allocated. This value is only valid for LTE. 
+Filled by:OPM (initially), BKS
+Used by: OPM
+Type: Optional
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="dialInAccountNameStatic" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="resultDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Stores the resultDate as returned by OPM after processing the function. Will then be stored via FIF in CCB. Must not be filled by the frontends.
+Since: 
+Filled by: OPM
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="networkElementID" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Legacy attribute from the OP interface. Its purpose is currently unknown. Must not be filled by frontends. OPM is not aware of this element
+Since: 
+Filled by: OPM?
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="disableInternetUsageIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A sipTrunk access with indicator false means the customer is not able to use the online
+    part of his internet function for internet access
+Since: IT-28575 (1.39)
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="selectedDestinationsRefId" type="tns:ExistConfStringId" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: For customers with ISDN and internet (without DSL) the internet tariff may be a flatrate.
+    In this case billing must ignore the rating of calls, which come from the customer's access numbers
+    and target to the Vodafone internet service.
+Since: IT-28900 (1.41)
+Values: Reference to voice function
+Filled by: POS-FE
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serviceLevel" type="tns:RemovableExistConfServiceLevel" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Agreement between customer and Vodafone, regarding QoS of the respective function.
+Since: IT-32434 (1.45)
+Filled by: Frontend, BKS
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serviceLevelLegalList" type="tns:RemovableExistConfServiceLevelList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A new SOM element for the legal SLAs so that the new SLAs can be described separated from the existing one
+Since: PPM-90531 (1.48)
+Filled by: Frontend
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="ipV6Variant" type="tns:RemovableExistConfIpV6Variant" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="sdslInternetConfiguration">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <!-- Part 2: Technical settings: -->
+          <element name="DSLBandwidth" type="tns:PricableRemovableExistConfDescriptionString100" minOccurs="0"/>
+    <!--
+    SOM    OPM       Access
+    =====  ========  ===========
+    I1220  2000      businessDSL
+    I1221  4000      businessDSL
+    -->
+          <element name="allowBandwidthDowngrade" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="desiredBandwidth" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="fixedIPAddressIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>Deprecated since IT-27626. Use fixedIPAddressChangeType instead.</documentation>
+            </annotation>
+          </element>
+          <element name="fixedIPAddressChangeType" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>Please refer to "adslInternetConfiguration"</documentation>
+            </annotation>
+          </element>
+          <element name="userAccountName" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="automaticMailingIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="instantAccessIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: used e.g. during line creation
+Since: 
+Filled by: ePOS (sid2som)
+Used by: POS-FE
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="simSerialNumber" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountID" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="chargesAndCreditsList" type="tns:chargesAndCreditsList_Type" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="earlyTerminationFeeServiceCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose:  The given service code results in a fee for the customer, which is due because the customer has terminated the contract before the minimum contract duration has been reached.
+Since: 
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: 
+Changed: IT-k-31152 (1.40): 100 to 1024 chars
+Filled by: 
+Used by: CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="dialInAccountName" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="dialInAccountNameStatic" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="networkElementID" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Legacy attribute from the OP interface. Its purpose is currently unknown. Must not be filled by frontends. OPM is not aware of this element
+Since: 
+Filled by: OPM?
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="fixedIPAddress" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+The fixed IP address as requested per fixedIPAddressChangeType. Frontends should not provide this element, as it will be filled by OPM for a new fixed IP address or by COM/BKS for changes on the internet function.
+Values:
+"None", "Add", "Remove", and possibly "Replace" (if OPM supports the scenario) 
+Filled by:
+OPM (initially) Used by: OPM
+Type: Optional
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="disableInternetUsageIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A sipTrunk access with indicator false means the customer is not able to use the online
+    part of his internet function for internet access
+Since: IT-28575 (1.39)
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serviceLevel" type="tns:RemovableExistConfServiceLevel" minOccurs="0"/>
+          <element name="serviceLevelLegalList" type="tns:RemovableExistConfServiceLevelList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A new SOM element for the legal SLAs so that the new SLAs can be described separated from the existing one
+Since: PPM-90531 (1.48)
+Filled by: Frontend
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="ipV6Variant" type="tns:RemovableExistConfIpV6Variant" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="fttxInternetConfiguration">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="DSLBandwidth" type="tns:PricableRemovableExistConfDescriptionString100" minOccurs="0"/>
+          <element name="upstreamBandwidth" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: 
+Values:
+    SOM    OPM       Access
+    =====  ========  ===========
+    V0118  1000      ngn        
+    V0174  2000      ngn        
+    V0178  6000      ngn        
+    V018C  16000     ngn        
+    V018D  20000     ngn        
+    V018G  25000     ngn        
+    V018H  50000     ngn        
+    V018N  100000    ngn        
+    V0174  dsl2000   ?          
+Filled by: 
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="allowBandwidthDowngrade" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="desiredBandwidth" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="fixedIPAddressIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>Deprecated since IT-27626. Use fixedIPAddressChangeType instead.</documentation>
+            </annotation>
+          </element>
+          <element name="fixedIPAddressChangeType" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Controls IP address generation in OPM. COM passes it to OPM order, as new orderDetail "fixedIPAddressChangeType" (together with existing value for "fixedIPAddress") inside "internet" function node
+Since: IT-27626
+Values: "None", "Add", "Remove", and possibly "Replace" (if OPM supports the scenario)
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+Remarks: It makes no sense for KBA to set the new fixed IP address value directly, because that will be set (or overwritten) by OPM. KBA can only indicate that a change is requested.
+
+TODO: change from type string to an enumeration.
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="userAccountName" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="automaticMailingIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="instantAccessIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: used e.g. during line creation
+Since: 
+Filled by: ePOS (sid2som)
+Used by: POS-FE
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="simSerialNumber" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountID" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="chargesAndCreditsList" type="tns:chargesAndCreditsList_Type" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="earlyTerminationFeeServiceCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose:  The given service code results in a fee for the customer, which is due because the customer has terminated the contract before the minimum contract duration has been reached.
+Since: 
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="dialInAccountName" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="fixedIPAddress" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+The fixed IP address as requested per fixedIPAddressChangeType. Frontends should not provide this element, as it will be filled by OPM for a new fixed IP address or by COM/BKS for changes on the internet function.
+Values:
+"None", "Add", "Remove", and possibly "Replace" (if OPM supports the scenario) 
+Filled by:
+OPM (initially) Used by: OPM
+Type: Optional
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="dialInAccountNameStatic" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="resultDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Stores the resultDate as returned by OPM after processing the function. Will then be stored via FIF in CCB. Must not be filled by the frontends.
+Since: 
+Filled by: OPM
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="networkElementID" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Legacy attribute from the OP interface. Its purpose is currently unknown. Must not be filled by frontends. OPM is not aware of this element
+Since: 
+Filled by: OPM?
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serviceLevel" type="tns:RemovableExistConfServiceLevel" minOccurs="0"/>
+          <element name="serviceLevelLegalList" type="tns:RemovableExistConfServiceLevelList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A new SOM element for the legal SLAs so that the new SLAs can be described separated from the existing one
+Since: PPM-90531 (1.48)
+Filled by: Frontend
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="ipV6Variant" type="tns:RemovableExistConfIpV6Variant" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="fibreInternetConfiguration">
+    <complexContent>
+      <extension base="tns:adslInternetConfiguration">
+       <sequence>
+        <element name="fibreFee" type="tns:ExistConfFeatureService" minOccurs="0">
+          <annotation>
+            <documentation>
+              <![CDATA[
+Purpose: A special fee for fibre customers. 
+Every GigaGemeinde fibre customer must get a "Regio-Zuschlag Glasfaser" (it is mandatory); 
+it is not allowed to have a fibre customer without Regio Fee Fibre. 
+The Regio Fee Fibre is classified in regio classes (Regio-Klassen) to which a price is assigned. 
+The frontend & order capturing systems must make sure that the correct regio fee fibre is added automatically to the order (by default).
+Since : BSS-27, PPM-320858
+Used by: OPM/CCB
+Filled by: FrontEnd / BKS
+]]>
+            </documentation>
+          </annotation>
+        </element>
+       </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="voice">
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="ipCentrexSiteConfiguration" type="tns:ipCentrexSiteConfiguration" minOccurs="0"/>
+          <element name="voicePremiumConfiguration" type="tns:voicePremiumConfiguration" minOccurs="0"/>
+          <element name="voiceBasisConfiguration" type="tns:voiceBasisConfiguration" minOccurs="0"/>
+          <element name="voiceONBConfiguration" type="tns:VoiceONBConfiguration" minOccurs="0"/>
+          <element name="voicePBXConfiguration" type="tns:VoicePBXConfiguration" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: for all voice PBX configurations (Telefonanlagen) for which no more special PBX configuration (ipCentrexSiteConfiguration, 
+    sipTrunkS2MConfiguration, voiceONBConfiguration, ...) is provided.
+Since: IT-31157 (1.43)
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="sipTrunkS2MConfiguration" type="tns:sipTrunkS2MConfiguration" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[deprecated: use voicePBXConfiguration instead]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="voiceConfiguration" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+A voiceConfiguration element is mandatory for orders containing a 'voice' function with processingType either 'CHANGE' or 'ADD'.
+Since: 1.31
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="discountType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountID" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="automaticMailingIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0"/>
+          <element name="activationType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="customerCallBackNumber" type="tns:ExistConfString100" minOccurs="0">
+             <annotation>
+                <documentation><![CDATA[
+DEPRECATED : - This element will not be used fromm BSS-24. Use customerCallBackNumber from access configuration instead.
+]]></documentation>
+             </annotation>
+          </element> 
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="chargesAndCreditsList" type="tns:chargesAndCreditsList_Type" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="blockingList" type="tns:BlockingList" minOccurs="0"></element>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="earlyTerminationFeeServiceCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose:  The given service code results in a fee for the customer, which is due because the customer has terminated the contract before the minimum contract duration has been reached.
+Since: 
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="remarks" type="tns:ExistConfString1024" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: 
+Changed: IT-k-31152 (1.40): 100 to 1024 chars
+Filled by: 
+Used by: CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="phoneNumbersList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Contains all current access numbers. Used only by OutputManagement for termination confirmation letter.
+Since: 1.35
+Filled by: COM (via SOM0toSOM3.xsl or in enrichment by BKS)
+Used by: OutputMgmt
+]]></documentation>
+            </annotation>
+            <complexType>
+              <sequence>
+                <element name="existing" type="tns:PhoneNumbersList" minOccurs="0"/>
+              </sequence>
+            </complexType>
+          </element>
+          <element name="mailboxAlias" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: MailboxAlias is generated by OPM and stored in CCB. The value is not validated by COM.
+Since: 1.36
+Filled by: OPM
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="accessNumberChangeAnnouncementIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: In case of a change of the an access number, make an announcement on the former number
+    German: Ansage auf der alten Nummer nach einem Rufnummernwechsel
+Since: PN-4521 (1.38)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="serviceLevel" type="tns:RemovableExistConfServiceLevel" minOccurs="0"/>
+          <element name="serviceLevelLegalList" type="tns:RemovableExistConfServiceLevelList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: A new SOM element for the legal SLAs so that the new SLAs can be described separated from the existing one
+Since: PPM-90531 (1.48)
+Filled by: Frontend
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ipCentrexSiteConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Structure outlook: This type will be changed to extend type VoicePBXConfiguration during the next changes of the IP Centrex configurations. 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:voiceConfiguration">
+        <sequence>
+          <element name="siteGroupCode" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="portingAccessNumberRanges" type="tns:portingAccessNumberRanges" minOccurs="0"/>
+          <element name="portingAccessNumbers" type="tns:portingAccessNumbers" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfConnectionType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Type of the voice connection. 
+Values: comfortPlus, ... (as defined in the XSD)
+Filled by: Frontends
+Used by: FIF 
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:ConnectionType" minOccurs="0"/>
+      <element name="configured" type="tns:ConnectionType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="voicePremiumConfiguration">
+    <complexContent>
+      <extension base="tns:voiceConfiguration">
+        <sequence>
+          <element name="portingAccessNumbers" type="tns:portingAccessNumbers" minOccurs="0"/>
+          <element name="desiredCountriesList" type="tns:ExistConfDesiredCountriesList" minOccurs="0"/>
+          <element name="connectionType" type="tns:ExistConfConnectionType" minOccurs="0">
+            <annotation>
+              <documentation>In "old" SOM this was known as 'desiredPremiumType' with values 'Plus', 'Classic'</documentation>
+            </annotation>
+          </element>
+          <element name="allowDifferentConnectionType" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>In "old" SOM this was known as 'allowPremiumTypeChange'</documentation>
+            </annotation>
+          </element>
+          <element name="selectedDestinations" type="tns:SelectedDestinations" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: used for update of selected destinations
+Since: IT-27144 (3.22)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="callForwarding" type="tns:CallForwarding" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Used in case of call is forwared. Allowed for mass-market products only.
+Since: BSS-19
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="voiceBasisConfiguration">
+    <complexContent>
+      <extension base="tns:voiceConfiguration">
+        <sequence>
+          <element name="portingAccessNumbers" type="tns:portingAccessNumbers" minOccurs="0"/>
+          <element name="desiredCountriesList" type="tns:ExistConfDesiredCountriesList" minOccurs="0"/>
+          <element name="connectionType" type="tns:ExistConfConnectionType" minOccurs="0"/>
+          <element name="allowDifferentConnectionType" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation>In "old" SOM this was known as 'allowPremiumTypeChange'</documentation>
+            </annotation>
+          </element>
+          <element name="selectedDestinations" type="tns:SelectedDestinations" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: used for update of selected destinations
+Since: IT-27144 (3.22)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="callForwarding" type="tns:CallForwarding" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Used in case of call is forwared. Allowed for mass-market products only.
+Since: BSS-19
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="sipTrunkS2MConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Structure outlook: This type will be changed to extend type VoicePBXConfiguration during the next changes of the SIP trunk configurations. 
+Purpose: 
+Since Rel: 1.39
+Since IT: 28575
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:voiceConfiguration">
+        <sequence>
+          <element name="sipTrunkMailboxAliasList" type="tns:ExistConfMailboxAliasList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: MailboxAliases are generated by OPM and stored in CCB;
+    the value is not validated by COM
+Since: IT-28575 (1.39)
+Filled by: OPM
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="portingAccessNumberRanges" type="tns:portingAccessNumberRanges" minOccurs="0"/>
+          <element name="portingAccessNumbers" type="tns:portingAccessNumbers" minOccurs="0"/>
+          <element name="connectionType" type="tns:ExistConfConnectionType" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: In "old" SOM this was known as 'desiredPremiumType' with values 'Plus', 'Classic'
+Since: IT-28575 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VoicePBXConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Structure Outlook: ipCentrexSiteConfiguration and sipTrunkS2MConfiguration will extend this type as soon as they are modified the next time. 
+Purpose: for all voice PBX configurations (Telefonanlagen). Existing special voice PBX configurations will extend this type in the future.
+Since: IT-31157 (1.43)
+Filled by: POS-FE
+Used by: OPM
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:voiceConfiguration">
+        <sequence>
+          <element name="portingAccessNumberRanges" type="tns:portingAccessNumberRanges" minOccurs="0"/>
+          <element name="desiredCountriesList" type="tns:ExistConfDesiredCountriesList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Since: IT-32245 (1.43)
+Filled by: POS-FE
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExtraLine">
+    <annotation>
+      <documentation><![CDATA[
+Since: IT-31157 (1.43)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AccessAddOnFunction">
+        <sequence>
+          <element name="extraS0LineConfiguration" type="tns:ExtraS0LineConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExtraTalLineConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: 
+Since: IT-31157 (1.43)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="provisioningDiscount" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: V0149 Discount for provisioning (in % used by VTS)
+Since: IT-31157 (1.43)
+Filled by: 
+Used by: VTS
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGCompletionDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin
+Since: IT-31157 (1.43)
+Filled by: OPM
+Used by: ?
+DEPRECATED : - use providerCompletionDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerCompletionDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of completion, VI062 - Nachträglich gemeldeter Schalttermin,
+Since: BSS-21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="DTAGPaymentDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin)
+   I1327
+Since: IT-31157 (1.43)
+Filled by: OPM
+Used by: ?
+DEPRECATED, use providerPaymentDate instead
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="providerPaymentDate" type="tns:ExistConfDate" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: late message from DTAG WITA: date of payment (DE: Nachträglich gemeldeter Entgelttermin)
+   I1327
+Since: BSS 21 : PPM-155469_xxxxx
+Filled by: OPM
+Used by: ?
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExtraS0LineConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: 
+Since: IT-31157 (1.43)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExtraTalLineConfiguration">
+        <sequence>
+          <element name="lineID" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: V0144 - Line-Id
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="isdnActiveVariant" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: V0864 isdnActivVariant
+  Anschaltevariante ISDN (V9.3, V5.1, V5.2).
+  Aus PSM:
+    Eigenschaften des Service V0014 (die gleichen Service-Characteristic wie die ursprünglichen im V0011).
+    nur für OP
+  This parameter is not used anymore and exists only for BKS to provide it for old lines.
+Since: IT-31157 (1.43)
+Filled by: BKS
+Used by: not by COM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="cancellationIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: If a requested extra line can’t be provided by the DTAG, OPM will return this indicator with value true for the line. 
+  As the line might have been processed in some of the Vodafone backends before DTAG’s negative answer, 
+  some processing may be necessary in these backends to revert the changes. 
+  An extra SOM order is sent to COM that contains a S0 line reduction for the refused line. 
+  For this order the cancellationIndicator is set to true, too.
+Since: IT-31157 (1.43)
+Filled by: OPM, Frontend
+Used by: FIF/CCB
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="oldWitaContractNumber" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Contract number related with the technical ressource, i.e. the physical line.
+         Needed in a porting scenario over WBCI.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="dtagPbxAccountNumber" type="tns:string100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 'Verrechnungsnummer'. Identifier of a technical ressource of a private branch exchange (PBX) access.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="discountList">
+    <annotation>
+      <documentation><![CDATA[
+Since: IT-28575 (1.39)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="discount" type="tns:discountFunction" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="discountFunction">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: The requirement that discounts on monthly prices should be available for sipTrunk
+    (2 discount products, one for voice (dependent from number of voice channels) and one for
+    data shall be available to be entered, also available in WOE) leads in a SOM
+    enhancement for sipTrunk. At the moment the SOM only supports discounts for
+    termination. For a discount creation more input data is required
+Since: IT-28575 (1.39)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:contractFunction">
+        <sequence>
+          <element name="discountConfiguration" type="tns:discountConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="discountConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: see discountList
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: IT-28575 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="salesCampaignCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: IT-28575 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="pricePlanList" type="tns:ExistConfPricePlanList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: IT-28575 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="contributingItems" type="tns:contributingItem" minOccurs="0">
+            <annotation>
+              <documentation>Scope of the discount, i.e. charges originating from which CCM-object are discounted</documentation>
+            </annotation>
+          </element>
+          <element name="hierarchyInclusionIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="discountGroup" type="tns:ExistConfDiscountGroup" minOccurs="0"></element>
+          <!-- Scope of the discount, part 1: Charges connected to which CCM objects are discounted ? -->
+          <element name="selectedDestinations" type="tns:ExistConfFixedAndMobilePhoneNumbersList" minOccurs="0">
+            <annotation>
+              <documentation>Scope of the discount, part 2: Charges for calls to which access-numbers are discounted</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfFixedAndMobilePhoneNumbersList">
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:FixedAndMobilePhoneNumbersList" minOccurs="0"/>
+          <element name="configured" type="tns:FixedAndMobilePhoneNumbersList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FixedAndMobilePhoneNumbersList">
+    <sequence>
+      <element name="fixedAccessNumber" type="tns:accessNumber" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="mobileAccessNumber" type="tns:accessNumber" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="contributingItem">
+    <sequence>
+      <element name="customerNodeRefId" type="tns:string10" minOccurs="0">
+        <annotation>
+          <documentation>If set, it must refer to a customer node inside same SOM document.</documentation>
+        </annotation>
+      </element>
+      <element name="targetCustomerNodeRefId" type="tns:string10" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: If set, it must refer to a "target" customer node inside same 
+    SOM document -> takeoverContract, providerChange!
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="billingAccountNodeRefId" type="tns:string10" minOccurs="0">
+        <annotation>
+          <documentation>If set, it must refer to a billingAccount node inside same SOM document</documentation>
+        </annotation>
+      </element>
+      <element name="targetBillingAccountNodeRefId" type="tns:string10" minOccurs="0">
+        <annotation>
+          <documentation>If set, it must refer to a "target" billingAccount node inside same SOM document -> takeoverContract, providerChange!)
+          </documentation>
+        </annotation>
+      </element>
+      <element name="contributingCustomerList" type="tns:contributingCustomerList" minOccurs="0" maxOccurs="unbounded"/>
+      <element name="contributingBillingAccountList" type="tns:contributingBillingAccountList" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="contributingCustomerList">
+    <annotation>
+      <documentation>to be used in seat configurations</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:accessNumber" minOccurs="0">
+            <annotation>
+              <documentation>If set, it must refer to any existing customer inside the same customer hierarchy. This may also be the beneficiary)</documentation>
+            </annotation>
+          </element>
+          <element name="configured" type="tns:accessNumber" minOccurs="0">
+            <annotation>
+              <documentation>If set, it must refer to any existing customer inside the same customer hierarchy. This may also be the beneficiary)</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="contributingBillingAccountList">
+    <annotation>
+      <documentation>to be used in seat configurations</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:accessNumber" minOccurs="0">
+            <annotation>
+              <documentation>f set, it must refer to any existing billingAccount inside same hierarchy. This may also be the payerAllCharges</documentation>
+            </annotation>
+          </element>
+          <element name="configured" type="tns:accessNumber" minOccurs="0">
+            <annotation>
+              <documentation>f set, it must refer to any existing billingAccount inside same hierarchy. This may also be the payerAllCharges</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SelectedDestinations">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: 
+Since Rel: 3.22
+Since IT: 27144
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfPlainPhoneNumbersList">
+        <attribute name="pricePlanCode" type="tns:string5">
+          <annotation>
+            <documentation>Vxxxx</documentation>
+          </annotation>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="minimumDurationPeriod">
+    <sequence>
+      <element name="value" type="tns:ExistConfNonNegativeInteger4" minOccurs="0"/>
+      <element name="unit" type="tns:ExistConfString16" minOccurs="0">
+        <annotation>
+          <documentation>MONTH, DAY, YEAR</documentation>
+        </annotation>
+      </element>
+      <element name="startDate" type="tns:ExistConfDate" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="autoExtension">
+    <sequence>
+      <element name="value" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="unit" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="autoExtensionIndicator" type="tns:ExistConfString100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="noticePeriod">
+    <sequence>
+      <element name="value" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="unit" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="noticeRestriction" type="tns:ExistConfString100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="RemovableExistConfAccessNumberRange">
+    <sequence>
+      <element name="existing" type="tns:accessNumberRange" minOccurs="0"/>
+      <element name="configured" type="tns:accessNumberRange" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="ExistConfLineOwner">
+    <sequence>
+      <element name="existing" type="tns:lineOwner" minOccurs="0"/>
+      <element name="configured" type="tns:lineOwner" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="portingAccessNumberRanges">
+    <annotation>
+      <documentation><![CDATA[Falls die zu kuendigende Voice-Function 1..3 Rufnummernbloecke hatte (V0002 befuellt)]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="portingMode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation>
+            portingMode values: Standard, Nein, Übernehmen, Portiert, Reserviert, Löschen.
+            <![CDATA[DEPRECATED, use the according distinct portingMode of an accessNumberRange instead]]>
+          </documentation>
+        </annotation>
+      </element>
+      <element name="numberOfNewAccessNumbers" type="tns:ExistConfInteger" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Number of access numbers, which should be created additionally to any existing numbers. 
+Valid in the context of lineCreations, change from voice basis to premium, e.al.
+Filled by: Frontends
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This parameter denotes the new carrier for an outbound access number porting in case of a termination. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+Since: IT-32546 (1.46)
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldLocalExchangeCarrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This parameter denotes the previous carrier for an inbound access number porting in case of a lineCreation or lineChange. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+For SIP Trunk, use the element inside access configuration; refer to PN-10050 for details
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="maskingDigits" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates how many digits in an itemised bill should be masked (suppressed).
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="storageMaskingDigits" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The call data is stored by Vodafone for a certain time period (e.g. normally 80 days for complaints). 
+This element denotes the number of digits of a single call record, that should be masked for the stored records.
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="centralNumber" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumberRange1" type="tns:RemovableExistConfAccessNumberRange" minOccurs="0"/>
+      <element name="portingMode1" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="ownerAccessNumberRange1" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumberRange2" type="tns:RemovableExistConfAccessNumberRange" minOccurs="0"/>
+      <element name="portingMode2" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="ownerAccessNumberRange2" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumberRange3" type="tns:RemovableExistConfAccessNumberRange" minOccurs="0"/>
+      <element name="portingMode3" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="ownerAccessNumberRange3" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="lineOwner1" type="tns:ExistConfLineOwner" minOccurs="0"/>
+      <element name="lineOwner2" type="tns:ExistConfLineOwner" minOccurs="0"/>
+      <element name="lineOwnerAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="splitNumberRangeIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+      <element name="dialOutPrefix" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="wbciPrecoordination" type="tns:WbciPrecoordination" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="accessNumberRange">
+    <sequence>
+      <element name="countryCode" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+COM expects values of type ISO 3166 ALPHA-2 only, e.g. DE, GB, IN
+QUESTION: Really? No prefix number like 49?
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="localAreaCode" type="tns:string100" minOccurs="0"/>
+      <element name="pilotNumber" type="tns:string100" minOccurs="0"/>
+      <element name="startNumber" type="tns:string100" minOccurs="0"/>
+      <element name="endNumber" type="tns:string100" minOccurs="0"/>
+      <element name="subRange1" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange2" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange3" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange4" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange5" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange6" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange7" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange8" type="tns:subRange" minOccurs="0"/>
+      <element name="subRange9" type="tns:subRange" minOccurs="0"/>
+      <element name="releasingPortingIdentifier" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="subRange">
+    <sequence>
+      <element name="startNumber" type="tns:string100" minOccurs="0"/>
+      <element name="endNumber" type="tns:string100" minOccurs="0"/>
+      <element name="length" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="portingAccessNumbers">
+    <annotation>
+      <documentation><![CDATA[
+Falls die zu kuendigende Voice-Function 1..10 Einzelrufnummern hatte (Serv.Char. V0001 befuellt)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="portingMode" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation>portingMode values: Standard, Nein, Übernehmen, Portiert, Reserviert, Löschen
+          </documentation>
+        </annotation>
+      </element>
+      <element name="keepExistingVoIPNumbers" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation>Usage: for CPCOM use case 'new line'. If the new customer has a TCOM line and already a VoIP access number to indicate that this number will be the ISDN access number.</documentation>
+        </annotation>
+      </element>
+      <element name="keepExistingNumbers" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Usage: KBA uses that field to indicate to keep existing access numbers in line change and relocation scenarios.
+Refers to element 'keepFixedNumbersIndicator' on order position level, both fields should contain the same value!
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="portRemainingNumbersIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purposes: If true, only one porting number must be given, still all other numbers will be ported.
+Since: IT-28900 (1.41)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="numberOfNewAccessNumbers" type="tns:ExistConfInteger" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Number of access numbers, which should be created additionally to any existing numbers. 
+Valid in the context of lineCreations, change from voice basis to premium, e.al.
+Filled by: Frontends
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This parameter denotes the new carrier for an outbound access number porting in case of a termination. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="oldLocalExchangeCarrier" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This parameter denotes the previous carrier for an inbound access number porting in case of a lineCreation or lineChange. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+For SIP Trunk, use the element inside access configuration; refer to PN-10050 for details
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="maskingDigits" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates how many digits in an itemised bill should be masked (suppressed).
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="storageMaskingDigits" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The call data is stored by Vodafone for a certain time period (e.g. normally 80 days for complaints). This element denotes the number of digits of a single call record, that should be masked for the stored records.
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="accessNumber1" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber1" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: The owning company of the access number. 
+Filled by: 
+Used by: unknown (not OPM) 
+Question: The usage of this element is unclear. We know of no user. Maybe it should be deprecated?
+          ]]></documentation>
+        </annotation>
+      </element>
+      <element name="voipAccount1" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purposes: If the according access number is a VoIP number then a so called VoIP account is assigned to that number, normally it's simply an email address
+Since: IT-28260 (1.36)
+Filled by: OPM
+Used by:
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="portingMode1" type="tns:ExistConfString100" minOccurs="0">
+        <annotation>
+          <documentation>portingMode values: Standard, Nein, Übernehmen, Portiert, Reserviert, Löschen
+          </documentation>
+        </annotation>
+      </element>
+      <element name="accessNumber2" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber2" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount2" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode2" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber3" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber3" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount3" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode3" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber4" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber4" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount4" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode4" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber5" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber5" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount5" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode5" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber6" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber6" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount6" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode6" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber7" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber7" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount7" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode7" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber8" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber8" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount8" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode8" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber9" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber9" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount9" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode9" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="accessNumber10" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+      <element name="ownerAccessNumber10" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="voipAccount10" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="portingMode10" type="tns:ExistConfString100" minOccurs="0"/>
+      <element name="lineOwner1" type="tns:ExistConfLineOwner" minOccurs="0"/>
+      <element name="lineOwner2" type="tns:ExistConfLineOwner" minOccurs="0"/>
+      <element name="lineOwnerAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+      <element name="wbciPrecoordination" type="tns:WbciPrecoordination" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="lineOwner">
+    <sequence>
+      <element name="name" type="tns:string100"/>
+      <element name="firstName" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="extraNumbers">
+    <annotation>
+      <documentation><![CDATA[
+extraNumbers are used for a virtual private branch exchange (e.g. SIP Trunk or IP Centrex) only.
+When the access number ranges from a different site are ported into the existing voice function a new extraNumbers function will be added.
+extraNumbers always denote a former access, hence local area code and pilot number must be unique over all extraNumbers.
+        ]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunction">
+        <sequence>
+          <element name="singleNumberConfiguration" type="tns:singleNumberConfiguration" minOccurs="0"/>
+          <element name="numberRangeConfiguration" type="tns:numberRangeConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="singleNumberConfiguration">
+    <complexContent>
+      <extension base="tns:functionConfiguration">
+        <sequence>
+          <element name="portingMode" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>portingMode values: Standard, Nein, Übernehmen, Portiert, Reserviert, Löschen
+              </documentation>
+            </annotation>
+          </element>
+          <element name="numberOfNewAccessNumbers" type="tns:ExistConfInteger" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Number of access numbers, which should be created additionally to any existing numbers. 
+Valid in the context of lineCreations, change from voice basis to premium, e.al.
+Filled by: Frontends
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: This parameter denotes the new carrier for an outbound access number porting in case of a termination. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="oldLocalExchangeCarrier" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: This parameter denotes the previous carrier for an inbound access number porting in case of a lineCreation or lineChange. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+For SIP Trunk, use the element inside access configuration; refer to PN-10050 for details
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="maskingDigits" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Indicates how many digits in an itemised bill should be masked (suppressed).
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="storageMaskingDigits" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The call data is stored by Vodafone for a certain time period (e.g. normally 80 days for complaints). This element denotes the number of digits of a single call record, that should be masked for the stored records.
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="accessNumber1" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber1" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The owning company of the access number. 
+Filled by: 
+Used by: unknown (not OPM) 
+Question: The usage of this element is unclear. We know of no user. Maybe it should be deprecated?
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="accessNumber2" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber2" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber3" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber3" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber4" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber4" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber5" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber5" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber6" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber6" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber7" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber7" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber8" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber8" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber9" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber9" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumber10" type="tns:RemovableExistConfAccessNumber" minOccurs="0"/>
+          <element name="ownerAccessNumber10" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="lineOwner1" type="tns:ExistConfLineOwner" minOccurs="0"/>
+          <element name="lineOwner2" type="tns:ExistConfLineOwner" minOccurs="0"/>
+          <element name="lineOwnerAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="wbciPrecoordination" type="tns:WbciPrecoordination" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="numberRangeConfiguration">
+    <complexContent>
+      <extension base="tns:functionConfiguration">
+        <sequence>
+          <element name="portingMode" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>portingMode values: Standard, Nein, Übernehmen, Portiert, Reserviert, Löschen
+              </documentation>
+            </annotation>
+          </element>
+          <element name="numberOfNewAccessNumbers" type="tns:ExistConfInteger" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Number of access numbers, which should be created additionally to any existing numbers. 
+Valid in the context of lineCreations, change from voice basis to premium, e.al.
+Filled by: Frontends
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="carrier" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: This parameter denotes the new carrier for an outbound access number porting in case of a termination. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="oldLocalExchangeCarrier" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: This parameter denotes the previous carrier for an inbound access number porting in case of a lineCreation or lineChange. 
+Only the configured value will be considered. The value has to be the same for all portingAccessNumber(Range)s. 
+For SIP Trunk, use the element inside access configuration; refer to PN-10050 for details
+Filled by: Frontends
+Used by: OPM
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="maskingDigits" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Indicates how many digits in an itemised bill should be masked (suppressed).
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="storageMaskingDigits" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: The call data is stored by Vodafone for a certain time period (e.g. normally 80 days for complaints). This element denotes the number of digits of a single call record, that should be masked for the stored records.
+Filled by: Frontends
+Values: 0 (show all digits?), 20 (last three digits should be suppressed?), -1 (mask all digits?)
+          ]]></documentation>
+            </annotation>
+          </element>
+          <element name="centralNumber" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumberRange1" type="tns:RemovableExistConfAccessNumberRange" minOccurs="0"/>
+          <element name="ownerAccessNumberRange1" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumberRange2" type="tns:RemovableExistConfAccessNumberRange" minOccurs="0"/>
+          <element name="ownerAccessNumberRange2" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="accessNumberRange3" type="tns:RemovableExistConfAccessNumberRange" minOccurs="0"/>
+          <element name="ownerAccessNumberRange3" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="lineOwner1" type="tns:ExistConfLineOwner" minOccurs="0"/>
+          <element name="lineOwner2" type="tns:ExistConfLineOwner" minOccurs="0"/>
+          <element name="lineOwnerAddress" type="tns:ExistConfAddress" minOccurs="0"/>
+          <element name="splitNumberRangeIndicator" type="tns:ExistConfBoolean" minOccurs="0"/>
+          <element name="dialOutPrefix" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="wbciPrecoordination" type="tns:WbciPrecoordination" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="safetyPackage">
+    <complexContent>
+      <extension base="tns:contractFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="safetyPackageConfiguration" type="tns:safetyPackageConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="safetyPackageConfiguration">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="discountType" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="discountID" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="sendConfirmationLetterIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Kündigungsbrief-Versand (V0580)
+Since: 
+Filled by: 
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="remarks" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="activationKey" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Licence number for safety software package
+Filled by: OPM
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="activationKeyChangeType" type="tns:ExistConfBasicChangeType" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: indicates the necessity to generate a new activation key
+Since: IT-27144 (3.22)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="resultDate" type="tns:ExistConfDate" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Stores the resultDate as returned by OPM after processing the function. Will then be stored via FIF in CCB. Must not be filled by the frontends.
+Since: 
+Filled by: OPM
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="networkElementID" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Legacy attribute from the OP interface. Its purpose is currently unknown. Must not be filled by frontends. OPM is not aware of this element
+Since: 
+Filled by: OPM?
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="iptv">
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="iptvConfiguration" type="tns:multimediaConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="vod">
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="vodConfiguration" type="tns:multimediaConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="multimediaConfiguration">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="fskLevel" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>
+                FSK 18Plus
+                keine (Default)
+              </documentation>
+            </annotation>
+          </element>
+          <element name="allowPartialCancel" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+  German: Kundenzustimmung Teilstorno Multimedia
+Since: 1.34
+Changed: 1.39 to existing/configured
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="chargesAndCreditsList" type="tns:chargesAndCreditsList_Type" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="earlyTerminationFeeServiceCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose:  The given service code results in a fee for the customer, which is due because the customer has terminated the contract before the minimum contract duration has been reached.
+Since: 
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="tvCenter">
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="providerTrackingNumber" type="tns:providerTrackingNumber" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="tvCenterBundledConfiguration" type="tns:tvCenterBundledConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="tvCenterBundledConfiguration">
+    <complexContent>
+      <extension base="tns:contractFunctionConfig">
+        <sequence>
+          <element name="fskLevel" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>
+                FSK18Plus
+                keine (Default)
+              </documentation>
+            </annotation>
+          </element>
+          <element name="allowPartialCancel" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+  German: Kundenzustimmung Teilstorno Multimedia
+Since: 1.34
+Changed: 1.39 to existing/configured
+Filled by: 
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="initialOrderType" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation>
+                from KBA:
+                TVC als Option
+                TVC im Paket (Default)
+              </documentation>
+            </annotation>
+          </element>
+          <element name="featuresList" type="tns:featuresList_ExistingConfiguredType" minOccurs="0"/>
+          <element name="chargesAndCreditsList" type="tns:chargesAndCreditsList_Type" minOccurs="0"/>
+          <element name="conditionsList" type="tns:conditionsList_Type" minOccurs="0"/>
+          <element name="tariffOptionsList" type="tns:existConf_tariffOptionsList" minOccurs="0"/>
+          <element name="tvCenterOptionsList" type="tns:ExistConfTVCenterOptionsList" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: IT-29445 (1.40)
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="earlyTerminationFeeServiceCode" type="tns:ExistConfString5" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose:  The given service code results in a fee for the customer, which is due because the customer has terminated the contract before the minimum contract duration has been reached.
+Since: 
+Filled by: Frontends
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="setTopBoxPinChange" type="tns:pinChange" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: indicates if a set top box installation code should be generated
+Since: IT-28170 (3.2)
+Filled by: 
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="tvPinChange" type="tns:pinChange" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: indicates if a TV pin should be generated
+Since: IT-28170 (3.2)
+Filled by: 
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="adultPinChange" type="tns:pinChange" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: indicates if an adult pin should be generated. "adultPinChange" does not use the optional elements "sendAdditionalSMS" and 
+  "msisdn" of type "pinChange".
+Since: IT-28170 (3.2)
+Filled by: 
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="multimediaAccount" type="tns:ExistConfString30" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Multimedia Account ID, maps to service characteristic I1330 for service I1305 of product I1305
+Since: IT-28170 (3.2)
+Filled by: BKS
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="multimediaAccountChangeType" type="tns:ExistConfSimpleChangeType" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: indicates the takeover of an existing Vodafone TV product and its existing product PINs using value "None". 
+Since: IT-28251 (3.2)
+Values: 'None' (OPM value: 'Umzug mit Accountübernahme'), 'Replace'
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="sendConfirmationLetterIndicator" type="tns:ExistConfBoolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Kündigungsbrief-Versand (V0580)
+Since: 
+Filled by: 
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="language" type="tns:ExistConfString100" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Language; previously defaulted to 'german'
+Since: PN-6465 (1.39)
+Values:
+  german
+Filled by: KBA
+Used by: OPM
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="reasonForConfigurationChange" type="tns:ExistConfString30" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Configured value is sent to OMTS in the field 'grundNeukonfiguration'
+Since: IT-29445 (1.40)
+Filled by: KBA
+Used by: OMTS
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="transmissionType" type="tns:RemovableExistConfTransmissionType" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+ Purpose: This is a technical property of the tvCenter denoting the supported transmission type
+ SINCE: PPM-100743 (1.48 / BSS 13)
+ Filled by: BKS (for changes), OPM (line creations)
+ Used by: OPM, FIF
+ ]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <simpleType name="ConnectionType">
+    <restriction base="string">
+      <enumeration value="basic"/>
+      <enumeration value="comfortClassic"/>
+      <enumeration value="comfortPlus"/>
+      <enumeration value="basicLTE"/>
+      <enumeration value="comfortLTE"/>
+      <enumeration value="S2M">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: SIP-Trunk
+Since: IT-28575 (1.40)
+Filled by: KBA
+]]></documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <complexType name="PhoneBookNumber">
+    <sequence>
+      <element name="accessNumber" type="tns:accessNumber" minOccurs="0"/>
+      <element name="allowInverseSearch" type="boolean" minOccurs="0"/>
+      <element name="usageType" type="tns:string15" minOccurs="0"/>
+      <element name="entryType" type="tns:string10" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfMsisdnEligibilityCheckData">
+    <sequence>
+      <element name="existing" type="tns:MsisdnEligibilityCheckData" minOccurs="0"/>
+      <element name="configured" type="tns:MsisdnEligibilityCheckData" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="MsisdnEligibilityCheckData">
+    <sequence>
+      <element name="ban" type="tns:string9" minOccurs="0"/>
+      <element name="banPassword" type="tns:string20" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[SOW IT-28823: field 'password']]></documentation>
+        </annotation>
+      </element>
+      <element name="msisdnPassword" type="tns:string100" minOccurs="0"/>
+      <element name="user" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="otherFunction">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Enables COM to process any type of function, e.g. entered into SOM-Editor
+Since: 1.37
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:accessFunction">
+        <sequence>
+          <element name="otherFunctionConfiguration" type="tns:otherFunctionConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="otherFunctionConfiguration">
+    <sequence>
+      <any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfPricePlanList">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: For discounts
+Since: IT-28575 (1.39)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:PricePlanList" minOccurs="0"/>
+          <element name="configured" type="tns:PricePlanList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PricePlanList">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: List of entries for PricePlanList
+Since: IT-28575 (1.39)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="pricePlan" type="tns:PricePlan" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-28575 (1.39)
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="PricePlan">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: One single entry for PricePlanList
+Since: IT-28575 (1.39)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="code" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-28575 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="optionValue" type="tns:string7" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 
+Since: IT-28575 (1.39)
+Filled by: 
+Used by: 
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="WbciPrecoordination">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Holds the order parameters for a WBCI porting.
+Since: IT-31530 (1.47)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="precoordinationId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Id of the WBCI precoordination.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="safetyTermination" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: "Sicherer Hafen" indicator.
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="releasingTnbId" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Porting identifier of the participation network provider (Teilnehmernetzbetreiber/ TNBabg)
+         corresponding to the number plan of the porting identifiers of the federal network agency, e.g. D019. 
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="receivingCustomerContractPartner" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: 'EKPauf'
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="existingTechnology" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose:
+Since: IT-31530 (1.47)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="RemovableExistConfTransmissionType">
+    <sequence>
+      <element name="existing" type="tns:TransmissionType" minOccurs="0"/>
+      <element name="configured" type="tns:TransmissionType" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action" use="optional"/>
+  </complexType>
+  <simpleType name="TransmissionType">
+    <restriction base="string">
+      <enumeration value="Standard"/>
+      <enumeration value="Unicast"/>
+      <enumeration value="Multicast"/>
+    </restriction>
+  </simpleType>
+  <complexType name="RemovableExistConfIpV6Variant">
+    <sequence>
+      <element name="existing" type="tns:IpV6Variant" minOccurs="0"/>
+      <element name="configured" type="tns:IpV6Variant" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <simpleType name="IpV6Variant">
+    <restriction base="string">
+      <enumeration value="IpV4Public"/>
+      <enumeration value="IpV4Private"/>
+    </restriction>
+  </simpleType>
+  <complexType name="VoiceONBConfiguration">
+    <complexContent>
+      <extension base="tns:VoicePBXConfiguration">
+        <sequence>
+          <element name="licencesList" type="tns:ExistConfLicencesList" maxOccurs="1" minOccurs="0"></element>
+          <element name="licenceOptionsList" type="tns:ExistConfLicenceOptionsList" maxOccurs="1" minOccurs="0"></element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="LicencesList">
+    <sequence>
+      <element name="licence" type="tns:Licence" maxOccurs="unbounded" minOccurs="1"></element>
+    </sequence>
+  </complexType>
+  <complexType name="LicenceOptionsList">
+    <sequence>
+      <element name="licenceOption" type="tns:Licence" maxOccurs="unbounded" minOccurs="1"></element>
+    </sequence>
+  </complexType>
+  <complexType name="Licence">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: descibes a licence or a licence option
+Since:
+Filled by:
+Used by:
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="serviceCode" type="tns:string5">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: the PSM service code, which corresponds to the licence
+Since:
+Filled by:
+Used by:
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="name" type="string" maxOccurs="1" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: a optional name describing the licence or the licence option
+Since:
+Filled by:
+Used by:
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="quantity" type="nonNegativeInteger">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: denotes the maximum number of users allowed for the licence or the licence option
+Since:
+Filled by:
+Used by:
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfLicencesList">
+    <sequence>
+      <element name="existing" type="tns:LicencesList" maxOccurs="1" minOccurs="0">
+      </element>
+      <element name="configured" type="tns:LicencesList" maxOccurs="1" minOccurs="0">
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfLicenceOptionsList">
+    <sequence>
+      <element name="existing" type="tns:LicenceOptionsList" maxOccurs="1" minOccurs="0">
+      </element>
+      <element name="configured" type="tns:LicenceOptionsList" maxOccurs="1" minOccurs="0">
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="MobileUsage">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: function 'mobileUsage’ is defined, which contains the mobile' related elements and depends on the original 'internet' node (NGN, Bitstream) or 'voice node (ISDN).
+Since: BSS-19
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunction">
+        <sequence>
+          <element name="mobileUsageConfiguration" type="tns:MobileUsageConfiguration" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MobileUsageConfiguration">
+    <annotation>
+      <documentation><![CDATA[
+A 'MobileUsageConfiguration' element contains the mobile usage related elements for a corresponding hardware function.
+Since: BSS-19
+Filled by: 
+Used by: 
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:dependentFunctionConfig">
+        <sequence>
+          <element name="accessNumber" type="tns:ExistConfAccessNumber" minOccurs="0"/>
+          <element name="billingAccountNumber" type="tns:ExistConfString35" minOccurs="0"/>
+          <element name="simSerialNumber" type="tns:ExistConfString100" minOccurs="0"/>
+          <element name="serviceVoucherCodeList" type="tns:ExistConfServiceVoucherCodeList" minOccurs="0"/>
+          <element name="socCodeList" type="tns:ExistConfSocCodeList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="CallForwarding">
+    <sequence>
+      <element name="action" type="tns:actionEnum" minOccurs="0"/>
+      <element name="targetPhoneNumber" type="tns:ExistConfAccessNumber" minOccurs="0"/>
+      <element name="billingAccountNumber" type="tns:ExistConfString35" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfSocCodeList">
+    <sequence>
+      <element name="existing" type="tns:SocCodeList" minOccurs="0"/>
+      <element name="configured" type="tns:SocCodeList" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="SocCodeList">
+    <sequence>
+      <element name="socCode" type="tns:string100" minOccurs="1" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfServiceVoucherCodeList">
+    <sequence>
+      <element name="existing" type="tns:ServiceVoucherCodeList" minOccurs="0"/>
+      <element name="configured" type="tns:ServiceVoucherCodeList" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ServiceVoucherCodeList">
+    <sequence>
+      <element name="serviceVoucherCode" type="tns:string100" minOccurs="1" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+
+</schema>

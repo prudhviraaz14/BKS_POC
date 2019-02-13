@@ -1,0 +1,1029 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" targetNamespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation><![CDATA[
+Author: Heiko Barthel
+Change history:
+  0.1  2009-12-01 Heiko Barthel: Initial version
+  1.01 2010-02-09 Thomas Schneider:
+    bank account owner length extended from 50 to 60 figures.
+    Restricted MobilePhoneNumber.countryCode to '49' prefix.MobilePhoneNumber. to list of valid prefix numbers
+  1.02 2010-05-20 Joerg Winter: Removed restriction for mobile phone prefix (IT-28457)
+Since 1.36:
+  1.03 2010-07-12 Joerg Winter: IT-27143 added "clid" to "CustomerInformationData"
+  1.04 2010-08-04 Hans Becker: IT-28260 added creditCheckResult and creditCheckTransactionId to CustomerInformationData
+       2010-08-06 Hans Becker: introduced type EmailAddress
+       2010-08-19 Hans Becker: IT-28260 added creditCheckPerformed to CustomerInformationData
+Since 1.37:
+  1.10 2010-11-10 Hans Becker: IT-28170 added adultCheckIndicator to Individual
+Since 1.39:
+  1.11 2011-04-20 Hans Becker: IT-29627 removed enumeration from salutation in type Party
+  1.12 2011-05-13 Hans Becker: IT-29627 Added vipIndicator and customerClass to CustomerInformationData
+  1.13 2011-07-26 Joerg Winter: IT-k-30631 added contactPersonType TOP
+Since 1.42:
+  1.14 2012-01-10 Hans Becker: IT-30713 Changed multiplitity of billingAccount in CustomerInformationData
+                                        New attributes customerNumber and parentCustomerNumber in CustomerInformationData
+                                        New attribute ID in BillingAccount
+Since 1.44:
+  1.15 2012-11-13 Hans Becker: IT-76671 Made elements userPassword and customer optional.
+Since 1.45:
+  1.16 2013-02-18 Hans Becker: IT-32488 Added billCycle to InvoiceDelivery
+Since 1.47, BSS 12:
+  1.17 2013-08-01 Hans Becker: IT-32632 Added sepaBankAccount and mandate to methodOfPayment.
+Since BSS 13:
+  1.18 2014-01-08 Hans Becker: PPM-108364 Added attribute serialNumber to Customer and ContactMedium.
+                                          Added element emailValidationResult to ContactMedium.
+                                          Added elements customerAsIs and customerToBe to CustomerInformationData, deprecated customer.
+]]></xs:documentation>
+  </xs:annotation>
+  <xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+  <xs:simpleType name="PartyID">
+    <xs:restriction base="xs:ID"/>
+  </xs:simpleType>
+  <xs:simpleType name="PartyIDREF">
+    <xs:restriction base="xs:IDREF"/>
+  </xs:simpleType>
+  <xs:complexType name="Address">
+    <xs:sequence>
+      <xs:choice>
+        <xs:sequence>
+          <xs:element name="street">
+            <xs:annotation>
+              <xs:documentation>(hint: database restricts to 40)</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="40"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="streetNumber" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>House number, e.g. '4'</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="10"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="streetNumberSuffix" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Addition to the house number, to exactly define it, e.g. 'a' to clarify that 4a is meant</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="10"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element name="postOfficeBox">
+            <xs:annotation>
+              <xs:documentation>(hint: database restrcits to 10.)</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="10"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+      </xs:choice>
+      <xs:element name="postalCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="10"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="city">
+        <xs:annotation>
+          <xs:documentation>City name of the address, e.g. 'Frankfurt'</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="40"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="citySuffixName" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Optional addition to make the city name unique, e.g. 'am Main'</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="30"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="district" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>German: Ortsteil</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="40"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="countryCode" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The two letter international country code, e.g. DE for Germany</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="additionalAddressDescription" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Additional field to clearly define the address.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="35"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="secondAdditionalAddressDescription" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Another additional field to clearly define the address.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="35"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FixedNetPhoneNumber">
+    <xs:sequence>
+      <xs:element name="countryCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="4"/>
+            <xs:minLength value="1"/>
+            <xs:pattern value="\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="areaCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="6"/>
+            <xs:pattern value="\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="localNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="15"/>
+            <xs:pattern value="\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MobilePhoneNumber">
+    <xs:sequence>
+      <xs:element name="countryCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="4"/>
+            <xs:minLength value="1"/>
+            <xs:pattern value="\d*"/>
+            <xs:enumeration value="49"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="prefix">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="6"/>
+            <xs:minLength value="3"/>
+            <xs:pattern value="\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="localNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="15"/>
+            <xs:pattern value="\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CustomerInformationData">
+    <xs:annotation>
+      <xs:documentation>In SID as implemented by Vodafone an Individual or Organization has PartyRoles like Customer or ProductUser. This data is stored in CIM.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="kiasReference" type="KiasReference" minOccurs="0"/>
+      <xs:element name="clid" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Customer Link-DB ID
+Since: IT-27143 (1.36)
+Filled by: AO
+Used by: AO, not stored in fixed net systems
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="externalCustomerId" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Optional customer id in external (e.g. service provider) system.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="40"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="userPassword" maxOccurs="1" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The passphrase checked e.g. by the call center agent when the customer calls.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="dataProtection" type="DataProtection" minOccurs="0"/>
+      <xs:element name="billingAccount" type="BillingAccount" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="creditCheckPassed" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Only for Instant Access ("Surf sofort")
+Since: 
+Filled by: Frontend
+Used by: POS-FE
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="creditCheckPerformed" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: All other scenarios than Instant Access
+Since: IT-28260 (1.36)
+Filled by: Frontend
+Used by: POS-FE
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="creditCheckResult" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Contains the result of creditCheck. boniResult is used for further processing of the order: 
+- "OK": Credit check positive
+- "NO": Credit check negative
+- "KI" and others: no information available
+- "GA": Credit check positive
+- "GN": Credit check negative
+- "GI" and others: no information available
+Since: IT-28260 (1.36)
+Filled by: Frontend
+Used by: POS-FE
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="4"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="creditCheckTransactionId" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Id of the transaction for which the credit check was performed.
+Since: IT-28260 (1.36)
+Filled by: Frontend
+Used by: POS-FE
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="creditCheckExtendedCode" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: The information is used for an extended credit check, i.e. the customer already has a fixed line product and must be cleared in POS-FE
+Values:
+   '0' if the customer is assumed to be a new customer
+   '1' if the customer is assumed to be an existing customer (accessTechnology = 'LTE' OR dunning = 'true')
+   '2' if the customer is assumed to be an existing customer (accessTechnology <> 'LTE' AND dunning = 'false')
+   '3' if the customer is assumed to be an existing customer and could not be identified uniquely (BKS00015)
+Since: IT-28713 (1.37)
+Filled by: Frontend
+Used by: POS-FE
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="customer" type="Customer" maxOccurs="unbounded" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DEPRECATED. For lineCreations use customerToBe instead. For customer changes customerAsIs and customerToBe have to be present.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerAsIs" type="Customer" maxOccurs="unbounded" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>It is possible to send more than one party in order to support the life partner or another party as additional contract partner.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerToBe" type="Customer" maxOccurs="unbounded" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>It is possible to send more than one party in order to support the life partner or another party as additional contract partner.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="vipIndicator" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Indicates if the customer has a special status.
+Since: IT-29627 (1.39)
+Filled by: BKS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="customerClass" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Customer class.
+Values: A, A1, A2, A3, AV, B, B1, B2, B3, B4, C, C1, C2, C3, D, E, FK, GK, PK, QA, QAB, QB, QBB, QC, QCB, QD, QDB
+Since: IT-29627 (1.39)
+Filled by: BKS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="customerNumber">
+      <xs:annotation>
+        <xs:documentation><![CDATA[
+Purpose: Customer number from CCB. Used to identify a customer in a hierarchy.
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="12"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="parentCustomerNumber">
+      <xs:annotation>
+        <xs:documentation><![CDATA[
+Purpose: Associated customer number from CCB. Identifies a superior level customer in a hierarchy. 
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="12"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="PartyRole" abstract="true">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="individual" type="Individual"/>
+        <xs:element name="organization" type="Organization"/>
+        <xs:element name="partyRef">
+          <xs:complexType>
+            <xs:attribute name="IDREF" type="PartyIDREF"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+      <xs:element name="contactMedium" type="ContactMedium" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="address" type="Address" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Customer">
+    <xs:annotation>
+      <xs:documentation>The address of the Customer role is the legal address.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="PartyRole">
+        <xs:attribute name="serialNumber">
+          <xs:annotation>
+            <xs:documentation><![CDATA[
+Purpose: Fixed net customer number. Must be provided for customer changes. 
+Since: PPM-108364 (BSS 13)
+Filled by: Frontend
+]]></xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:length value="12"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ProductRecipient">
+    <xs:complexContent>
+      <xs:extension base="PartyRole"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DocumentRecipient">
+    <xs:complexContent>
+      <xs:extension base="PartyRole"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ContactPerson">
+    <xs:complexContent>
+      <xs:extension base="PartyRole">
+        <xs:sequence>
+          <xs:element name="contactPersonType" minOccurs="0" maxOccurs="unbounded">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="Owner"/>
+                <xs:enumeration value="Purchaser"/>
+                <xs:enumeration value="Technician"/>
+                <xs:enumeration value="CEO"/>
+                <xs:enumeration value="TOP">
+                  <xs:annotation>
+                    <xs:documentation><![CDATA[
+Purpose: TOP customer of a hierarchy;
+         THIS IS A TEMPORARY SOLUTION UNTIL IT-30713 (NGCS) IS IN PLACE
+Since: IT-k-30631 (1.39)
+]]></xs:documentation>
+                  </xs:annotation>
+                </xs:enumeration>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Party" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Represents the abstract SID type Party.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="salutation" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The salutation of the individual, e.g. 'Herr' or the organization, e.g. 'Firma'.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="30"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="ID" type="PartyID"/>
+  </xs:complexType>
+
+  <xs:complexType name="Individual">
+    <xs:annotation>
+      <xs:documentation>Represents the SID type Individual which is a Party.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="Party">
+        <xs:sequence>
+          <xs:element name="title" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Optional title of individual, e.g. 'Prof. Dr.'</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="nobilityPrefix" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Optional nobility of individual, e.g. 'Graf', 'Baron', 'Freiherr'</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="forename" minOccurs="0">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="surnamePrefix" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>e.g. 'von', 'van', 'de', 'Mac'
+                (hint: database restricts to 50)
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="name">
+            <xs:annotation>
+              <xs:documentation>The surname of the individual.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="60"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="maritalStatus" minOccurs="0"/>
+          <xs:element name="profession" type="xs:string" minOccurs="0"/>
+          <xs:element name="birthDate" type="xs:date" minOccurs="0"/>
+          <xs:element name="idCard" type="IdCard" minOccurs="0"/>
+          <xs:element name="adultCheckIndicator" type="xs:boolean" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Indicates whether the customer's age was verified in the shop (shop ident)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Organization">
+    <xs:annotation>
+      <xs:documentation>Represents the SID type Organization which is a Party.
+        (hint: American English because written this way in PPT 'CPCOM ProduktKatalog Fachbereiche 20090814.ppt' page 3.)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="Party">
+        <xs:sequence>
+          <xs:element name="organizationType" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>German: Rechtsform der Firma, e.g. 'AG'
+                (hint: database restricts to 16)
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="16"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="name">
+            <xs:annotation>
+              <xs:documentation>Name of the organization
+                (hint: database restricts to 50)
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="organizationSuffixName" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Additional text
+                (hint: database restricts to 50, but CCB only allows 30)
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="sector" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The sector (German: Branche) of the organization (e.g. Automobile).
+                (hint: database restricts to 99, but CCB only allows 16)
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="16"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="incorporationNumber" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>German: Eindeutige Registernummer des Unternehmens, e.g. 'HRB 51728'</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="20"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="incorporation" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>German: Handelsregister, e.g. 'HRA'</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="16"/>
+                <xs:enumeration value="GR"/>
+                <xs:enumeration value="GEW"/>
+                <xs:enumeration value="HRA"/>
+                <xs:enumeration value="HRB"/>
+                <xs:enumeration value="KOE"/>
+                <xs:enumeration value="NOT"/>
+                <xs:enumeration value="PAR"/>
+                <xs:enumeration value="PR"/>
+                <xs:enumeration value="STA"/>
+                <xs:enumeration value="STI"/>
+                <xs:enumeration value="kein Eintrag"/>
+                <xs:enumeration value="VR"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="incorporationCityName" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>German: Eintragungsort des Registereintrags e.g. 'Hamburg'
+                (hint: database and CCB restrict to 30)
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="contactPerson" type="ContactPerson" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="IdCard">
+    <xs:sequence>
+      <xs:element name="idCardNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="idCardType" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="16"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="idCardCountry" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ISO 3166 two letter country code, e.g. DE for Germany</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="idCardExpiryDate" type="xs:date" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ContactMedium">
+    <xs:annotation>
+      <xs:documentation>maps to AccessInformation in CCM</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="contactName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>contact person's name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fixedNetPhoneNumber" type="FixedNetPhoneNumber" minOccurs="0"/>
+      <xs:element name="mobilePhoneNumber" type="MobilePhoneNumber" minOccurs="0"/>
+      <xs:element name="faxNumber" type="FixedNetPhoneNumber" minOccurs="0"/>
+      <xs:element name="emailAddress" type="EmailAddress" minOccurs="0"/>
+      <xs:element name="emailValidationResult" type="EmailValidationResult" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Purpose: Used by BKS GetFNPCustomerData to transmit the validation result of an email addressto ePOS.
+Since: PPM-108364 (BSS 13)
+Filled by: BKS
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="serialNumber">
+      <xs:annotation>
+        <xs:documentation><![CDATA[
+Purpose: CCB ID of corresponding contact role.
+Since: PPM-108364 (BSS 13)
+Filled by: Frontend in customer change scenarios.
+]]></xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:maxLength value="16"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="KiasReference">
+    <xs:annotation>
+      <xs:documentation>The BAN or mobilePhoneNumber is needed in order to find the customer in KIAS when e.g. a clearing has to be created.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="billingAccountNumber" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The BAN.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="mobilePhoneNumber" type="MobilePhoneNumber" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DataProtection">
+    <xs:annotation>
+      <xs:documentation>Indicates what the customer did allow us, how to use personal data for marketing purposes. In KIAS: Werbestandsanzeiger</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="marketingPhoneIndicator" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="marketingMailIndicator" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="marketingFaxIndicator" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="marketingUseDataIndicator" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="marketingAuthorizationDate" type="xs:date" minOccurs="0"/>
+      <xs:element name="electronicContactIndicator" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Indicates whether the contract partner allows legal changes to be sent electronically, German: Bevorzugte Kommunikation per E-Mail</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BillingAccount">
+    <xs:sequence>
+      <xs:element name="invoiceDelivery" type="InvoiceDelivery"/>
+      <xs:element name="methodOfPayment" type="MethodOfPayment" minOccurs="0"/>
+      <xs:element name="documentRecipient" type="DocumentRecipient" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>If not provided the customer is used.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="ID" type="xs:string">
+      <xs:annotation>
+        <xs:documentation><![CDATA[
+Purpose: Can be filled with account id, e.g. from CCB.
+Since: IT-30713 (1.42)
+Filled by: BKS
+]]></xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="InvoiceDelivery">
+    <xs:sequence>
+      <xs:element name="invoiceDeliveryType">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="WEBBILL"/>
+            <xs:enumeration value="EMAIL"/>
+            <xs:enumeration value="PAPER"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="itemizedBill">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="no"/>
+            <xs:enumeration value="complete"/>
+            <xs:enumeration value="shortened"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="billCycle" type="BillCycle" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32488 (1.45)
+Filled by: COM, BKS, Frontend
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MethodOfPayment">
+    <xs:sequence>
+      <xs:element name="paymentMethod">
+        <xs:annotation>
+          <xs:documentation>Frontend ensures by applying business rules that bank account is provided when DIRECT_DEBIT is chosen.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="DIRECT_DEBIT"/>
+            <xs:enumeration value="MANUAL"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="bankAccount" type="BankAccount" minOccurs="0"/>
+      <xs:element name="sepaBankAccount" type="SepaBankAccount" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Filled by: Frontend
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="mandate" type="Mandate" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Filled by: Frontend
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="directDebitAuthorizationDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>German: Datum der Einzugsermächtigung</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BankAccount">
+    <xs:sequence>
+      <xs:element name="bankAccountNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="18"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="owner">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="60"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="bankCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="9"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="bankName" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>hint: in CCB limited to 16</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SepaBankAccount">
+    <xs:sequence>
+      <xs:element name="iban">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Purpose: International Bank Account Number, replaces the bank account number.
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{0,30}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="bic">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Purpose: Business Identification Number, temporarily replaces the bank code. From 2016 not needed any more.
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="([a-zA-Z]{4}[a-zA-Z]{2}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?)"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="bankName" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="58"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="owner" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="60"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Mandate">
+    <xs:annotation>
+      <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Purpose: Authorisation for direct debit.
+]]></xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="umr" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Purpose: Unique Mandate Reference
+]]></xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="35"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="signatureDate" type="xs:date"/>
+      <xs:element name="recurrentIndicator" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation><![CDATA[
+Since: IT-32362 (1.47, BSS 12)
+Purpose: Indicates if a mandate is a one time authorisation (false) or a recurring authorisation for direct debit (true).
+]]></xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="status" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="CREATED"/>
+            <xs:enumeration value="ACTIVE"/>
+            <xs:enumeration value="FINISHED"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AccessOwner">
+    <xs:complexContent>
+      <xs:extension base="PartyRole"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="EmailAddress">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="64"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="BillCycle">
+    <xs:sequence>
+      <xs:element name="cycleDueDate" type="xs:date"/>
+      <xs:element name="cycleName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EmailValidationResult">
+    <xs:sequence>
+      <xs:element name="validationResult" type="ValidationResult"/>
+      <xs:element name="validationDate" type="xs:dateTime"/>
+      <xs:element name="bounceReasonCode" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ValidationResult">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IN_VALIDATION">
+        <xs:annotation>
+          <xs:documentation>Validation of the email address has been initiated. But no result is yet available.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="VALIDATED">
+        <xs:annotation>
+          <xs:documentation>The email has been validated and is valid.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="BOUNCED">
+        <xs:annotation>
+          <xs:documentation>The email has been checked but the the checking email has been bounced (bounceReasonCode should be filled).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

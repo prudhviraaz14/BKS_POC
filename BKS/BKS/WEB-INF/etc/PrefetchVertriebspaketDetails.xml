@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+   <sqlMap>
+	<select id = "PrefetchVertriebspaketDetails.effonl.RetrieveAccessNumbers" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchVertriebspaketDetails.effonl.RetrieveAccessNumbers */  ACCESS_NUMBER FROM ACCESS_NUMBER AN
+        WHERE EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC
+            WHERE  CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+		    AND  CSC.EFFECTIVE_FLAG = 'N' AND CSC.EFFECTIVE_STATUS = 'ACTIVE' )
+        AND AN.CUSTOMER_NUMBER 	= #customerNumber#  
+        AND AN.TYPE_RD IN ('MAIN_ACCESS_NUM')
+        AND AN.ACCESS_NUMBER IS NOT NULL
+   </select>
+	
+   <select id = "PrefetchVertriebspaketDetails.onl.RetrieveAccessNumbers" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PrefetchVertriebspaketDetails.onl.RetrieveAccessNumbers */  ACCESS_NUMBER FROM ACCESS_NUMBER AN
+        WHERE EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC
+            WHERE CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+            AND CSC.EFFECTIVE_STATUS = 'ACTIVE'		  
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(CSC2.EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC2
+               WHERE CSC2.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID))
+        AND AN.CUSTOMER_NUMBER 	=  #customerNumber#
+	AND AN.TYPE_RD IN ('MAIN_ACCESS_NUM')
+        AND AN.ACCESS_NUMBER IS NOT NULL
+    </select>    
+
+</sqlMap>
+                                    

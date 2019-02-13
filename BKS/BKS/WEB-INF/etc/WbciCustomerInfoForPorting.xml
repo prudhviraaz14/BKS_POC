@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveAccessNumberForSerSu" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveAccessNumberForSerSu */  
+            AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC 
+        WHERE
+            AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+            AND CSC.SERVICE_SUBSCRIPTION_ID = #SerSuId#
+            AND CSC.EFFECTIVE_STATUS = #Status#  
+            AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID
+                                    AND  CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                    AND CSC1.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS'))
+            ORDER BY CSC.SERVICE_CHARACTERISTIC_CODE      
+    </select>
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveAccessNumberForSerSu" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveAccessNumberForSerSu */ 
+            AN.ACCESS_NUMBER
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC 
+        WHERE
+            AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+            AND CSC.SERVICE_SUBSCRIPTION_ID = #SerSuId#
+            AND CSC.EFFECTIVE_STATUS = #Status# 
+            AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID
+                                    AND  CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                    AND CSC1.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS'))
+            ORDER BY CSC.SERVICE_CHARACTERISTIC_CODE
+    </select>
+    
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveCustomerDataByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveCustomerDataByAccessNumber */  
+        AN.ACCESS_NUMBER,C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD , E.ENTITY_TYPE, E.SALUTATION_DESCRIPTION,
+        E.FORENAME, E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID
+        FROM CUSTOMER C, ENTITY E, ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC,
+            SERVICE_SUBSCRIPTION SS
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND AN.TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                AND CSC1.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED')
+    </select>
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveCustomerDataByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveCustomerDataByAccessNumber */  
+        AN.ACCESS_NUMBER,C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD , E.ENTITY_TYPE, E.SALUTATION_DESCRIPTION,
+        E.FORENAME, E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID
+        FROM CUSTOMER C, ENTITY E, ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC,
+        SERVICE_SUBSCRIPTION SS
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND AN.TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+        AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+                                WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)   
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                AND CSC1.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED')        
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveDeactRecByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveDeactRecByAccessNumber */  
+        AN.ACCESS_NUMBER,C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD, E.ENTITY_TYPE, E.SALUTATION_DESCRIPTION,
+        E.FORENAME, E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID  
+        FROM CUSTOMER C, ENTITY E, ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC,
+        SERVICE_SUBSCRIPTION SS
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND NOT EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+				        AN.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID  
+				        AND CSC1.EFFECTIVE_STATUS = 'ACTIVE' 
+				        AND CSC1.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC2 WHERE 
+				        CSC1.CONFIG_SERVICE_CHAR_ID = CSC2.CONFIG_SERVICE_CHAR_ID 
+				        AND CSC2.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') ))
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        ORDER BY CSC.EFFECTIVE_DATE DESC
+    </select>
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveDeactRecByAccessNumber" parameterClass = "String"  resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveDeactRecByAccessNumber */  
+        AN.ACCESS_NUMBER,C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD, E.ENTITY_TYPE, E.SALUTATION_DESCRIPTION,
+        E.FORENAME, E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD, SS.SERVICE_CODE, SS.SERVICE_SUBSCRIPTION_ID     
+        FROM CUSTOMER C, ENTITY E, ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC,
+        SERVICE_SUBSCRIPTION SS
+        WHERE  AN.ACCESS_NUMBER = #value#
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID
+        AND NOT EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+				        AN.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID  
+				        AND CSC1.EFFECTIVE_STATUS = 'ACTIVE' 
+				        AND CSC1.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC2 WHERE 
+				        CSC1.CONFIG_SERVICE_CHAR_ID = CSC2.CONFIG_SERVICE_CHAR_ID 
+				        AND CSC2.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') ))
+        AND C.CUSTOMER_NUMBER = AN.CUSTOMER_NUMBER 
+        AND C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = (SELECT MAX(C2.EFFECTIVE_DATE) FROM CUSTOMER C2
+                                WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER)	   
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        ORDER BY CSC.EFFECTIVE_DATE DESC
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveConfigValueForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveConfigValueForSerSu */   
+            CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+            CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                AND CSC1.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveConfigValueForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveConfigValueForSerSu */   
+        CV.CONFIGURED_VALUE_STRING,CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM
+        CONFIGURED_VALUE CV, CONFIG_SERVICE_CHARACTERISTIC CSC
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM  CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                AND CSC1.COMPLETION_DATE != TO_DATE('01.01.1901 01:00:01','DD.MM.YYYY HH.MI.SS') 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveAddressForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveAddressForSerSu */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX ,
+        CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.DATA_TYPE_RD = 'ADDRESS'
+        AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveAddressForSerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveAddressForSerSu */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX,
+        CSC.SERVICE_CHARACTERISTIC_CODE
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #value#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.DATA_TYPE_RD = 'ADDRESS'
+        AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                    WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                    AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                    AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveRootCustomer */  
+        CUSTOMER_NUMBER AS ROOT_CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_FLAG = 'N'  
+            )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveRootCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveRootCustomer */  CUSTOMER_NUMBER AS ROOT_CUSTOMER_NUMBER ,ASSOCIATED_CUSTOMER_NUMBER FROM  
+            (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+                WHERE C.EFFECTIVE_DATE =  
+                (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                    WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                    AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                )  
+            )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveExternalOrder" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND) WbciCustomerInfoForPorting.effonl.RetrieveExternalOrder */  
+            EO.DESIRED_DATE , EO.BARCODE, EO.CUSTOMER_INTENTION
+        FROM 
+            EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        <dynamic prepend="WHERE ">
+	        EOD.SUPPORTED_OBJECT_ID = #servSubsId#
+	        <isNotEmpty property="intention">
+	        	AND EO.CUSTOMER_INTENTION = #intention#
+	        </isNotEmpty>
+	        AND EO.ORDER_ID = EOD.ORDER_ID
+	        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+	        AND EO.EFFECTIVE_FLAG = 'N'
+	        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+        </dynamic>
+    </select>    
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveExternalOrder" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND) WbciCustomerInfoForPorting.onl.RetrieveExternalOrder */  
+            EO.DESIRED_DATE , EO.BARCODE, EO.CUSTOMER_INTENTION
+        FROM 
+            EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        <dynamic prepend="WHERE ">
+	        EOD.SUPPORTED_OBJECT_ID = #servSubsId#
+	        <isNotEmpty property="intention">
+	        	AND EO.CUSTOMER_INTENTION = #intention#
+	        </isNotEmpty>
+	        AND EO.ORDER_ID = EOD.ORDER_ID
+	        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+	        AND EO.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM EXTERNAL_ORDER EO2
+	                                WHERE EO.ORDER_ID = EO2.ORDER_ID
+	                                AND EO.ORDER_POSITION_NUMBER = EO2.ORDER_POSITION_NUMBER
+	                                AND EFFECTIVE_DATE &lt; SYSDATE)
+	        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+        </dynamic>
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveInternalOrder" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveInternalOrder */  
+            STP.DESIRED_DATE,  CO.CUSTOMER_TRACKING_ID AS BARCODE
+        FROM 
+            SERVICE_TICKET_POSITION STP , CUSTOMER_ORDER CO
+        WHERE 
+        STP.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND STP.USAGE_MODE_VALUE_RD = #usageMode#
+        AND STP.CUSTOMER_ORDER_ID = CO.CUSTOMER_ORDER_ID
+        AND STP.STATE_RD NOT IN ('ASSIGNED','UNASSIGNED','CANCELED','REJECTED')    
+    </select>    
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveInternalOrder" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveInternalOrder */  
+            STP.DESIRED_DATE,  CO.CUSTOMER_TRACKING_ID AS BARCODE
+        FROM 
+            SERVICE_TICKET_POSITION STP, CUSTOMER_ORDER CO 
+        WHERE 
+        STP.SERVICE_SUBSCRIPTION_ID = #servSubsId#
+        AND STP.USAGE_MODE_VALUE_RD = #usageMode#
+        AND STP.CUSTOMER_ORDER_ID = CO.CUSTOMER_ORDER_ID
+        AND STP.STATE_RD NOT IN ('ASSIGNED','UNASSIGNED','CANCELED','REJECTED')  
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveBundleData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveBundleData */   
+            SS.SERVICE_SUBSCRIPTION_ID, SS.SERVICE_CODE
+        FROM 
+            BUNDLE_ITEM BI, BUNDLE_ITEM BI2, SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI2.SUPPORTED_OBJECT_ID = #value#
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.EFFECTIVE_FLAG = 'N'
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveBundleData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ rule WbciCustomerInfoForPorting.onl.RetrieveBundleData */   
+            SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE_ITEM BI2,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI2.SUPPORTED_OBJECT_ID = #value#
+        AND BI.BUNDLE_ID =BI2.BUNDLE_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                 BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                 AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI2.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI3 WHERE
+                                BI2.BUNDLE_ITEM_ID = BI3.BUNDLE_ITEM_ID 
+                                AND BI3.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI2.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveOrderFormData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveOrderFormData */ 
+        OF1.CONTRACT_NUMBER,OF1.TERMINATION_DATE,OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,
+        OF1.MIN_PERIOD_START_DATE,OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,
+        OF1.AUTO_EXTENSION_IND,OF1.NOTICE_PERIOD_DUR_UNIT_RD,OF1.NOTICE_PERIOD_DUR_VALUE,OF1.SPECIAL_TERMINATION_RIGHT_RD,PC.PRODUCT_CODE
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N'
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.STATE_RD = 'SIGNED'
+        AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD = 'SIGNED')
+        AND OF1.STATE_RD = 'SIGNED'
+    </select>
+
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveOrderFormData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveOrderFormData */ 
+        OF1.CONTRACT_NUMBER,OF1.TERMINATION_DATE,OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,
+        OF1.MIN_PERIOD_START_DATE,OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,
+        OF1.AUTO_EXTENSION_IND,OF1.NOTICE_PERIOD_DUR_UNIT_RD,OF1.NOTICE_PERIOD_DUR_VALUE,OF1.SPECIAL_TERMINATION_RIGHT_RD,PC.PRODUCT_CODE
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+        AND PC.STATE_RD = 'SIGNED'
+        AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+        AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD = 'SIGNED')
+        AND OF1.STATE_RD = 'SIGNED'
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveServDeliveContData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveServDeliveContData */ 
+        PC.CONTRACT_NUMBER,PC.TERMINATION_DATE,PC.MIN_PERIOD_DUR_UNIT_RD,PC.MIN_PERIOD_DUR_VALUE,
+        PC.MIN_PERIOD_START_DATE,PC.AUTO_EXTENT_DUR_UNIT_RD,PC.AUTO_EXTENT_DUR_VALUE,
+        PC.AUTO_EXTENSION_IND,PC.NOTICE_PERIOD_DUR_UNIT_RD,PC.NOTICE_PERIOD_DUR_VALUE,PC.SPECIAL_TERMINATION_RIGHT_RD,PC.PRODUCT_CODE   
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,SERV_DELIV_CONT_PRODUCT_COMMIT PC
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_FLAG = 'N'
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+    </select>
+
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveServDeliveContData" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveServDeliveContData */ 
+        PC.CONTRACT_NUMBER,PC.TERMINATION_DATE,PC.MIN_PERIOD_DUR_UNIT_RD,PC.MIN_PERIOD_DUR_VALUE,
+        PC.MIN_PERIOD_START_DATE,PC.AUTO_EXTENT_DUR_UNIT_RD,PC.AUTO_EXTENT_DUR_VALUE,
+        PC.AUTO_EXTENSION_IND,PC.NOTICE_PERIOD_DUR_UNIT_RD,PC.NOTICE_PERIOD_DUR_VALUE,PC.SPECIAL_TERMINATION_RIGHT_RD,PC.PRODUCT_CODE
+        FROM  
+        SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,SERV_DELIV_CONT_PRODUCT_COMMIT PC
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = #value# 
+        AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+        AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+        AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+        AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM SERV_DELIV_CONT_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD = 'SIGNED')
+    </select>
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveCustomerByName" parameterClass = "java.util.HashMap"  resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveCustomerByName */  
+        C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD , E.ENTITY_TYPE, E.SALUTATION_DESCRIPTION,
+        E.FORENAME, E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD, ACS.CSA_SERVICE_CODE, 
+        ACS.CSA_SERVICE_SUBSCRIPTION_ID  , ACS.CSA_POSTAL_CODE, ACS.CSA_CITY,
+        CSA_STREET_NAME, CSA_STREET_NUMBER
+        FROM CUSTOMER C, ENTITY E,ACS_ACCESS.ACS_CUSTOMER_ADDRESS ACS 
+        <dynamic prepend="WHERE ">
+        	C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER     
+        	AND C.EFFECTIVE_FLAG = 'N'	
+        	AND E.CUSTOMER_NUMBER=ACS.CSA_CUSTOMER_NUMBER   
+        	and ACS.CSA_PHON_NAME IN (PHONETIX(#name1#),PHONETIX(#name2#))
+        	and ACS.CSA_POSTAL_CODE = #postalCode#
+        	and ACS.CSA_PHON_STREET IN (PHONETIX(#street1#),PHONETIX(#street2#))
+        	and ACS.CSA_PHON_CITY IN (PHONETIX(#city1#),PHONETIX(#city2#))
+            <isNotEmpty property="forename1">
+	           AND ACS.CSA_PHON_FORENAME IN (PHONETIX(#forename1#),PHONETIX(#forename2#))
+	        </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveCompanyByName" parameterClass = "java.util.HashMap"  resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveCompanyByName */  
+        C.CUSTOMER_NUMBER, C.CLASSIFICATION_RD , E.ENTITY_TYPE, E.SALUTATION_DESCRIPTION,
+        E.FORENAME, E.NAME,E.ORGANIZATION_SUFFIX_NAME,E.ORGANIZATION_TYPE_RD,E.ORGANIZATION_TYPE_RD, 
+        ACS.CSA_SERVICE_CODE, ACS.CSA_SERVICE_SUBSCRIPTION_ID , ACS.CSA_POSTAL_CODE, ACS.CSA_CITY,
+        CSA_STREET_NAME, CSA_STREET_NUMBER
+        FROM CUSTOMER C, ENTITY E,ACS_ACCESS.ACS_CUSTOMER_ADDRESS ACS 
+        <dynamic prepend="WHERE ">
+            C.CUSTOMER_NUMBER = E.CUSTOMER_NUMBER     
+            AND C.EFFECTIVE_FLAG = 'N'	
+            AND E.CUSTOMER_NUMBER=ACS.CSA_CUSTOMER_NUMBER   
+            and ACS.CSA_PHON_NAME IN (PHONETIX(#name1#),PHONETIX(#name2#))
+            and ACS.CSA_POSTAL_CODE = #postalCode#
+            and ACS.CSA_PHON_STREET IN (PHONETIX(#street1#),PHONETIX(#street2#))
+            and ACS.CSA_PHON_CITY IN (PHONETIX(#city1#),PHONETIX(#city2#))
+            <isNotEmpty property="companySuffix1">
+                AND E.ORGANIZATION_SUFFIX_NAME IN (PHONETIX(#companySuffix1#),PHONETIX(#companySuffix2#))
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveBundleDataByBundleId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveBundleDataByBundleId */   
+            SS.SERVICE_SUBSCRIPTION_ID, SS.SERVICE_CODE
+        FROM 
+            BUNDLE_ITEM BI, SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI.BUNDLE_ID =#value#
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveBundleDataByBundleId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /*+ rule WbciCustomerInfoForPorting.onl.RetrieveBundleDataByBundleId */   
+            SS.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE
+        FROM 
+        BUNDLE_ITEM BI,SERVICE_SUBSCRIPTION SS
+        WHERE 
+        BI.BUNDLE_ID =#value#
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                 BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                 AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND BI.SUPPORTED_OBJECT_TYPE_RD = 'SERVSUB'
+        AND SS.SERVICE_SUBSCRIPTION_ID = BI.SUPPORTED_OBJECT_ID
+        ORDER BY SS.SERVICE_CODE DESC
+    </select>
+
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveBundleInfoForCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveBundleInfoForCustomer */   
+            B.BUNDLE_ID
+        FROM 
+            BUNDLE B
+        WHERE 
+        B.CUSTOMER_NUMBER =#value#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND B.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.STATE_RD = 'COMPLETE'
+     </select>
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveBundleInfoForCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveBundleInfoForCustomer */   
+            B.BUNDLE_ID
+        FROM 
+            BUNDLE B
+        WHERE 
+        B.CUSTOMER_NUMBER =#value#
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                                 B.BUNDLE_ID = B1.BUNDLE_ID 
+                                 AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND B.STATE_RD = 'COMPLETE'
+    </select>
+    
+    <select id = "WbciCustomerInfoForPorting.effonl.RetrieveChildService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.effonl.RetrieveChildService */  
+        SS.SERVICE_CODE 
+        FROM SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SD
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+        AND SS.STATE_RD IN ('SUBSCRIBED') 
+    </select>
+    <select id = "WbciCustomerInfoForPorting.onl.RetrieveChildService" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* WbciCustomerInfoForPorting.onl.RetrieveChildService */  
+        SS.SERVICE_CODE 
+        FROM SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SD
+        WHERE 
+        SS.SERVICE_SUBSCRIPTION_ID = SD.SERVICE_SUBSCRIPTION_ID
+        AND SD.SERVICE_SUBSCRIPTION_DEP_ID = #value#
+        AND SS.STATE_RD IN ('SUBSCRIBED') 
+    </select>
+    
+    <parameterMap id="zarAccNumInfoMap" class="java.util.Map">
+       <parameter property="customerNumberIn" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+       <parameter property="areaCodeIn" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+       <parameter property="accessNumber" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+       <parameter property="areaCodeOut" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="accessNumberStart" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="accessNumberEnd" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="productCode" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="physicalStatus" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+       <parameter property="logicalStatus" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+       <parameter property="tnb" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="futureTnb" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="desiredDate" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="customerNumberOut" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="accessId" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="errorCode" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+       <parameter property="errorText" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="pairedStatusInd" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+       <parameter property="pendingCorrectionInd" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+    </parameterMap>
+
+    <procedure id="WbciCustomerInfoForPorting.GetZarStatus" parameterMap="zarAccNumInfoMap">
+        { call ZAR_ACCNUM_INFO.CCM_GET_ZAR_ACCNUM_INFO(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}
+    </procedure>
+
+</sqlMap>

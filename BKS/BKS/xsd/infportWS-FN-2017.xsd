@@ -1,0 +1,867 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.dialogika.de/infport/schema/fn/r2017" elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fn17="http://www.dialogika.de/infport/schema/fn/r2017" xmlns:basic="http://www.dialogika.de/infport/schema/basic/v1"
+	xmlns:com="http://www.dialogika.de/infport/schema/common/v1">
+
+	<import namespace="http://www.dialogika.de/infport/schema/basic/v1" schemaLocation="basic.xsd" />
+	<import namespace="http://www.dialogika.de/infport/schema/common/v1" schemaLocation="common.xsd" />
+
+
+	<!-- Simple Types for FN -->
+
+	<simpleType name="stPortId">
+		<restriction base="string">
+			<pattern value="D\d{3}"></pattern>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stReception">
+		<restriction base="string">
+			<maxLength value="6"></maxLength>
+		</restriction>
+	</simpleType>
+
+
+	<simpleType name="stCorrectionId">
+		<restriction base="string">
+			<maxLength value="36"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stShortName">
+		<restriction base="string">
+			<maxLength value="20"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stLineId">
+		<restriction base="string">
+			<maxLength value="30"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stErrorCode">
+		<restriction base="string">
+			<maxLength value="9"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stCarrier">
+		<restriction base="string">
+			<length value="4"></length>
+		</restriction>
+	</simpleType>
+
+	<!-- Enumerations -->
+	<simpleType name="stPubState" final="#all">
+		<restriction base="string">
+			<enumeration value="UNKNOWN" />
+			<enumeration value="IGNORE" />
+			<enumeration value="PUBLISH" />
+			<enumeration value="PUBLISHED" />
+			<enumeration value="VERIFIED" />
+			<enumeration value="UNVERIFIABLE" />
+			<enumeration value="TIMEOUT" />
+			<enumeration value="ERROR" />
+			<enumeration value="FAILED" />
+			<enumeration value="CONFLICT" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stOwnNumberType" final="#all">
+		<restriction base="string">
+			<enumeration value="OWN_ONLY" />
+			<enumeration value="IMPORTED_ONLY" />
+			<enumeration value="ALL" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stCorrectionCode" final="#all">
+		<restriction base="string">
+			<enumeration value="CO_SYNTAX" />
+			<enumeration value="CO_RANGE" />
+			<enumeration value="CO_PREFIX" />
+			<enumeration value="CO_PORT_DATE" />
+			<enumeration value="CO_MSG_TYPE" />
+			<enumeration value="CO_PORT_ID" />
+			<enumeration value="CO_NUMBER_LENGTH" />
+			<enumeration value="RV_IMPORT" />
+			<enumeration value="RV_IMPORT_46" />
+			<enumeration value="RV_EXPORT" />
+			<enumeration value="RV_EXPORT_46" />
+			<enumeration value="RV_DEACTIVATION" />
+			<enumeration value="RV_NUMBER_RANGE" />
+			<enumeration value="RV_SINGLE_NUMBER" />
+			<enumeration value="RV_MERGE_RANGE" />
+			<enumeration value="RV_SPLIT_RANGE" />
+			<enumeration value="RV_MIGRATE_TO_MSN" />
+			<enumeration value="RV_MIGRATE_TO_RANGE" />
+			<enumeration value="RV_EXTEND_RANGE" />
+			<enumeration value="RV_PORTING" />
+			<enumeration value="RV_PORTING_PORTDATE" />
+			<enumeration value="RV_PORTING_CANCELLATION" />
+			<enumeration value="RV_PORTING_RANGE" />
+			<enumeration value="RV_PORTING_NUMBER_LENGHT" />
+			<enumeration value="RV_PORTING_NO_ORDER_USED" />
+			<enumeration value="RV_PORTING_NO_ORDER_FREE" />
+			<enumeration value="RV_PORTING_NOT_ALLOCATED" />
+			<enumeration value="RV_PORTING_WRONG_NUMBER" />
+			<enumeration value="RV_PORTING_MERGE_RANGE" />
+			<enumeration value="RV_PORTING_SPLIT_RANGE" />
+			<enumeration value="RV_PORTING_MIGRATE_TO_MSN" />
+			<enumeration value="RV_PORTING_MIGRATE_TO_RANGE" />
+			<enumeration value="RV_PORTING_46" />
+			<enumeration value="RV_PORTING_EXTEND_RANGE" />
+			<enumeration value="RP_REVOKE_VERIFIED" />
+			<enumeration value="AD_MERGE_RANGE" />
+			<enumeration value="AD_MIGRATE_TO_MSN" />
+			<enumeration value="AD_MIGRATE_TO_RANGE" />
+			<enumeration value="AD_EXTEND_RANGE" />
+			<enumeration value="SM_EXPORT" />
+			<enumeration value="SM_IMPORT" />
+			<enumeration value="SM_DEACTIVATION" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stCarrierState" final="#all">
+		<restriction base="string">
+			<enumeration value="UNKNOWN" />
+			<enumeration value="ACTIVE" />
+			<enumeration value="INACTIVE" />
+			<enumeration value="PASSIVE" />
+			<enumeration value="INACTIVE_PLANNED" />
+			<enumeration value="INACTIVE_RETURNED" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stLocalState" final="#all">
+		<restriction base="string">
+			<enumeration value="ERN_UNKNOWN" />
+			<enumeration value="ERN_ACTIVATED_NO_ACTIONS" />
+			<enumeration value="ERN_ACTIVATED_ACTIONS" />
+			<enumeration value="ERN_RESERVED_NO_ACTIONS" />
+			<enumeration value="ERN_PORTED_OUT_NO_ACTIONS" />
+			<enumeration value="ERN_PORTED_OUT_ACTIONS" />
+			<enumeration value="ERN_DEACTIVATED_NO_ACTIONS" />
+			<enumeration value="ERN_DEACTIVATED_ACTIONS" />
+			<enumeration value="ERN_QUARANTINED_NO_ACTIONS" />
+			<enumeration value="ERN_QUARANTINED_ACTIONS" />
+			<enumeration value="ERN_RANGE_BLOCKED_NO_ACTIONS" />
+			<enumeration value="ERN_RANGE_BLOCKED_ACTIONS" />
+			<enumeration value="ERN_ALLOCATED_NO_ACTIONS" />
+			<enumeration value="ERN_ALLOCATED_ACTIONS" />
+			<enumeration value="LNP_UNKNOWN_NO_ACTIONS" />
+			<enumeration value="LNP_UNKNOWN_ACTIONS" />
+			<enumeration value="LNP_ACTIVATED_NO_ACTIONS" />
+			<enumeration value="LNP_ACTIVATED_ACTIONS" />
+			<enumeration value="LNP_PORTED_OUT_NO_ACTIONS" />
+			<enumeration value="LNP_PORTED_OUT_ACTIONS" />
+			<enumeration value="LNP_DEACTIVATED_NO_ACTIONS" />
+			<enumeration value="LNP_DEACTIVATED_ACTIONS" />
+			<enumeration value="LNP_DEACTIVATION_FINISHED_NO_ACTIONS" />
+			<enumeration value="LNP_DEACTIVATION_FINISHED_ACTIONS" />
+			<enumeration value="LNP_PORTED_NO_ACTIONS" />
+			<enumeration value="LNP_PORTED_ACTIONS" />
+		</restriction>
+	</simpleType>
+
+	<!-- Complex Types -->
+
+
+	<!-- Methods -->
+	<!-- <element name="activateNumberRequest" type="fn17:tActivateNumberRequest" /> -->
+	<!-- <element name="activateNumberResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="importNumberRequest" type="fn17:tImportNumberRequest" /> -->
+	<!-- <element name="importNumberResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="deactivateNumberRequest" type="fn17:tDeactivateNumberRequest" /> -->
+	<!-- <element name="deactivateNumberResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="exportNumberRequest" type="fn17:tExportNumberRequest" /> -->
+	<!-- <element name="exportNumberResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="reclaimNumberRequest" type="fn17:tReclaimNumberRequest" /> -->
+	<!-- <element name="reclaimNumberResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="deleteOwnOpenMessageRequest" type="fn17:tDeleteOwnOpenMessageRequest" /> -->
+	<!-- <element name="deleteOwnOpenMessageResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="reactivateNumberRequest" type="fn17:tReactivateNumberRequest" /> -->
+	<!-- <element name="reactivateNumberResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="updateVerifiedRequest" type="fn17:tUpdateVerifiedRequest" /> -->
+	<!-- <element name="updateVerifiedResponse" type="basic:ctBasicResponse" /> -->
+
+	<!-- <element name="getHistoryRequest" type="fn17:tGetHistoryRequest" /> -->
+	<!-- <element name="getHistoryResponse" type="fn17:tGetHistoryResponse" /> -->
+
+	<!-- <element name="getOpenPortingsRequest" type="fn17:tGetOpenPortingsRequest" /> -->
+	<!-- <element name="getOpenPortingsResponse" type="fn17:tGetOpenPortingsResponse" /> -->
+
+	<!-- <element name="getGlobalHistoryRequest" type="fn17:tGetGlobalHistoryRequest" /> -->
+	<!-- <element name="getGlobalHistoryResponse" type="fn17:tGetGlobalHistoryResponse" /> -->
+
+	<!-- <element name="getIncompletePortedNumbersRequest" type="fn17:tGetIncompletePortedNumbersRequest" /> -->
+	<!-- <element name="getIncompletePortedNumbersResponse" type="fn17:tGetIncompletePortedNumbersResponse" /> -->
+
+	<!-- <element name="getOwnReturnedNumbersRequest" type="fn17:tGetOwnReturnedNumbersRequest" /> -->
+	<!-- <element name="getOwnReturnedNumbersResponse" type="fn17:tGetOwnReturnedNumbersResponse" /> -->
+
+	<!-- <element name="getByClientIdRequest" type="fn17:tGetByClientIdRequest" /> -->
+	<!-- <element name="getByClientIdResponse" type="fn17:tGetByClientIdResponse" /> -->
+
+	<!-- <element name="getByContractNumberRequest" type="fn17:tGetByContractNumberRequest" /> -->
+	<!-- <element name="getByContractNumberResponse" type="fn17:tGetByContractNumberResponse" /> -->
+
+	<!-- <element name="selectRequest" type="fn17:tSelectRequest" /> -->
+	<!-- <element name="selectResponse" type="fn17:tSelectResponse" /> -->
+
+	<!-- <element name="getLocalStateOfNumberRequest" type="fn17:tGetLocalStateOfNumberRequest" /> -->
+	<!-- <element name="getLocalStateOfNumberResponse" type="fn17:tGetLocalStateOfNumberResponse" /> -->
+
+	<!-- <element name="getCarriersByPortIdRequest" type="fn17:tGetCarriersByPortIdRequest" /> -->
+	<!-- <element name="getCarriersByPortIdResponse" type="fn17:tGetCarriersByPortIdResponse" /> -->
+
+	<!-- <element name="isOpenRequest" type="fn17:tIsOpenRequest" /> -->
+	<!-- <element name="isOpenResponse" type="fn17:tIsOpenResponse" /> -->
+
+	<!-- <element name="getCurrentRequest" type="fn17:tGetCurrentRequest" /> -->
+	<!-- <element name="getCurrentResponse" type="fn17:tGetCurrentResponse" /> -->
+
+	<!-- Complex Types -->
+
+	<complexType name="ctFnNumber">
+		<sequence>
+			<element name="prefix" type="com:stPrefix" maxOccurs="1" minOccurs="1"></element>
+			<element name="startNumber" type="com:stPhoneNr" maxOccurs="1" minOccurs="1"></element>
+			<element name="endNumber" type="com:stPhoneNr" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctBasicFnEntry">
+		<sequence>
+			<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+			<element name="info" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensions" type="com:ctExtensionSet" maxOccurs="1" minOccurs="0"></element>
+			<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="ctBasicFnRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="snNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+					<element name="info" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="extensions" type="com:ctExtensionSet" maxOccurs="1" minOccurs="0"></element>
+					<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ctFnEntry">
+		<complexContent>
+			<extension base="fn17:ctBasicFnEntry">
+				<sequence>
+					<element name="rcvCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="rlsCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="portDate" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="pubCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="ownCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientName" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="pubDate" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="histState" type="com:stHistState" maxOccurs="1" minOccurs="1"></element>
+					<element name="pubState" type="fn17:stPubState" maxOccurs="1" minOccurs="1"></element>
+					<element name="useState" type="com:stUseState" maxOccurs="1" minOccurs="1"></element>
+					<element name="correctionCode" type="fn17:stCorrectionCode" maxOccurs="1" minOccurs="0"></element>
+					<element name="correctionId" type="fn17:stCorrectionId" maxOccurs="1" minOccurs="0"></element>
+					<element name="errorMsg" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="tableType" type="com:stTableType" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ctFnCarrier">
+		<sequence>
+			<element name="portId" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+			<element name="mainPortId" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+			<element name="shortName" type="fn17:stShortName" maxOccurs="1" minOccurs="0"></element>
+			<element name="longName" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+			<element name="providerSpecific1" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+			<element name="providerSpecific2" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+			<element name="providerSpecific3" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+			<element name="carrierState" type="fn17:stCarrierState" maxOccurs="1" minOccurs="1"></element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctClientInfo">
+		<sequence>
+			<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+			<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="0"></element>
+			<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctNumberDetails">
+		<sequence>
+			<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+			<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+			<element name="clientInfo" type="fn17:ctClientInfo" maxOccurs="1" minOccurs="0"></element>
+			<element name="rlsCarrier" type="fn17:stPortId" minOccurs="1" maxOccurs="1" />
+			<element name="rcvCarrier" type="fn17:stPortId" minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctNumberActivation">
+		<sequence>
+			<element name="fnNumber" type="fn17:ctFnNumber" />
+     		<element name="details" type="fn17:ctNumberDetails" />
+		</sequence>
+	</complexType>
+	
+	
+	<!-- Requests -->
+	
+	<complexType name="mtWriteNumberToCurrentRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="details" type="fn17:ctNumberDetails" minOccurs="1" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtCreateCombinedCustomerDataRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="installationAddress" type="com:ctInstallationAddress" minOccurs="0" maxOccurs="1" />
+					<element name="numberActivation" type="fn17:ctNumberActivation" minOccurs="0" maxOccurs="1" />
+					<element name="lineParameters" type="com:ctLineParameter" minOccurs="0" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtUpdateCombinedCustomerDataRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="installationAddress" type="com:ctInstallationAddress" minOccurs="0" maxOccurs="1" />
+					<element name="numberActivation" type="fn17:ctNumberActivation" minOccurs="0" maxOccurs="1" />
+					<element name="lineParameters" type="com:ctLineParameter" minOccurs="0" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetCombinedCustomerDataRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0" />
+					<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="0" />
+					<element name="lookupPhoneNumbers" type="boolean" maxOccurs="1" minOccurs="0" />
+					<element name="lookupLineParameters" type="boolean" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetCombinedCustomerDataResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="installationAddress" type="com:ctInstallationAddress"  maxOccurs="unbounded" minOccurs="0"/>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"/>
+					<element name="lineParameter" type="com:ctLineParameter" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	
+<!-- IN DEVELOPMENT - NOT YET IMPLEMENTED -->	
+<!--  
+	<complexType name="mtActivateNumberRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+					<element name="lineId" type="fn17:stLineId" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtImportNumberRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="rlsCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtDeactivateNumberRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtExportNumberRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="rcvCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtReclaimNumberRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="rlsCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtDeleteOwnOpenMessageRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtReactivateNumberRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+					<element name="lineId" type="fn17:stLineId" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtUpdateVerifiedRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="portDate" type="date" minOccurs="1" maxOccurs="1" />
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetHistoryRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetHistoryResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetOpenPortingsRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetOpenPortingsResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetGlobalHistoryRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetGlobalHistoryResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetIncompletePortedNumbersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="from" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="to" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetIncompletePortedNumbersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetDeactivatedNumbersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="from" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="prefix" type="com:stPrefix" maxOccurs="1" minOccurs="0"></element>
+					<element name="ownNumberType" type="fn17:stOwnNumberType" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetDeactivatedNumbersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+
+	<complexType name="mtGetOwnReturnedNumbersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="from" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="to" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetOwnReturnedNumbersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetByClientIdRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1"></element>
+					<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+					<element name="isActive" type="boolean" maxOccurs="1" minOccurs="0"></element>
+					<element name="useFnActions" type="boolean" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+					<element name="offset" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetByClientIdResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetByContractNumberRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="1"></element>
+					<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+					<element name="isActive" type="boolean" maxOccurs="1" minOccurs="0"></element>
+					<element name="useFnActions" type="boolean" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+					<element name="offset" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetByContractNumberResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtSelectRequest">
+		<complexContent>
+			<extension base="fn17:ctBasicFnRequest">
+				<sequence>
+					<element name="reception" type="fn17:stReception" maxOccurs="1" minOccurs="0"></element>
+					<element name="lineId" type="fn17:stLineId" maxOccurs="1" minOccurs="0"></element>
+					<element name="rcvCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="rlsCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="ownCarrier" type="fn17:stPortId" maxOccurs="1" minOccurs="0"></element>
+					<element name="histState" type="com:stHistState" maxOccurs="1" minOccurs="0"></element>
+					<element name="useState" type="com:stUseState" maxOccurs="1" minOccurs="0"></element>
+					<element name="portDate" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="verifiedDate" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="reservedUntil" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="clientName" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+					<element name="errorCode" type="fn17:stErrorCode" maxOccurs="1" minOccurs="0"></element>
+					<element name="correctionCode" type="fn17:stCorrectionCode" maxOccurs="1" minOccurs="0"></element>
+					<element name="reservationKey" type="com:stReservationKey" maxOccurs="1" minOccurs="0"></element>
+					<element name="contractNumber" type="com:stContractNumber" maxOccurs="1" minOccurs="0"></element>
+					<element name="sortAscending" type="boolean" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+					<element name="offset" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtSelectResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetLocalStateOfNumberRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetLocalStateOfNumberResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="1" minOccurs="0"></element>
+					<element name="localState" type="fn17:stLocalState" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCarriersByPortIdRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="portId" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCarriersByPortIdResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnCarrier" type="fn17:ctFnCarrier" maxOccurs="unbounded" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetAllCarriersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetAllCarriersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnCarrier" type="fn17:ctFnCarrier" maxOccurs="unbounded" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetCarrierRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="portId" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCarrierResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnCarrier" type="fn17:ctFnCarrier" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtUpdateCarrierRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="portId" type="fn17:stPortId" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtUpdateCarrierResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse"/>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetHistoryByClientIdRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1"></element>
+					<element name="maxCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetHistoryByClientIdResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="unbounded" minOccurs="0"></element>
+					<element name="totalCount" type="nonNegativeInteger" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtIsOpenRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtIsOpenResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="isOpen" type="boolean" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCurrentRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="fnNumber" type="fn17:ctFnNumber" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mtGetCurrentResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="fnEntry" type="fn17:ctFnEntry" maxOccurs="1" minOccurs="0"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	-->
+	
+	
+</schema>

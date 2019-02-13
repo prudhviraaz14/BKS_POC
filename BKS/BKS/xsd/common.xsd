@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.dialogika.de/infport/schema/common/v1" elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:com="http://www.dialogika.de/infport/schema/common/v1">
+
+
+	<complexType name="ctExtensionSet">
+		<sequence>
+			<element name="extensionField1" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField2" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField3" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField4" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField5" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField6" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField7" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField8" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField9" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+			<element name="extensionField10" type="com:stExtensionField" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctBasicContact">
+		<sequence>
+			<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1"></element>
+			<element name="surname" type="com:stStr80" maxOccurs="1" minOccurs="0"></element>
+			<element name="givenName" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+			<element name="dateOfBirth" type="date" maxOccurs="1" minOccurs="0"></element>
+			<element name="organisation" type="com:stStr80" maxOccurs="1" minOccurs="0"></element>
+			<element name="postcode" type="com:stStr10" maxOccurs="1" minOccurs="0"></element>
+			<element name="city" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+			<element name="street" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+			<element name="houseNumber" type="com:stStr10" maxOccurs="1" minOccurs="0"></element>
+			<element name="houseNoAddition" type="com:stStr10" maxOccurs="1" minOccurs="0"></element>
+			<element name="postcodePostOfficeBox" type="com:stPostcodePostOfficeBox" maxOccurs="1" minOccurs="0"></element>
+			<element name="postOfficeBox" type="com:stPostOfficeBox" maxOccurs="1" minOccurs="0"></element>
+			<element name="eMail" type="com:stStr80" maxOccurs="1" minOccurs="0"></element>
+			<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+			<element name="comment" type="com:stStr255" maxOccurs="1" minOccurs="0"></element>
+			<element name="geoEast" type="com:stCoordinate" maxOccurs="1" minOccurs="0"></element>
+			<element name="geoNorth" type="com:stCoordinate" maxOccurs="1" minOccurs="0"></element>
+			<element name="ags_n" type="com:stAgs_n" maxOccurs="1" minOccurs="0"></element>
+			<element name="gf" type="com:stSurfaceType" maxOccurs="1" minOccurs="0"></element>
+			<element name="Psap110" type="com:stPsap" maxOccurs="1" minOccurs="0"></element>
+			<element name="Psap112" type="com:stPsap" maxOccurs="1" minOccurs="0"></element>
+			<element name="region" type="com:stRegion" maxOccurs="2" minOccurs="0"></element>
+			<element name="providerSpec1" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+			<element name="providerSpec2" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+			<element name="providerSpec3" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+			<element name="type" type="com:stCustomerType" maxOccurs="1" minOccurs="1"></element>
+			<element name="calculationMode" type="com:stCalculationMode" maxOccurs="1" minOccurs="1"></element>
+			<element name="geoChanged" type="com:stGeoChanged" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctLineParameter">
+		<sequence>
+			<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1"></element>
+			<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="1"></element>
+			<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+			<choice>
+				<element name="lineid" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+				<element name="IPv4" type="com:ctIPv4" maxOccurs="1" minOccurs="0"></element>
+				<element name="IPv6" type="com:ctIPv6" maxOccurs="1" minOccurs="0"></element>
+			</choice>
+			<element name="extensions" type="com:ctExtensionSet" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	
+	<complexType name="ctInstallationAddress">
+		<complexContent>
+			<extension base="com:ctBasicContact" >
+				<sequence>
+					<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="ctIPv4">
+		<sequence>
+			<element name="IPv4Address" type="string" maxOccurs="1" minOccurs="1"></element>
+			<element name="sub" type="string" maxOccurs="1" minOccurs="0"></element>
+			<element name="port" type="com:stPort" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="ctIPv6">
+		<sequence>
+			<element name="IPv6Address" type="string" maxOccurs="1" minOccurs="1"></element>
+			<element name="sub" type="string" maxOccurs="1" minOccurs="0"></element>
+			<element name="port" type="com:stPort" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+	
+	
+	<simpleType name="stCoordinate" final="#all">
+        <restriction base="string">
+            <pattern value="\d{1,8}(,|\.){0,1}\d{0,12}"></pattern>
+        </restriction>
+    </simpleType>
+    
+	<simpleType name="stPrefix">
+		<restriction base="string">
+			<minLength value="2"></minLength>
+			<maxLength value="5"></maxLength>
+			<pattern value="[123456789]\d{1,4}"></pattern>
+		</restriction>
+	</simpleType>
+	
+
+	<simpleType name="stPhoneNr">
+		<restriction base="string">
+			<minLength value="1"></minLength>
+			<maxLength value="15"></maxLength>
+			<pattern value="\d{1,15}"></pattern>
+		</restriction>
+	</simpleType>
+	<simpleType name="stReseller">
+		<restriction base="string">
+			<maxLength value="50"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stClientId">
+		<restriction base="string">
+			<maxLength value="25"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stLocation">
+		<restriction base="string">
+			<maxLength value="50"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stContractNumber">
+		<restriction base="string">
+			<maxLength value="100"></maxLength>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stExtensionField">
+		<restriction base="string">
+			<maxLength value="255"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stStr80">
+		<restriction base="string">
+			<maxLength value="80"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stStr50">
+		<restriction base="string">
+			<maxLength value="50"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stStr10">
+		<restriction base="string">
+			<maxLength value="10"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stStr255">
+		<restriction base="string">
+			<maxLength value="255"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stStr1024">
+		<restriction base="string">
+			<maxLength value="1024"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stProviderSpecific">
+		<restriction base="string">
+			<maxLength value="100"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stReservationKey">
+		<restriction base="string">
+			<maxLength value="10"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stPsap">
+		<restriction base="string">
+			<maxLength value="20"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stPostcodePostOfficeBox">
+		<restriction base="string">
+			<maxLength value="6"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stPostOfficeBox">
+		<restriction base="string">
+			<maxLength value="8"></maxLength>
+		</restriction>
+	</simpleType>
+	<simpleType name="stAgs_n">
+		<restriction base="string">
+			<maxLength value="9"></maxLength>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stPort">
+		<restriction base="unsignedShort">
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stHistState" final="#all">
+		<restriction base="string">
+			<enumeration value="ACTIVE" />
+			<enumeration value="VALID" />
+			<enumeration value="INVALID" />
+			<enumeration value="DELETED" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stUseState" final="#all">
+		<restriction base="string">
+			<enumeration value="UNKNOWN" />
+			<enumeration value="USED" />
+			<enumeration value="RESERVED" />
+			<enumeration value="ALLOCATED" />
+			<enumeration value="EXPORTED" />
+			<enumeration value="BLOCKED" />
+			<enumeration value="FREE" />
+			<enumeration value="DELETED" />
+			<enumeration value="QUARANTINE" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="stTableType" final="#all">
+		<restriction base="string">
+			<enumeration value="CURRENT" />
+			<enumeration value="ACTIONS" />
+			<enumeration value="ARCHIVE" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stSurfaceType" final="#all">
+		<restriction base="string">
+			<enumeration value="SHORE" />
+			<enumeration value="WATER" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stRegion" final="#all">
+		<restriction base="string">
+			<enumeration value="SH"/>
+			<enumeration value="HH"/>
+			<enumeration value="NI"/>
+			<enumeration value="HB"/>
+			<enumeration value="NW"/>
+			<enumeration value="HE"/>
+			<enumeration value="RP"/>
+			<enumeration value="BW"/>
+			<enumeration value="BY"/>
+			<enumeration value="SL"/>
+			<enumeration value="BE"/>
+			<enumeration value="BB"/>
+			<enumeration value="MV"/>
+			<enumeration value="SN"/>
+			<enumeration value="ST"/>
+			<enumeration value="TH"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stCustomerType" final="#all">
+		<restriction base="string">
+			<enumeration value="PRIVATE"/>
+			<enumeration value="COMMERCIAL"/>
+			<enumeration value="PRIVATE"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stCalculationMode" final="#all">
+		<restriction base="string">
+			<enumeration value="AUTO" />
+			<enumeration value="MANUAL" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stGeoChanged" final="#all">
+		<restriction base="string">
+			<enumeration value="COORDINATES" />
+			<enumeration value="PSAP" />
+			<enumeration value="ALL" />
+		</restriction>
+	</simpleType>
+
+
+
+</schema>

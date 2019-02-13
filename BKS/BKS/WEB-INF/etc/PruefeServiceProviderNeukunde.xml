@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveExactAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID ,SS.SERVICE_CODE, C.CLASSIFICATION_RD
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS, CUSTOMER C WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND AN.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveAccessNumber" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, C.CLASSIFICATION_RD
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS, CUSTOMER C WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND (AN.START_RANGE_STRING > #shortnumber# AND AN.START_RANGE_STRING &lt;= #accessnumber#  
+                AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND AN.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveTechServiceId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveTechServiceId */  AN.ACCESS_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        AN.TYPE_RD IN ('TECH_SERVICE_ID')  
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_FLAG = 'N' 
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveRootCustomer */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_FLAG = 'N'  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveContractData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveContractData */ 
+            OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,
+            OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,PC.PRODUCT_CODE
+        FROM  
+            SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC
+        WHERE 
+            SS.SERVICE_SUBSCRIPTION_ID = #value# 
+            AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+            AND PS.EFFECTIVE_FLAG = 'N' AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+            AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+            AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD IN  ('SIGNED','APPROVED'))
+            AND PC.STATE_RD IN  ('SIGNED','APPROVED')
+            AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+            AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                OF2.STATE_RD IN  ('SIGNED','APPROVED'))
+            AND OF1.STATE_RD IN  ('SIGNED','APPROVED')
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveEntityData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveEntityData */  NAME,FORENAME FROM  
+           ENTITY 
+        WHERE  
+           CUSTOMER_NUMBER = #value#
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveServiceTicket" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.effonl.RetrieveServiceTicket */   
+        STP.SERVICE_TICKET_POSITION_ID
+        FROM 
+        SERVICE_TICKET_POSITION STP
+        WHERE  
+        STP.SERVICE_SUBSCRIPTION_ID = #ServiceSubscriptionId# 
+        AND STP.USAGE_MODE_VALUE_RD = #UsageMode# 
+        AND STP.STATE_RD != 'CANCELED'
+    </select>
+    
+    <select id = "PruefeServiceProviderNeukunde.effonl.RetrieveExternalOrders" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND)   PruefeServiceProviderNeukunde.effonl.RetrieveExternalOrders */   
+        EO.ORDER_ID , EO.ORDER_POSITION_NUMBER
+        FROM 
+        EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EOD.SUPPORTED_OBJECT_ID = #ServiceSubscriptionId#
+        AND EO.CUSTOMER_INTENTION = #CustIntention#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_FLAG = 'N'
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveExactAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveExactAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID ,SS.SERVICE_CODE, C.CLASSIFICATION_RD
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS, CUSTOMER C WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND AN.START_RANGE_STRING = #value# 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                         WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                         AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AN.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                        WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER 
+                                        AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveAccessNumber" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveAccessNumber */  AN.CUSTOMER_NUMBER, CSC.SERVICE_SUBSCRIPTION_ID , SS.SERVICE_CODE, C.CLASSIFICATION_RD
+        FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC, 
+        SERVICE_SUBSCRIPTION SS, CUSTOMER C WHERE 
+        TYPE_RD IN ('MAIN_ACCESS_NUM', 'ACC_NUM_RANGE','MOBIL_ACCESS_NUM')  
+        AND (AN.START_RANGE_STRING > #shortnumber# AND AN.START_RANGE_STRING &lt;= #accessnumber#  
+                AND CONCAT( AN.END_RANGE_STRING,SUBSTR(AN.ACCESS_NUMBER,INSTR(AN.ACCESS_NUMBER,';',-1,1)+1))> #accessnumber#) 
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                         WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                         AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID 
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                        WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER 
+                                        AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AN.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER 
+        AND ss.state_rd in ('SUBSCRIBED','SUSPENDED','ORDERED') 
+        AND ROWNUM &lt; 3 
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveTechServiceId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveTechServiceId */  AN.ACCESS_NUMBER FROM ACCESS_NUMBER AN, CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+        AN.TYPE_RD IN ('TECH_SERVICE_ID')  
+        AND AN.CONFIG_SERVICE_CHAR_ID = CSC.CONFIG_SERVICE_CHAR_ID  
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE' 
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                         WHERE CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                         AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.SERVICE_SUBSCRIPTION_ID = #value# 
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveRootCustomer" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveRootCustomer */  CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM  
+         (  SELECT CUSTOMER_NUMBER,ASSOCIATED_CUSTOMER_NUMBER FROM CUSTOMER C  
+            WHERE C.EFFECTIVE_DATE =  
+                  (  SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C2  
+                     WHERE C2.CUSTOMER_NUMBER = C.CUSTOMER_NUMBER  
+                       AND C2.EFFECTIVE_DATE &lt;= TRUNC(SYSDATE)  
+                  )  
+              AND C.EFFECTIVE_STATUS = 'ACTIVE'  
+         )  
+        WHERE ASSOCIATED_CUSTOMER_NUMBER IS NULL  
+        START WITH CUSTOMER_NUMBER =  #value# 
+        CONNECT BY CUSTOMER_NUMBER = PRIOR ASSOCIATED_CUSTOMER_NUMBER
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveContractData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveContractData */ 
+           OF1.MIN_PERIOD_DUR_UNIT_RD,OF1.MIN_PERIOD_DUR_VALUE,OF1.MIN_PERIOD_START_DATE,
+           OF1.AUTO_EXTENT_DUR_UNIT_RD,OF1.AUTO_EXTENT_DUR_VALUE,OF1.AUTO_EXTENSION_IND,PC.PRODUCT_CODE
+        FROM  
+           SERVICE_SUBSCRIPTION SS,PRODUCT_SUBSCRIPTION PS,ORDER_FORM OF1, ORDER_FORM_PRODUCT_COMMIT PC
+        WHERE 
+           SS.SERVICE_SUBSCRIPTION_ID = #value# 
+           AND SS.PRODUCT_SUBSCRIPTION_ID = PS.PRODUCT_SUBSCRIPTION_ID 
+           AND PS.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM PRODUCT_SUBSCRIPTION PS2 WHERE 
+                                PS.PRODUCT_SUBSCRIPTION_ID = PS2.PRODUCT_SUBSCRIPTION_ID)
+           AND PS.EFFECTIVE_STATUS = 'ACTIVE' 
+           AND PS.PRODUCT_COMMITMENT_NUMBER = PC.PRODUCT_COMMITMENT_NUMBER 
+           AND PC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM_PRODUCT_COMMIT PC2 WHERE 
+                                PC.PRODUCT_COMMITMENT_NUMBER = PC2.PRODUCT_COMMITMENT_NUMBER AND 
+                                PC2.STATE_RD IN  ('SIGNED','APPROVED'))
+           AND PC.STATE_RD IN  ('SIGNED','APPROVED')
+           AND OF1.CONTRACT_NUMBER = PC.CONTRACT_NUMBER 
+           AND OF1.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM ORDER_FORM OF2 WHERE 
+                                   OF1.CONTRACT_NUMBER = OF2.CONTRACT_NUMBER AND 
+                                   OF2.STATE_RD IN  ('SIGNED','APPROVED'))
+           AND OF1.STATE_RD IN  ('SIGNED','APPROVED')
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveEntityData" parameterClass = "string" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveEntityData */  NAME,FORENAME FROM  
+           ENTITY 
+        WHERE  
+           CUSTOMER_NUMBER = #value#
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveServiceTicket" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* PruefeServiceProviderNeukunde.onl.RetrieveServiceTicket */   
+        STP.SERVICE_TICKET_POSITION_ID
+        FROM 
+        SERVICE_TICKET_POSITION STP
+        WHERE  
+        STP.SERVICE_SUBSCRIPTION_ID = #ServiceSubscriptionId# 
+        AND STP.USAGE_MODE_VALUE_RD = #UsageMode# 
+        AND STP.STATE_RD != 'CANCELED'
+    </select>
+
+    <select id = "PruefeServiceProviderNeukunde.onl.RetrieveExternalOrders" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND) PruefeServiceProviderNeukunde.onl.RetrieveExternalOrders */  
+        EO.ORDER_ID , EO.ORDER_POSITION_NUMBER
+        FROM 
+        EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EOD.SUPPORTED_OBJECT_ID = #ServiceSubscriptionId#
+        AND EO.CUSTOMER_INTENTION = #CustIntention#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM EXTERNAL_ORDER EO2
+                                WHERE EO.ORDER_ID = EO2.ORDER_ID
+                                AND EO.ORDER_POSITION_NUMBER = EO2.ORDER_POSITION_NUMBER
+                                AND EFFECTIVE_DATE &lt; SYSDATE)
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+</sqlMap>
+                                    

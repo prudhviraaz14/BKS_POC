@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" 
+		xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" 
+		xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001"
+		xmlns:rechnungskonto="http://www.arcor.net/EPSM-CommonTypes-Rechnungskonto-001"
+		targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Rechnungskonto-001" 
+		elementFormDefault="qualified" 
+		attributeFormDefault="unqualified">
+<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+<xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EPSM_Rechnungskonto_Dokument_Information">
+	<xs:annotation>
+		<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 08.02.2008  11:31</xs:documentation>
+	</xs:annotation>
+</xs:element>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Zahlungsart">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI] Zahlungsart z.B. Einzugsermächtigung oder Überweisung</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="60"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EVN">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) PRODUKT-TST-TS.EVN]
+[Befüllung durch BOI  (Ver. 29.5.07) PRODUKT-ISDN-TS.EVN]
+[Befüllung durch BOI  (Ver. 29.5.07) PRODUKT-DSL.EVN]
+Der Kunde kann zusätzlich zu seiner Rechnung einen kompletten oder verkürzten Einzelverbindungsnachweis erhalten.
+Einzelverbindungserstellung im standardisierten Edifact Format, das inbes. durch GK Kunden mit sehr großen Datenmengen und Rechnungsbeträgen verwendet wird (identische Systemvoraussetzungen wie Edifact Invoice).</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="100"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Webbill">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) AUFTRAG.WEBBILL]
+
+Webbill ja/nein</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:boolean"/>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Mahnsperrflag">
+	<xs:annotation>
+		<xs:documentation>Kennzeichen für eine Sperre des Rechnungskontos</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:boolean"/>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Zustellart">
+	<xs:annotation>
+		<xs:documentation>Zustellart der Rechnung</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="30"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Rechnungskonto">
+	<xs:annotation>
+		<xs:documentation>Angaben zum Rechnungskonto</xs:documentation>
+	</xs:annotation>
+	<xs:complexContent>
+		<xs:extension base="ape:AuftragsPositionsElement">
+			<xs:sequence>
+				<xs:element name="rechnungskontonummer" type="common:Rechnungskontonummer" minOccurs="0"/>
+				<xs:element name="zahlungsart" type="rechnungskonto:Zahlungsart" minOccurs="0"/>
+				<xs:element name="eVN" type="rechnungskonto:EVN" minOccurs="0"/>
+				<xs:element name="webbill" type="rechnungskonto:Webbill" minOccurs="0"/>
+				<xs:element name="mahnsperrflag" type="rechnungskonto:Mahnsperrflag" minOccurs="0"/>
+				<xs:element name="zustellart" type="rechnungskonto:Zustellart" minOccurs="0"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+</xs:schema>

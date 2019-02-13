@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 20.12.2011 Thomas Schneider IT 30257 added new FKP (FirmenKundenPortal) Service  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-GetSomMasterData-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:comesb="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:bm="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-GetSomMasterData-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002" schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_GetSomMasterData_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+        Aenderungshistorie:
+        • Version 0.1 - 10.10.2007 - Rusbe Makuie  - initiale Version
+        • Version 0.2 - 20.12.2011 - Thomas Schneider   IT 30257 duplicated getSOmMasterData to getSOMMasterDataFKP
+                                                                                            added new service GetSOMCustomerHierarchyDataFKP
+        • Version 0.3 - 30.01.2012 - Thomas Schneider   IT 30257 added chunking and customerHierachy service points directly to customer
+        • Version 0.4 - 05.12.2016 - Rusbe Makuie		 PPM- 221286_255041 Rebate and ServiceDeliveryContract added to GetSomMasterDataFKPOutput     
+        • Version 0.5 - 05.09.2017 - Rusbe Makuie		 PPM- 204826_280085 clientSomReleaseVersion, dialInAccountName and accessNumber added to GetSomMasterDataInput.      
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+              Dieses Dokument basiert auf und referenziert folgende Dokumente:
+            </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+            </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="GetSomMasterDataService">
+		<xs:annotation>
+			<xs:documentation>Typdefinition Dienst RangerBestandskundenPruefung</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="GetSomMasterDataInput" type="GetSomMasterDataInput"/>
+					<xs:element name="GetSomMasterDataOutput" type="GetSomMasterDataOutput">
+						<xs:annotation>
+							<xs:documentation>Handelt es sich eindeutig um einen Bestandskunden, so beinhaltet das Element result den Wert "true. In diesem Fall wird seine Kundenummer mit zurückgegeben. Beinhaltet das Element result den Wert "false", so ist eine weitere Aufschlüsselung im Element "errorCode" (und eine entsprechende textuelle Beschreibung im Element errorText) gegeben:
+                
+                1 ... es handelt sich eindeutig um keinen Bestandskunden
+                2 ... es ist nicht ermittelbar, ob Bestandskunde oder nicht. In diesem Fall kann eine oder mehrere Kundennummern zurückgegeben werden.
+                
+              </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSomMasterDataInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:choice>
+						<xs:element name="kundennummer" type="common:Kundennummer"/>
+						<xs:element name="dialInAccountName" type="bm:UserAccountId"/>
+						<xs:element name="accessNumber" type="comesb:ComplexPhoneNumber"/>
+					</xs:choice>
+					<xs:element name="clientSomReleaseVersion" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>
+								 The release version of the client SOM XSD. For example for BSS 20 this fiels should be set to 20.0.
+								 If not populated the latest SOM release version is assumed. 
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="kontonummer" type="common:Rechnungskontonummer" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="vertragsnummer" type="common:Vertragsnummer" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSomMasterDataOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="order" type="bm:order" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSomMasterDataFKPService">
+		<xs:annotation>
+			<xs:documentation>GetSOMMasterDataFKP this service is implemented for IT 30257 for the component order and contract managment for project enterprice excellence. It is called  by the FKP Frontend (FirmenKundenPortal)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="GetSomMasterDataFKPInput" type="GetSomMasterDataFKPInput">
+						<xs:annotation>
+							<xs:documentation>Derived from GetSomMasterDataInput. FKP will use customer_number (kundennummer) to call the service. account_number (kontonummer) and contract_number (vertragsnummer) will be used in a 2nd step.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="GetSomMasterDataFKPOutput" type="GetSomMasterDataFKPOutput">
+						<xs:annotation>
+							<xs:documentation>Derived from GetSomMasterDataOutput</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSomMasterDataFKPInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="kundennummer" type="common:Kundennummer"/>
+					<xs:element name="customerHierarchyNumber" type="common:Kundennummer">
+						<xs:annotation>
+							<xs:documentation>FKP requirement to enforce user account rights. FKP will always provide the root level customer_number of an hierarchy and BKS will double check whether the queried customer_number (kundennummer) is part of that hierarchry.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="kontonummer" type="common:Rechnungskontonummer" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="vertragsnummer" type="common:Vertragsnummer" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSomMasterDataFKPOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+          <xs:element name="order" type="bm:order" minOccurs="0" />
+          <xs:element name="serviceDeliveryContract" type="serviceDeliveryContract" maxOccurs="unbounded" minOccurs="0"/>
+          <xs:element name="rebate" type="rebate" maxOccurs="unbounded" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSOMCustomerHierarchyDataFKPService">
+		<xs:annotation>
+			<xs:documentation>GetSOMCustomerHierarchyData this service is implemented for IT 30257 for the component order and contract managment for project enterprice excellence. It is called  by the FKP Frontend (FirmenKundenPortal). It will provide the hierarchy customer_number overview</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="GetSOMCustomerHierarchyDataFKPInput" type="GetSOMCustomerHierarchyDataFKPInput">
+						<xs:annotation>
+							<xs:documentation>IT 30257: provide customer_number as a starting point for a top down search</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="GetSOMCustomerHierarchyDataFKPOutput" type="GetSOMCustomerHierarchyDataFKPOutput">
+						<xs:annotation>
+							<xs:documentation>IT 30257: will return customer_number, name, nameSuffix, parent_customer_number</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSOMCustomerHierarchyDataFKPInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="customerNumber" type="common:Kundennummer"/>
+					<xs:element name="chunkSize" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of rows requested per chunk</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>number of chunck to be returnd. To take full benefit of caching this should always  start with 1 and then be increased by 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="customerHierarchyNumber" type="common:Kundennummer">
+						<xs:annotation>
+							<xs:documentation>FKP requirement to enforce user account rights. FKP will always provide the root level customer_number of an hierarchy and BKS will double check whether the queried customer_number (kundennummer) is part of that hierarchry.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSOMCustomerHierarchyDataFKPOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="customerList" type="bm:customer" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="chunkNumber" type="xs:integer" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>This is the number of chunk returned. Starting with 1</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="lastChunk" type="xs:boolean" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>true indicates that there is no more chunk to the requested data</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="rebate">
+		<xs:sequence>
+			<xs:element name="accountNumber" type="common:Rechnungskontonummer"/>
+			<xs:element name="rebateItem" type="rebateItem" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="rebateItem">
+		<xs:sequence>
+			<xs:element name="serviceSubscriptionId" type="xs:string"/>
+			<xs:element name="productCode" type="xs:string"/>
+			<xs:element name="productName" type="xs:string" minOccurs="0"/>
+			<xs:element name="pricingStructureCode" type="xs:string"/>
+			<xs:element name="pricingStructureName" type="xs:string" minOccurs="0"/>
+			<xs:element name="serviceCode" type="xs:string"/>
+			<xs:element name="serviceName" type="xs:string" minOccurs="0"/>
+			<xs:element name="pricePlanCode" type="xs:string"/>
+			<xs:element name="pricePlanName" type="xs:string" minOccurs="0"/>
+			<xs:element name="pricePlanOptionValue" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="serviceDeliveryContract">
+		<xs:sequence>
+			<xs:element name="contractNumber" type="common:Vertragsnummer"/>
+			<xs:element name="productCommitment" type="productCommitment" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="productCommitment">
+		<xs:sequence>
+			<xs:element name="productCommitmentNumber" type="xs:string"/>
+			<xs:element name="salesOrganizationNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="productCode" type="xs:string"/>
+			<xs:element name="productName" type="xs:string" minOccurs="0"/>
+			<xs:element name="pricingStructureCode" type="xs:string"/>
+			<xs:element name="pricingStructureName" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

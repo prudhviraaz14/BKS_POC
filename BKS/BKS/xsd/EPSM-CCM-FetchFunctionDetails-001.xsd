@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://www.arcor.net/ccm/EPSM-CCM-FetchFunctionDetails-001"
+	xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002"
+	xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001"
+	xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002"
+	xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002"
+	xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001"
+	xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:bm="http://www.arcor.net/orderSchema"
+	targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-FetchFunctionDetails-001"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001"
+		schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001"
+		schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002"
+		schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001"
+		schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002"
+		schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002"
+		schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_FetchFunctionDetails_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+				Aenderungshistorie:
+				• Version 0.1 - 10.10.2007 - Rusbe Makuie	- initiale Version
+				• Version 0.2 - 02.12.2009 - Rusbe Makuie	- Changed the output to productBundle.
+				• Version 0.3 - 17.12.2012 - Rusbe Makuie	- Additional input to productBundle.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+							Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="FetchFunctionDetailsService">
+		<xs:annotation>
+			<xs:documentation>Typdefinition Dienst RangerBestandskundenPruefung</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="FetchFunctionDetailsInput" type="FetchFunctionDetailsInput"/>
+					<xs:element name="FetchFunctionDetailsOutput" type="FetchFunctionDetailsOutput">
+						<xs:annotation>
+							<xs:documentation>Handelt es sich eindeutig um einen Bestandskunden, so beinhaltet das Element result den Wert "true. In diesem Fall wird seine Kundenummer mit zurückgegeben. Beinhaltet das Element result den Wert "false", so ist eine weitere Aufschlüsselung im Element "errorCode" (und eine entsprechende textuelle Beschreibung im Element errorText) gegeben:
+								
+								1 ... es handelt sich eindeutig um keinen Bestandskunden
+								2 ... es ist nicht ermittelbar, ob Bestandskunde oder nicht. In diesem Fall kann eine oder mehrere Kundennummern zurückgegeben werden.
+								
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchFunctionDetailsInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:choice>
+						<xs:element name="serviceSubscriptionId" type="xs:string" />
+						<xs:sequence>
+							<xs:element name="geonumber" type="xs:string" minOccurs="0" />
+							<xs:element name="MSISDN" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:choice>
+					<xs:element name="fetchMasterData" type="xs:boolean" minOccurs="0" />
+					<xs:element name="disableCache" type="xs:boolean" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FetchFunctionDetailsOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="customerData" type="bm:customerData" minOccurs="0"/>
+					<xs:element name="productBundle" type="bm:productBundle" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

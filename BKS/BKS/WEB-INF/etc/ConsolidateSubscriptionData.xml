@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveDataBySerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveDataBySerSu */   
+        C.CUSTOMER_NUMBER,BI.BUNDLE_ID
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE B,CUSTOMER C
+        WHERE 
+        BI.SUPPORTED_OBJECT_ID = #value#
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.BUNDLE_ID = B.BUNDLE_ID
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveDataByBundleId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveDataByBundleId */   
+        C.CUSTOMER_NUMBER
+        FROM 
+        BUNDLE B, CUSTOMER C
+        WHERE 
+        B.BUNDLE_ID = #value#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_FLAG = 'N' 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveCharValuesForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveCharValuesForBundle */   
+            CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+            CV.CONFIGURED_VALUE_STRING AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+            BI.EFFECTIVE_STATUS AS ITEM_STATUS
+        FROM 
+            CONFIG_SERVICE_CHARACTERISTIC CSC,SERVICE_SUBSCRIPTION SS, BUNDLE_ITEM BI , CONFIGURED_VALUE CV 
+        WHERE 
+            BI.BUNDLE_ID = #value#
+            AND BI.EFFECTIVE_FLAG = 'N'
+            AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('V0153','I1330','V0152','V0154','V0138','V0934','I1020')
+            AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID    
+            UNION SELECT CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+            AN.ACCESS_NUMBER AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+            BI.EFFECTIVE_STATUS AS ITEM_STATUS
+            FROM 
+                CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS, BUNDLE_ITEM BI , ACCESS_NUMBER AN 
+            WHERE 
+                BI.BUNDLE_ID = #value#
+                AND BI.EFFECTIVE_FLAG = 'N'
+                AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+                AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+                AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+                AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+            ORDER BY SERVICE_SUBSCRIPTION_ID,SERVICE_CHARACTERISTIC_CODE,CSC_STATUS
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveCharValuesForChildServices" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveCharValuesForChildServices */   
+            CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+            CV.CONFIGURED_VALUE_STRING AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+            BI.EFFECTIVE_STATUS AS ITEM_STATUS
+        FROM 
+            CONFIG_SERVICE_CHARACTERISTIC CSC,SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SSD, BUNDLE_ITEM BI , CONFIGURED_VALUE CV 
+        WHERE 
+            BI.BUNDLE_ID = #value#
+            AND BI.EFFECTIVE_FLAG = 'N'
+            AND BI.SUPPORTED_OBJECT_ID = SSD.SERVICE_SUBSCRIPTION_DEP_ID
+            AND SS.SERVICE_SUBSCRIPTION_ID = SSD.SERVICE_SUBSCRIPTION_ID            
+            AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('')
+            AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID    
+         UNION SELECT CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+            AN.ACCESS_NUMBER AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+            BI.EFFECTIVE_STATUS AS ITEM_STATUS
+         FROM 
+                CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SSD, BUNDLE_ITEM BI , ACCESS_NUMBER AN 
+         WHERE 
+            BI.BUNDLE_ID = #value#
+            AND BI.EFFECTIVE_FLAG = 'N'
+            AND BI.SUPPORTED_OBJECT_ID = SSD.SERVICE_SUBSCRIPTION_DEP_ID
+            AND SS.SERVICE_SUBSCRIPTION_ID = SSD.SERVICE_SUBSCRIPTION_ID            
+            AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('I905B','I905A')
+            AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+         ORDER BY SERVICE_SUBSCRIPTION_ID,SERVICE_CHARACTERISTIC_CODE,CSC_STATUS
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveServiceCodesForCharCode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveServiceCodesForCharCode */   
+        S.SERVICE_CODE
+        FROM SERVICE_CHARACTERISTIC_VALUE SCV,SERVICE S 
+        WHERE SCV.SERVICE_CHAR_CODE = #value#
+        AND SCV.SERVICE_CODE = S.SERVICE_CODE
+        AND SCV.SERVICE_VERSION_CODE = S.SERVICE_VERSION_CODE
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)    
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveLeadingCharInfoOtherBundles" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveLeadingCharInfoOtherBundles */   
+        CSC.SERVICE_CHARACTERISTIC_CODE,CV.CONFIGURED_VALUE_STRING 
+        FROM 
+        CONFIG_SERVICE_CHARACTERISTIC CSC,BUNDLE_ITEM BI ,BUNDLE B , CONFIGURED_VALUE CV 
+        WHERE
+        B.CUSTOMER_NUMBER = #customerNumber#
+        AND B.BUNDLE_ID != #bundleId#
+        AND B.EFFECTIVE_FLAG = 'N'
+        AND BI.BUNDLE_ID = B.BUNDLE_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                        CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                        CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+        AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('V0152','V0154')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID    
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveAccessNumber */   
+        AN.ACCESS_NUMBER,AN.CUSTOMER_NUMBER
+        FROM ACCESS_NUMBER AN 
+        WHERE AN.ACCESS_NUMBER = #value# 
+        AND EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+                    CSC.CONFIG_SERVICE_CHAR_ID=AN.CONFIG_SERVICE_CHAR_ID
+                    AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+                    AND CSC.EFFECTIVE_FLAG='N')
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveOpenOrders" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND)  ConsolidateSubscriptionData.effonl.RetrieveOpenOrders */  
+        EO.ORDER_ID , EO.ORDER_POSITION_NUMBER
+        FROM 
+        EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EOD.SUPPORTED_OBJECT_ID = #serSuId#
+        AND EOD.ORDER_ID != #orderId#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_FLAG = 'N'
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.effonl.RetrieveAddressCharacteristic" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.effonl.RetrieveAddressCharacteristic */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #serSuId#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                    AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.DATA_TYPE_RD = 'ADDRESS'
+        AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+        AND AD.EFFECTIVE_FLAG = 'N'
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveDataBySerSu" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveDataBySerSu */   
+        C.CUSTOMER_NUMBER,BI.BUNDLE_ID
+        FROM 
+        BUNDLE_ITEM BI, BUNDLE B,CUSTOMER C
+        WHERE 
+        BI.SUPPORTED_OBJECT_ID = #value#
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                    BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                    AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.BUNDLE_ID = B.BUNDLE_ID
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                            B.BUNDLE_ID = B1.BUNDLE_ID 
+                            AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveDataByBundleId" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveDataByBundleId */   
+        C.CUSTOMER_NUMBER
+        FROM 
+        BUNDLE B, CUSTOMER C
+        WHERE 
+        B.BUNDLE_ID = #value#
+        AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                                B.BUNDLE_ID = B1.BUNDLE_ID 
+                                AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND C.CUSTOMER_NUMBER = B.CUSTOMER_NUMBER
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER  
+                                AND C1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveCharValuesForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveCharValuesForBundle */   
+        CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+        CV.CONFIGURED_VALUE_STRING AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+        BI.EFFECTIVE_STATUS AS ITEM_STATUS
+        FROM 
+        CONFIG_SERVICE_CHARACTERISTIC CSC,SERVICE_SUBSCRIPTION SS, BUNDLE_ITEM BI , CONFIGURED_VALUE CV 
+        WHERE 
+        BI.BUNDLE_ID = #value#
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+        AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('V0153','I1330','V0152','V0154','V0138','V0934','I1020')
+        AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID    
+        UNION SELECT CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+        AN.ACCESS_NUMBER AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+        BI.EFFECTIVE_STATUS AS ITEM_STATUS
+        FROM 
+            CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS, BUNDLE_ITEM BI , ACCESS_NUMBER AN 
+        WHERE 
+            BI.BUNDLE_ID = #value#
+            AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                    BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                    AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+            AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                        CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                        CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+         ORDER BY SERVICE_SUBSCRIPTION_ID,SERVICE_CHARACTERISTIC_CODE,CSC_STATUS
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveCharValuesForChildServices" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveCharValuesForChildServices */   
+            CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+            CV.CONFIGURED_VALUE_STRING AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+            BI.EFFECTIVE_STATUS AS ITEM_STATUS
+        FROM 
+            CONFIG_SERVICE_CHARACTERISTIC CSC,SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SSD, BUNDLE_ITEM BI , CONFIGURED_VALUE CV 
+        WHERE 
+            BI.BUNDLE_ID = #value#
+            AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                    BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                    AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+            AND BI.SUPPORTED_OBJECT_ID = SSD.SERVICE_SUBSCRIPTION_DEP_ID
+            AND SS.SERVICE_SUBSCRIPTION_ID = SSD.SERVICE_SUBSCRIPTION_ID            
+            AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('')
+            AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID    
+         UNION SELECT CSC.SERVICE_SUBSCRIPTION_ID,SS.SERVICE_CODE,CSC.SERVICE_CHARACTERISTIC_CODE,
+            AN.ACCESS_NUMBER AS VALUE,CSC.EFFECTIVE_STATUS AS CSC_STATUS,
+            BI.EFFECTIVE_STATUS AS ITEM_STATUS
+         FROM 
+             CONFIG_SERVICE_CHARACTERISTIC CSC, SERVICE_SUBSCRIPTION SS, SERVICE_SUBSCRIPTION_DEP SSD, BUNDLE_ITEM BI , ACCESS_NUMBER AN 
+         WHERE 
+            BI.BUNDLE_ID = #value#
+            AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                    BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                    AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+            AND BI.SUPPORTED_OBJECT_ID = SSD.SERVICE_SUBSCRIPTION_DEP_ID
+            AND SS.SERVICE_SUBSCRIPTION_ID = SSD.SERVICE_SUBSCRIPTION_ID            
+            AND SS.SERVICE_SUBSCRIPTION_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('I905B','I905A')
+            AND CSC.CONFIG_SERVICE_CHAR_ID = AN.CONFIG_SERVICE_CHAR_ID
+         ORDER BY SERVICE_SUBSCRIPTION_ID,SERVICE_CHARACTERISTIC_CODE,CSC_STATUS
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveServiceCodesForCharCode" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveServiceCodesForCharCode */   
+        S.SERVICE_CODE
+        FROM SERVICE_CHARACTERISTIC_VALUE SCV,SERVICE S 
+        WHERE SCV.SERVICE_CHAR_CODE = #value#
+        AND SCV.SERVICE_CODE = S.SERVICE_CODE
+        AND SCV.SERVICE_VERSION_CODE = S.SERVICE_VERSION_CODE
+        AND S.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM SERVICE S1 WHERE 
+                                S.SERVICE_CODE = S1.SERVICE_CODE
+                                AND S1.EFFECTIVE_STATUS = 'ACTIVE'
+                                AND S1.EFFECTIVE_DATE &lt;= SYSDATE)    
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveLeadingCharInfoOtherBundles" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveLeadingCharInfoOtherBundles */   
+            CSC.SERVICE_CHARACTERISTIC_CODE,CV.CONFIGURED_VALUE_STRING 
+        FROM 
+            CONFIG_SERVICE_CHARACTERISTIC CSC,BUNDLE_ITEM BI ,BUNDLE B , CONFIGURED_VALUE CV 
+        WHERE
+            B.CUSTOMER_NUMBER = #customerNumber#
+            AND B.BUNDLE_ID != #bundleId#
+            AND B.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE B1 WHERE
+                                    B.BUNDLE_ID = B1.BUNDLE_ID 
+                                    AND B1.EFFECTIVE_DATE &lt; SYSDATE)
+            AND BI.BUNDLE_ID = B.BUNDLE_ID
+            AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI1 WHERE
+                                    BI.BUNDLE_ITEM_ID = BI1.BUNDLE_ITEM_ID 
+                                    AND BI1.EFFECTIVE_DATE &lt; SYSDATE)
+            AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+            AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                                    CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID AND
+                                    CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE)
+            AND CSC.SERVICE_CHARACTERISTIC_CODE IN ('V0152','V0154')
+            AND CSC.CONFIG_SERVICE_CHAR_ID = CV.CONFIG_SERVICE_CHAR_ID    
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveAccessNumber" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveAccessNumber */   
+        AN.ACCESS_NUMBER,AN.CUSTOMER_NUMBER
+        FROM ACCESS_NUMBER AN 
+        WHERE AN.ACCESS_NUMBER = #value# 
+        AND EXISTS (SELECT 1 FROM CONFIG_SERVICE_CHARACTERISTIC CSC WHERE 
+                CSC.CONFIG_SERVICE_CHAR_ID=AN.CONFIG_SERVICE_CHAR_ID
+                AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+                AND CSC.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM 
+                    CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE
+                    CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID ))
+    </select>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveOpenOrders" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /*+ index(eod EXT_ORDER_DTL_SERV_SUB_IND)  ConsolidateSubscriptionData.onl.RetrieveOpenOrders */  
+        EO.ORDER_ID , EO.ORDER_POSITION_NUMBER
+        FROM 
+        EXTERNAL_ORDER EO,EXTERNAL_ORDER_DETAIL EOD
+        WHERE EOD.SUPPORTED_OBJECT_ID = #serSuId#
+        AND EOD.ORDER_ID != #orderId#
+        AND EO.ORDER_ID = EOD.ORDER_ID
+        AND EO.ORDER_POSITION_NUMBER = EOD.ORDER_POSITION_NUMBER
+        AND EO.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM EXTERNAL_ORDER EO2
+                                WHERE EO.ORDER_ID = EO2.ORDER_ID
+                                AND EO.ORDER_POSITION_NUMBER = EO2.ORDER_POSITION_NUMBER
+                                AND EFFECTIVE_DATE &lt; SYSDATE)
+        AND EO.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <parameterMap id="consZarMap" class="java.util.Map">
+        <parameter property="customerNumberIn" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="areaCodeIn" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="accessNumber" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+        <parameter property="areaCodeOut" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="accessNumberStart" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="accessNumberEnd" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="productCode" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="physicalStatus" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+        <parameter property="logicalStatus" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+        <parameter property="tnb" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="futureTnb" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="desiredDate" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="customerNumberOut" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="accessId" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="errorCode" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+        <parameter property="errorText" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="pairedStatusInd" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+        <parameter property="pendingCorrectionInd" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+    </parameterMap>
+    
+    <procedure id="ConsolidateSubscriptionData.GetZarAccNumInfo" parameterMap="consZarMap">
+        { call ZAR_ACCNUM_INFO.CCM_GET_ZAR_ACCNUM_INFO(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}
+    </procedure>
+    
+    <select id = "ConsolidateSubscriptionData.onl.RetrieveAddressCharacteristic" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* ConsolidateSubscriptionData.onl.RetrieveAddressCharacteristic */   
+        AD.ADDRESS_ID, AD.CITY_NAME, AD.CITY_SUFFIX_NAME, AD.COUNTRY_RD, 
+        AD.POSTAL_CODE, AD.STREET_NAME, AD.STREET_NUMBER, AD.STREET_NUMBER_SUFFIX
+        FROM CONFIG_SERVICE_CHARACTERISTIC CSC, ADDRESS AD 
+        WHERE CSC.SERVICE_SUBSCRIPTION_ID = #serSuId#
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CONFIG_SERVICE_CHARACTERISTIC CSC1 
+                                    WHERE CSC.SERVICE_SUBSCRIPTION_ID = CSC1.SERVICE_SUBSCRIPTION_ID 
+                                    AND CSC.SERVICE_CHARACTERISTIC_CODE = CSC1.SERVICE_CHARACTERISTIC_CODE
+                                    AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.DATA_TYPE_RD = 'ADDRESS'
+        AND CSC.ADDRESS_ID = AD.ADDRESS_ID
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = #charCode#
+        AND AD.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS AD1 
+                                    WHERE AD.ADDRESS_ID = AD1.ADDRESS_ID 
+                                    AND AD.ENTITY_ID = AD1.ENTITY_ID 
+                                    AND AD1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND AD.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+</sqlMap>

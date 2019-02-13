@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <bean id="dataSource_refdata" class="net.arcor.bks.db.BksDataSource" destroy-method="close">
+        <property name="driverClassName">
+            <value>${Driver}</value>
+        </property>
+        <property name="url">
+            <value>${refdata.ConnectString}</value>
+        </property>
+        <property name="username">
+            <value>${refdata.User}</value>
+        </property>
+        <property name="encryptionKey">
+            <value>${EncryptionKey}</value>
+        </property>
+        <property name="password">
+            <value>${refdata.Password}</value>
+        </property>
+    </bean> 
+    
+    
+    <bean id="dataSource_effonl" class="net.arcor.bks.db.BksDataSource" destroy-method="close">
+        <property name="driverClassName">
+            <value>${Driver}</value>
+        </property>
+        <property name="url">
+            <value>${effonl.ConnectString}</value>
+        </property>
+        <property name="username">
+            <value>${effonl.User}</value>
+        </property>
+        <property name="encryptionKey">
+            <value>${EncryptionKey}</value>
+        </property>
+        <property name="password">
+            <value>${effonl.Password}</value>
+        </property>
+    </bean> 
+    
+    <bean id="dataSource_onl" class="net.arcor.bks.db.BksDataSource" destroy-method="close">
+        <property name="driverClassName">
+            <value>${Driver}</value>
+        </property>
+        <property name="url">
+            <value>${onl.ConnectString}</value>
+        </property>
+        <property name="username">
+            <value>${onl.User}</value>
+        </property>
+        <property name="encryptionKey">
+            <value>${EncryptionKey}</value>
+        </property>
+        <property name="password">
+            <value>${onl.Password}</value>
+        </property>
+    </bean> 
+    
+    <bean id = "oracleLobHandler" class = "org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init = "true"/> 
+
+    <bean id="General" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+
+    <bean id="ErmittleKundenArt" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetCustomerDataCCM" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="ErmittleVertriebspacketWert" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="PruefeBestandskunde" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="PruefeBestandskundenRanger" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="PruefeServiceProviderNeukunde" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetCodbPrerequisiteData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetDetailsForAddedFunction" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetCcbId" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetCcbOpenOrder" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="ConsolidateSubscriptionData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetServiceInformation" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="HoleVertriebspaketDetails" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="PrefetchVertriebspaketDetails" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="PrefetchProductBundles" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="FetchProductBundle" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetSomMasterData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="FetchFunctionDetails" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetFNPCustomerData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetFNPCustomerSomData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property> 
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetFNPCustomerRecoData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetFNPCustomerNGCSData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetFNPAddressById" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetSOMCustomerHierarchyDataFKP" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GetFNPCustomerHierarchyNGCSData" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="WbciCustomerInfoForPorting" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="WbciGetDtagContractNumber" 
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation">
+            <value>${SqlMapConfig}</value>
+        </property>
+        <property name="lobHandler"> 
+            <ref local="oracleLobHandler"/> 
+        </property> 
+    </bean>
+    
+    <bean id="GeneralDAO" class="net.arcor.bks.db.ibatis.GeneralDAOImpl">
+        <property name="sqlMapClient"><ref local="General"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="ErmittleKundenArtDAO" class="net.arcor.bks.db.ibatis.ErmittleKundenArtDAOImpl">
+        <property name="sqlMapClient"><ref local="ErmittleKundenArt"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetCustomerDataCCMDAO" class="net.arcor.bks.db.ibatis.GetCustomerDataCCMDAOImpl">
+        <property name="sqlMapClient"><ref local="GetCustomerDataCCM"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="ErmittleVertriebspacketWertDAO" class="net.arcor.bks.db.ibatis.ErmittleVertriebspacketWertDAOImpl">
+        <property name="sqlMapClient"><ref local="ErmittleVertriebspacketWert"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="PruefeBestandskundeDAO" class="net.arcor.bks.db.ibatis.PruefeBestandskundeDAOImpl">
+        <property name="sqlMapClient"><ref local="PruefeBestandskunde"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="PruefeBestandskundenRangerDAO" class="net.arcor.bks.db.ibatis.PruefeBestandskundenRangerDAOImpl">
+        <property name="sqlMapClient"><ref local="PruefeBestandskundenRanger"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="PruefeServiceProviderNeukundeDAO" class="net.arcor.bks.db.ibatis.PruefeServiceProviderNeukundeDAOImpl">
+        <property name="sqlMapClient"><ref local="PruefeServiceProviderNeukunde"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetCodbPrerequisiteDataDAO" class="net.arcor.bks.db.ibatis.GetCodbPrerequisiteDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetCodbPrerequisiteData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetDetailsForAddedFunctionDAO" class="net.arcor.bks.db.ibatis.GetDetailsForAddedFunctionDAOImpl">
+        <property name="sqlMapClient"><ref local="GetDetailsForAddedFunction"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetCcbIdDAO" class="net.arcor.bks.db.ibatis.GetCcbIdDAOImpl">
+        <property name="sqlMapClient"><ref local="GetCcbId"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetCcbOpenOrderDAO" class="net.arcor.bks.db.ibatis.GetCcbOpenOrderDAOImpl">
+        <property name="sqlMapClient"><ref local="GetCcbOpenOrder"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="ConsolidateSubscriptionDataDAO" class="net.arcor.bks.db.ibatis.ConsolidateSubscriptionDataDAOImpl">
+        <property name="sqlMapClient"><ref local="ConsolidateSubscriptionData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetServiceInformationDAO" class="net.arcor.bks.db.ibatis.GetServiceInformationDAOImpl">
+        <property name="sqlMapClient"><ref local="GetServiceInformation"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="HoleVertriebspaketDetailsDAO" class="net.arcor.bks.db.ibatis.HoleVertriebspaketDetailsDAOImpl">
+        <property name="sqlMapClient"><ref local="HoleVertriebspaketDetails"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="PrefetchVertriebspaketDetailsDAO" class="net.arcor.bks.db.ibatis.PrefetchVertriebspaketDetailsDAOImpl">
+        <property name="sqlMapClient"><ref local="PrefetchVertriebspaketDetails"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="PrefetchProductBundlesDAO" class="net.arcor.bks.db.ibatis.PrefetchProductBundlesDAOImpl">
+        <property name="sqlMapClient"><ref local="PrefetchProductBundles"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="FetchProductBundleDAO" class="net.arcor.bks.db.ibatis.FetchProductBundleDAOImpl">
+        <property name="sqlMapClient"><ref local="FetchProductBundle"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetSomMasterDataDAO" class="net.arcor.bks.db.ibatis.GetSomMasterDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetSomMasterData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="FetchFunctionDetailsDAO" class="net.arcor.bks.db.ibatis.FetchFunctionDetailsDAOImpl">
+        <property name="sqlMapClient"><ref local="FetchFunctionDetails"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetFNPCustomerDataDAO" class="net.arcor.bks.db.ibatis.GetFNPCustomerDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetFNPCustomerData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetFNPCustomerSomDataDAO" class="net.arcor.bks.db.ibatis.GetFNPCustomerSomDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetFNPCustomerSomData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetFNPCustomerRecoDataDAO" class="net.arcor.bks.db.ibatis.GetFNPCustomerRecoDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetFNPCustomerRecoData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetFNPCustomerNGCSDataDAO" class="net.arcor.bks.db.ibatis.GetFNPCustomerNGCSDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetFNPCustomerNGCSData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetFNPAddressByIdDAO" class="net.arcor.bks.db.ibatis.GetFNPAddressByIdDAOImpl">
+        <property name="sqlMapClient"><ref local="GetFNPAddressById"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetSOMCustomerHierarchyDataFKPDAO" class="net.arcor.bks.db.ibatis.GetSOMCustomerHierarchyDataFKPDAOImpl">
+        <property name="sqlMapClient"><ref local="GetSOMCustomerHierarchyDataFKP"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="GetFNPCustomerHierarchyNGCSDataDAO" class="net.arcor.bks.db.ibatis.GetFNPCustomerHierarchyNGCSDataDAOImpl">
+        <property name="sqlMapClient"><ref local="GetFNPCustomerHierarchyNGCSData"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="WbciCustomerInfoForPortingDAO" class="net.arcor.bks.db.ibatis.WbciCustomerInfoForPortingDAOImpl">
+        <property name="sqlMapClient"><ref local="WbciCustomerInfoForPorting"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+    <bean id="WbciGetDtagContractNumberDAO" class="net.arcor.bks.db.ibatis.WbciGetDtagContractNumberDAOImpl">
+        <property name="sqlMapClient"><ref local="WbciGetDtagContractNumber"/></property>
+        <property name="dataSource"><ref local="dataSource_effonl"/></property>
+    </bean>
+</beans>

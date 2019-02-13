@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.dialogika.de/infport/schema/cu/r2017" elementFormDefault="qualified"
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cu17="http://www.dialogika.de/infport/schema/cu/r2017" xmlns:basic="http://www.dialogika.de/infport/schema/basic/v1"
+	xmlns:com="http://www.dialogika.de/infport/schema/common/v1">
+
+	<import namespace="http://www.dialogika.de/infport/schema/basic/v1" schemaLocation="basic.xsd" />
+	<import namespace="http://www.dialogika.de/infport/schema/common/v1" schemaLocation="common.xsd" />
+	
+	<!-- Simple Types for SN -->
+	
+	
+	<simpleType name="stName">
+		<restriction base="string">
+			<maxLength value="100"></maxLength>
+		</restriction>
+	</simpleType>
+	
+
+	<!-- Enums -->
+	
+	<simpleType name="stCascadeDeleteAddress" final="#all">
+		<restriction base="string">
+			<enumeration value="NO_CASCADE" />
+			<enumeration value="CASCADE_TO_LINES_AND_NUMBERS" />
+			<enumeration value="CASCADE_ALL" />
+		</restriction>
+	</simpleType>
+	
+	<simpleType name="stCascadeDeleteCustomer" final="#all">
+		<restriction base="string">
+			<enumeration value="NO_CASCADE" />
+			<enumeration value="CASCADE_ALL" />
+		</restriction>
+	</simpleType>
+	
+	<!-- Complex Types -->
+	<complexType name="ctCustomer">
+		<complexContent>
+			<extension base="com:ctBasicContact" />
+		</complexContent>
+	</complexType>
+
+	<complexType name="ctReseller">
+		<sequence>
+			<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="1"></element>
+			<element name="name" type="cu17:stName" maxOccurs="1" minOccurs="0"></element>
+		</sequence>
+	</complexType>
+
+	
+	<!-- Requests -->
+	
+	
+	<complexType name="mtGetResellersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData"/>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetResellersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="reseller" type="cu17:ctReseller" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtCreateCustomerRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="customer" type="cu17:ctCustomer" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtUpdateCustomerRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="customer" type="cu17:ctCustomer" maxOccurs="1" minOccurs="1" />
+					<element name="oldClientId" type="com:stClientId" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtDeleteCustomerRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1" />
+					<element name="cascade" type="cu17:stCascadeDeleteCustomer" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetCustomerRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetCustomerResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="customer" type="cu17:ctCustomer" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtSelectCustomerByFilterRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0"></element>
+					<element name="surname" type="com:stStr80" maxOccurs="1" minOccurs="0"></element>
+					<element name="givenName" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+					<element name="dateOfBirth" type="date" maxOccurs="1" minOccurs="0"></element>
+					<element name="organisation" type="com:stStr80" maxOccurs="1" minOccurs="0"></element>
+					<element name="postcode" type="com:stStr10" maxOccurs="1" minOccurs="0"></element>
+					<element name="city" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+					<element name="street" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+					<element name="houseNumber" type="com:stStr10" maxOccurs="1" minOccurs="0"></element>
+					<element name="houseNoAddition" type="com:stStr10" maxOccurs="1" minOccurs="0"></element>
+					<element name="postcodePostOfficeBox" type="com:stPostcodePostOfficeBox" maxOccurs="1" minOccurs="0"></element>
+					<element name="postOfficeBox" type="com:stPostOfficeBox" maxOccurs="1" minOccurs="0"></element>
+					<element name="eMail" type="com:stStr80" maxOccurs="1" minOccurs="0"></element>
+					<element name="reseller" type="com:stReseller" maxOccurs="1" minOccurs="0"></element>
+					<element name="providerSpec1" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+					<element name="providerSpec2" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+					<element name="providerSpec3" type="com:stProviderSpecific" maxOccurs="1" minOccurs="0"></element>
+					<element name="maxCount" type="int" maxOccurs="1" minOccurs="1"></element>
+					<element name="offset" type="int" maxOccurs="1" minOccurs="1"></element>
+					<element name="completeData" type="int" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtSelectCustomerByFilterResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="customer" type="cu17:ctCustomer" maxOccurs="unbounded" minOccurs="1" />
+					<element name="count" type="int" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetClientIdRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="reseller" type="com:stStr50" maxOccurs="1" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetClientIdResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetONBRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="geoEast" type="com:stCoordinate" maxOccurs="1" minOccurs="1" />
+					<element name="geoNorth" type="com:stCoordinate" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetONBResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="prefix" type="com:stPrefix" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtCreateInstallationAddressRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="installationAddress" type="com:ctInstallationAddress" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtUpdateInstallationAddressRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="installationAddress" type="com:ctInstallationAddress" maxOccurs="1" minOccurs="1" />
+					<element name="oldLocation" type="com:stLocation" maxOccurs="1" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtDeleteInstallationAddressRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1" />
+					<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="1"/>
+					<element name="cascade" type="cu17:stCascadeDeleteAddress" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetInstallationAddressRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="0" />
+					<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetInstallationAddressResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="installationAddress" type="com:ctInstallationAddress" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtCreateLineParametersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="lineParameter" type="com:ctLineParameter" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtUpdateLineParametersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="lineParameter" type="com:ctLineParameter" maxOccurs="1" minOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtDeleteLineParametersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1" />
+					<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="1"/>
+					<choice>
+						<element name="lineId" type="com:stStr50" maxOccurs="1" minOccurs="0"></element>
+						<element name="IPv4" type="com:ctIPv4" maxOccurs="1" minOccurs="0"></element>
+						<element name="IPv6" type="com:ctIPv6" maxOccurs="1" minOccurs="0"></element>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetLineParametersRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="clientId" type="com:stClientId" maxOccurs="1" minOccurs="1" />
+					<element name="location" type="com:stLocation" maxOccurs="1" minOccurs="1"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetLineParametersResponse">
+		<complexContent>
+			<extension base="basic:ctBasicResponse">
+				<sequence>
+					<element name="lineParameter" type="com:ctLineParameter" maxOccurs="unbounded" minOccurs="0" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mtGetLocationByLineIdRequest">
+		<complexContent>
+			<extension base="basic:ctBasicData">
+				<sequence>
+					<element name="lineId" type="com:stStr50" maxOccurs="1" minOccurs="1"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+</schema>

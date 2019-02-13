@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:st="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-VF-SimpleTypes-001" targetNamespace="http://www.vodafone.de/ESB/Service/SBUS/BKS/BKS-WBCI-VF-SimpleTypes-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation>		
+		Vers.	Date					Autor			Comment
+		====	==========	            		===================================================
+        0.1 		2013-07-26	M.El Hilali      Initial version
+        1.0		2013-08-13	M.Abraham	Final version
+        1.1		2013-08-16	M.El Hilali	including sbus name sapces 
+          </xsd:documentation>
+	</xsd:annotation>
+	<xsd:simpleType name="KundennummerType">
+		<xsd:annotation>
+			<xsd:documentation>Kundennummer</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ServiceProviderCodeType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="4"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TasiType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="14"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="DtagVertragsnummerType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="50"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TechnologieType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="25"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ServiceSubscriptionIdType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CCMContractNumberType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="12"/>
+			<xsd:maxLength value="12"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CustomerIntentionType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="30"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="BarcodeType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="KuendigungsdatumType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:date"/>
+	</xsd:simpleType>
+	<xsd:simpleType name="PostleitzahlType">
+		<xsd:annotation>
+			<xsd:documentation>Postleitzahl</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OrtType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="40"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="StrassennameType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="40"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="HausnummerType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="HausnummerResponseType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="HausnummernzusatzType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OnkzType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="RufnummerType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="DurchwahlnummerType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="AbfragestelleType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rnrBlockVonType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rnrBlockBisType">
+		<xsd:annotation>
+			<xsd:documentation/>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

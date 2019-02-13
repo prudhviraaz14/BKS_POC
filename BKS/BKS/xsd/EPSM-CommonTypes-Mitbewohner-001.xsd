@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" 
+		xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" 
+		xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001"
+		xmlns:mitbewohner="http://www.arcor.net/EPSM-CommonTypes-Mitbewohner-001"
+		targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Mitbewohner-001" 
+		elementFormDefault="qualified" 
+		attributeFormDefault="unqualified">
+<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+<xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EPSM_Mitbewohner_Dokument_Information">
+	<xs:annotation>
+		<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 01.07.2008  16:19</xs:documentation>
+	</xs:annotation>
+</xs:element>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Nachname">
+	<xs:annotation>
+		<xs:documentation>Nachname eines Mitbewohners</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="60"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Vorname">
+	<xs:annotation>
+		<xs:documentation>Vorname eines Mitbewohners</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="30"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Mitbewohner">
+	<xs:annotation>
+		<xs:documentation>Angabe von weiteren Personen eines Vertrages z.B. Lebensgemeinschaften oder WGs</xs:documentation>
+	</xs:annotation>
+	<xs:complexContent>
+		<xs:extension base="ape:AuftragsPositionsElement">
+			<xs:sequence>
+				<xs:element name="nachname" type="mitbewohner:Nachname" minOccurs="0"/>
+				<xs:element name="vorname" type="mitbewohner:Vorname" minOccurs="0"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+</xs:schema>

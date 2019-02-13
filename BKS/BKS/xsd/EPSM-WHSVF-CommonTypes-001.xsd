@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-CommonTypes-001" targetNamespace="http://www.vodafone-arcor.de/LinkDB/EPSM-WHSVF-CommonTypes-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="LinkDB_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>
+				Änderungshistorie
+				0.1	15.09.2008 	Reto Renner			- Initial Draft. Based on 
+																			- CommonTypes Version 1.5 / 15.09.2008
+																			- Address Sturcture Timestamp Adonis-Export: 07.08.2007  09:57 (Adresse)
+																			- Person Structure Timestamp Adonis-Export: 26.05.2008  11:18 (Person)
+																			- Company Structure Timestamp Adonis-Export: 18.01.2008  12:50 (JuristischePerson)
+				0.2	19.09.2008 	Reto Renner			- Englische Version
+				0.3    23.09.2008   Arnoud Ekker         - Change namespace to point that this is a joint Vodafone-Arcor document
+																			  Fixed same english. Added real definition of marketCode and BAN.
+																			  Replace ResultDetailsObject and error with bigger objects.
+				0.4	23.09.2008 	Reto Renner			- Type Barcode added
+				0.5   24.09.2008  Arnoud Ekker         	- Documentation resultdetails
+				0.6	26.09.2008	Reto Renner			- pattern eliminated in ZipCode + Email, Email -> string(10)  
+				0.7	27.10.2008	Reto Renner			- customerNumberund und arcorCustomerOrigin in customerData added, email deleted, Definition of barcode changed, CustomerId added
+				0.8	28.10.2008	Reto Renner			- SinglePhoneNumberand arcorCustomerOrigin corrected
+			</xs:documentation>
+			<xs:appinfo>
+				<version>0.8</version>
+			</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<!-- =============================== Definition of Phonenumber Structure ================================== -->
+	<xs:simpleType name="CountryCode">
+		<xs:annotation>
+			<xs:documentation>Country code associated to the access number. Format: 4 digits without leading “0” Example for the range associated for Arcor in Essen: 49 201 379  - 49 201 379 6 e.g.: 49 </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{0,4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LocalAreaCode">
+		<xs:annotation>
+			<xs:documentation>Local area code associated the access number. Format 2-5 digits, without leading “0” e.g.: 201</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{2,5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SinglePhoneNumber">
+		<xs:annotation>
+			<xs:documentation>Local number. Format: min. 3 digits, max. 20 digits</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{3,20}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PilotNumber">
+		<xs:annotation>
+			<xs:documentation>Local number e.g.: 379</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="StartRange">
+		<xs:annotation>
+			<xs:documentation>First number of an access number range e.g: 2</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="EndRange">
+		<xs:annotation>
+			<xs:documentation>Last number of an access number range. Has to be provided, if startRange has been provided. e.g: 6</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="CentralExtention">
+		<xs:annotation>
+			<xs:documentation>Extension which can be used to reach the reception e.g.:2601</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:complexType name="PhoneNumberRange">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="startRange" type="StartRange"/>
+			<xs:element name="endRange" type="EndRange"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PhoneNumbers">
+		<xs:annotation>
+			<xs:documentation>PhoneNumbers</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="phoneNumber" type="SinglePhoneNumber" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PhoneNumberRanges">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="pilotNumber" type="PilotNumber" minOccurs="0"/>
+			<xs:element name="phoneNumberRange" type="PhoneNumberRange" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="centralExtention" type="CentralExtention" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ComplexPhoneNumber">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="countryCode" type="CountryCode" minOccurs="0"/>
+			<xs:element name="localAreaCode" type="LocalAreaCode" minOccurs="0"/>
+			<xs:choice>
+				<xs:element name="phoneNumbers" type="PhoneNumbers" minOccurs="0"/>
+				<xs:element name="phoneNumberRanges" type="PhoneNumberRanges" minOccurs="0"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ======================================= Definition of Address Structure =============================== -->
+	<xs:simpleType name="ZipCode">
+		<xs:annotation>
+			<xs:documentation>German Zip-Code, e.g. "42799"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="City">
+		<xs:annotation>
+			<xs:documentation>City, e.g. "Hamburg"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CitySuffix">
+		<xs:annotation>
+			<xs:documentation>Suffix for City, e.g. "am Main" fpr Frankfurt.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Country">
+		<xs:annotation>
+			<xs:documentation>Name of Country, e.g. "Germany"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Street">
+		<xs:annotation>
+			<xs:documentation>Name of Street, e.g.  "Donaustr." </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="46"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Housenumber">
+		<xs:annotation>
+			<xs:documentation>Housenumber, e.g. "4"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HousenumberSuffix">
+		<xs:annotation>
+			<xs:documentation>Suffix for Housenumber, e.g."a" in Nr. 4a.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Postbox">
+		<xs:annotation>
+			<xs:documentation>Postbox</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Address">
+		<xs:annotation>
+			<xs:documentation>CCM customer address</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="zipCode" type="ZipCode" minOccurs="0"/>
+			<xs:element name="city" type="City" minOccurs="0"/>
+			<xs:element name="citySuffix" type="CitySuffix" minOccurs="0"/>
+			<xs:element name="country" type="Country" minOccurs="0"/>
+			<xs:element name="street" type="Street" minOccurs="0"/>
+			<xs:element name="housenumber" type="Housenumber" minOccurs="0"/>
+			<xs:element name="housenumberSuffix" type="HousenumberSuffix" minOccurs="0"/>
+			<xs:element name="postbox" type="Postbox" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ======================================= Definition of Person Structure =============================== -->
+	<xs:simpleType name="FamilyName">
+		<xs:annotation>
+			<xs:documentation>Familyname, e.g. "Meier"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FirstName">
+		<xs:annotation>
+			<xs:documentation>Firstname, e.g. "Harry"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Salutation">
+		<xs:annotation>
+			<xs:documentation>Salutation
+											 AR:	  e.g. "Herr", "Frau"
+											 VF:    N,F,R,S 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Title">
+		<xs:annotation>
+			<xs:documentation>Academic title, e.g. "Dr."</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NameSuffix">
+		<xs:annotation>
+			<xs:documentation>Suffix for name, e.g. "von", "van", "de", "Mac"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TitleOfNobility">
+		<xs:annotation>
+			<xs:documentation>Title of noblity, e.g. "Graf", "Baron", "Freiherr"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Position">
+		<xs:annotation>
+			<xs:documentation>Position in Company, e.g. "Director"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Person">
+		<xs:annotation>
+			<xs:documentation>personal data of private customer</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="familyName" type="FamilyName" minOccurs="0"/>
+			<xs:element name="firstName" type="FirstName" minOccurs="0"/>
+			<xs:element name="salutation" type="Salutation" minOccurs="0"/>
+			<xs:element name="title" type="Title" minOccurs="0"/>
+			<xs:element name="nameSuffix" type="NameSuffix" minOccurs="0"/>
+			<xs:element name="titleOfNobility" type="TitleOfNobility" minOccurs="0"/>
+			<xs:element name="dateOfBirth" type="xs:date" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Contact">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Person">
+				<xs:sequence>
+					<xs:element name="position" type="Position" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ======================================= Definition of Company Structure =============================== -->
+	<xs:simpleType name="CompanyName">
+		<xs:annotation>
+			<xs:documentation>Complete company Name, e.g. "Siemens AG"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LegalForm">
+		<xs:annotation>
+			<xs:documentation>Legal form, e.g. "AG", "GmbH", "KG"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CommercialRegisterNumber">
+		<xs:annotation>
+			<xs:documentation>Unique commercial register number, e.g. "HRB 12345"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CommercialRegisterCity">
+		<xs:annotation>
+			<xs:documentation>City of commercial register, e.g. "Berlin"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="KindOfCommerRegister">
+		<xs:annotation>
+			<xs:documentation>Kind of commercial register in germany, e.g. "A", "B". If customer have no kind of register ten "unregistered"</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="CommercialRegister">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="commercialRegisterNumber" type="CommercialRegisterNumber" minOccurs="0"/>
+			<xs:element name="commercialRegisterCity" type="CommercialRegisterCity" minOccurs="0"/>
+			<xs:element name="kindOfCommerRegister" type="KindOfCommerRegister" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Company">
+		<xs:annotation>
+			<xs:documentation>company data of business customer</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="companyName" type="CompanyName" minOccurs="0"/>
+			<xs:element name="legalForm" type="LegalForm" minOccurs="0"/>
+			<xs:element name="commercialRegister" type="CommercialRegister" minOccurs="0"/>
+			<xs:element name="contact" type="Contact" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ======================================= Definition of Anschlussdaten =============================== -->
+	<xs:simpleType name="FixedNetNumber">
+		<xs:annotation>
+			<xs:documentation>The fixed net number of the customer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ======================================= Definition of KIAS Types =================================== -->
+	<xs:simpleType name="MarketCode">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="MMC"/>
+			<xs:enumeration value="PUC"/>
+			<xs:enumeration value="MMO"/>
+			<xs:enumeration value="PUA"/>
+		</xs:restriction>
+		<!-- Credit Markt -->
+		<!-- Partner Unternehmen -->
+		<!-- Debit Markt -->
+		<!-- Partner Unternehmen Debit -->
+	</xs:simpleType>
+	<xs:simpleType name="Ban">
+		<xs:annotation>
+			<xs:documentation>Customernumber</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ResultDetailsObject">
+		<xs:annotation>
+			<xs:documentation>
+				The result status of the service.
+						Success =	The service executed successfully.
+						Warning =	The service executed successfully, but a warning is issued due to the result of the process. See field WarningText for more information.
+						Error =	The service executed erroneously. See ErrorDetails for detailed error information.
+						
+				The warning text. Only provided if the service result status is "Warning". Otherwise this field is empty.
+				
+				All object attributes are provided only if the service result status is "Error". Otherwise all attributes are empty.		
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="status" type="xs:string"/>
+			<xs:element name="warningText" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorDetails" type="errorType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="errorType">
+		<xs:annotation>
+			<xs:documentation>
+			    ErrorCode	            The error code.
+   				ErrorType	            The type of the error.
+			    ErrorSystem	        The name of the machine the application runs on. Determined usally by getHostName().
+			    ErrorSeverity	        The severity of the error. E = Error I = Information D = Debug
+			    ErrorMessage	    A short message text describing the error.
+			    ErrorDescription		A longer description text describing the error, the reason for the error and (optionally) ways to resolve the error.
+			    ErrorInformation	    Optional information on the error. May for example contain Tuxedo error codes and messages.
+			    ErrorApplication	    The name of the application that generated the error. 
+				ErrorTimestamp	    The date and time in ISO format (YYYY-MM-DD HH:MM:SS) when the error occurred.
+				ErrorSubsystem	The name of the subsystem of the application that generated the error. 
+				ErrorClass				The type of the error. Validation =	A validation error occurred. The contents of one or several input data fields is wrong. Functional = 	A functional error occurred. During the execution of the process of the EAI service a non-recoverably error occurred. Infrastructure = 	An infrastructure error occurred.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="errorCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorType" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorSystem" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorSeverity" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorDescription" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorInformation" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorApplication" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorTimestamp" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorSubsystem" type="xs:string" minOccurs="0"/>
+			<xs:element name="errorClass" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonDataQueryInput">
+		<xs:annotation>
+			<xs:documentation>Input data for search by person</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="familyName" type="FamilyName" nillable="false"/>
+			<xs:element name="zipCode" type="ZipCode" nillable="false"/>
+			<xs:element name="street" type="Street" nillable="false"/>
+			<xs:element name="firstName" type="FirstName" nillable="false" minOccurs="0"/>
+			<xs:element name="dateOfBirth" type="xs:date" nillable="false" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ======================================= Definition of LinkDB Types =================================== -->
+	<xs:simpleType name="CustomerId">
+		<xs:annotation>
+			<xs:documentation>Unique id which links the Arcor customer with Vodafone customer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:long"/>
+	</xs:simpleType>
+	<!-- ================================== Definition of Arcor Customer Data =================================== -->
+	<xs:complexType name="BaseMessageType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="carrier" type="Carrier"/>
+		</xs:sequence>
+		<xs:attribute name="schemaVersion" type="xs:string" default="0.1.0"/>
+	</xs:complexType>
+	<xs:simpleType name="Carrier">
+		<xs:annotation>
+			<xs:documentation>attribute if customer of Arcor or Vodafone</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Vodafone"/>
+			<xs:enumeration value="Arcor"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ArcorCustomerOrigin">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="V"/>
+			<xs:enumeration value="A"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="CustomerData">
+		<xs:annotation>
+			<xs:documentation>customer data of Arcor</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="company" type="Company" minOccurs="0"/>
+				<xs:element name="person" type="Person" minOccurs="0"/>
+			</xs:choice>
+			<xs:element name="address" type="Address" minOccurs="0"/>
+			<xs:element name="phoneNumber" type="ComplexPhoneNumber" minOccurs="0"/>
+			<xs:element name="customerNumber" type="CustomerNumber"/>
+			<xs:element name="arcorCustomerOrigin" type="ArcorCustomerOrigin"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CustomerNumber">
+		<xs:annotation>
+			<xs:documentation>customer number of Arcor</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]{12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Barcode">
+		<xs:annotation>
+			<xs:documentation>Arcor Barcode</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z,A-Z]{1}[a-z,A-Z,0-9]{1,12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

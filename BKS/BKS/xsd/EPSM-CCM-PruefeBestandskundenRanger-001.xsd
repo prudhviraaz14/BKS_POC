@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskundenRanger-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rufnummer="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" xmlns:kunde="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" xmlns:person="http://www.arcor.net/EPSM-CommonTypes-Person-002" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:bm="http://www.arcor.net/auftragsmodell-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-PruefeBestandskundenRanger-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kontaktrufnummer-001" schemaLocation="EPSM-CommonTypes-Kontaktrufnummer-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Kunde-002" schemaLocation="EPSM-CommonTypes-Kunde-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Person-002" schemaLocation="EPSM-CommonTypes-Person-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/auftragsmodell-001" schemaLocation="auftragsmodell-001.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_PruefeBestandskundenRanger_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+				Aenderungshistorie:
+				• Version 0.4 - 10.05.2008 - Rusbe Makuie	    - Corrected documentation.
+				• Version 0.3 - 06.11.2007 - Reto Renner		- ComplexTypes KundennummerListe entfernt 
+				• Version 0.2 - 20.10.2007 - Reto Renner		- EPSM-CommonTypes-Rufnummer-001.xsd -> EPSM-CommonTypes-Kontaktrufnummer-001.xsd
+				• Version 0.1 - 10.10.2007 - Rusbe Makuie	- initiale Version
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="PruefeBestandskundenRangerService">
+		<xs:annotation>
+			<xs:documentation>Typdefinition Dienst RangerBestandskundenPruefung</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:choice>
+					<xs:element name="PruefeBestandskundenRangerInput" type="PruefeBestandskundenRangerInput"/>
+					<xs:element name="PruefeBestandskundenRangerOutput" type="PruefeBestandskundenRangerOutput">
+						<xs:annotation>
+							<xs:documentation>
+							Results are returned according to the following rules:
+							Customer found, name matches access number
+								Result=TRUE, ErrorCode, ErrorText not set, Auftragsmodell populated
+							Customer found, name does not match access number
+								Result=TRUE, ErrorCode, ErrorText not set, Auftragsmodell only populated with "meldungen"
+							Customer not found
+								Result=TRUE, ErrorCode, ErrorText not set, Auftragsmodell only populated with "meldungen"
+							Invalid input parameters
+								Result=FALSE, ErrorCode, ErrorText set, Auftragsmodell not set
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PruefeBestandskundenRangerInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="kundennummer" type="common:Kundennummer" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="rufnummer" type="rufnummer:Kontaktrufnummer"/>
+					<xs:element name="vorname" type="person:Vorname" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="nachname" type="person:Nachname" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PruefeBestandskundenRangerOutput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:OutputData">
+				<xs:sequence>
+					<xs:element name="auftragsmodell" type="bm:Auftragsmodell" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

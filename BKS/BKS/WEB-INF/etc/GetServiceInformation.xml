@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "GetServiceInformation.effonl.RetrieveServiceTicket" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetServiceInformation.effonl.RetrieveServiceTicket */   STP.SERVICE_TICKET_POSITION_ID
+        FROM 
+        SERVICE_TICKET_POSITION STP, CUSTOMER_ORDER CO 
+        WHERE  
+        STP.SERVICE_SUBSCRIPTION_ID = #ServiceSubscriptionId# 
+        AND STP.USAGE_MODE_VALUE_RD = #UsageMode# 
+		AND STP.STATE_RD != 'CANCELED'
+		AND STP.CUSTOMER_ORDER_ID = CO.CUSTOMER_ORDER_ID
+		AND CO.CUSTOMER_TRACKING_ID = #OrderId#
+    </select>
+
+    <select id = "GetServiceInformation.onl.RetrieveServiceTicket" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetServiceInformation.onl.RetrieveServiceTicket */   STP.SERVICE_TICKET_POSITION_ID
+        FROM 
+        SERVICE_TICKET_POSITION STP, CUSTOMER_ORDER CO 
+        WHERE  
+        STP.SERVICE_SUBSCRIPTION_ID = #ServiceSubscriptionId# 
+        AND STP.USAGE_MODE_VALUE_RD = #UsageMode# 
+		AND STP.STATE_RD != 'CANCELED'
+		AND STP.CUSTOMER_ORDER_ID = CO.CUSTOMER_ORDER_ID
+		AND CO.CUSTOMER_TRACKING_ID = #OrderId#
+    </select>
+</sqlMap>
+                                    

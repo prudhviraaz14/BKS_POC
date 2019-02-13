@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 bearbeitet (http://www.altova.com) von Servicebus (Arcor AG & Co. KG) -->
+<!-- Mit XMLSpy v2007 bearbeitet (http://www.altova.com) von Servicebus (Arcor AG & Co. KG) -->
+<xs:schema xmlns="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:common="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" xmlns:ns1="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" xmlns:ns2="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" xmlns:ns3="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" targetNamespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-StatusData-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-ESB-001" schemaLocation="CommonTypes-ESB-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/SIDCOM-MasterData-001" schemaLocation="SIDCOM-MasterData-001.xsd"/>
+	<!--
+Author: Thomas Schneider
+v0.1 (2010-02-09) Initial version order 
+v0.1.1 (2010-02-26) orderID no longer mandatory, customerOrderID as mandatory and unique reference to CCB added.
+v0.2 (2010-03-22) added sequence of productOfferingOccerences
+v0.3 (2010.03.24) altered some documentation
+v0.4 (2010-03-31) according to review comments; openOrders and productOfferings removed under status.
+               status renamed to customerInformationStatus. productOffering has a new attribute contractDurationEnd and signDate
+v0.5 (2010-05-17) ServiceProvider directed to serviceProviderCode in commons.
+v0.6 (2010-06-24) partyRef needs to be optional, dueDate is not of type datetime but only date
+v0.7 (2010-07-09) IT-k-000028820 dueDate back to dateTime
+v.08 (2011-12-30) IT 30716 NGCS zero and uncound billingAccountStatus can be possible now
+-->
+	<xs:simpleType name="SerialNumber">
+		<xs:annotation>
+			<xs:documentation>The ID of the object. Has to be unique across the enterprise. Will be created by the system that stores the installed base.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="PartyID">
+		<xs:restriction base="xs:ID"/>
+	</xs:simpleType>
+	<xs:simpleType name="PartyIDREF">
+		<xs:restriction base="xs:IDREF"/>
+	</xs:simpleType>
+	<xs:complexType name="CustomerInformationStatus">
+		<xs:annotation>
+			<xs:documentation>current status information is listed here</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="billingAccountStatus" type="BillingAccountStatus" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="customerType" type="CustomerType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>It is possible to send more than one party in order to support the life partner or another party as additional contract partner.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ProductOfferingOccurrence">
+		<xs:sequence>
+			<xs:element name="productOfferingOccurrence" type="ProductOfferingOccurrence" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="serialNumber" type="SerialNumber" use="optional">
+			<xs:annotation>
+				<xs:documentation>references ProductOfferingOccurrence under the bundleOccurrence tree</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="PartyRole" abstract="true">
+		<xs:sequence>
+			<xs:element name="partyRef" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference to the Party either individual or organisation</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="IDREF" type="PartyIDREF"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="category">
+				<xs:annotation>
+					<xs:documentation>category BUSINESS, RESIDENTIAL or SOHO</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="BUSINESS"/>
+						<xs:enumeration value="RESIDENTIAL"/>
+						<xs:enumeration value="SOHO"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="serviceProvider" type="common:ServiceProviderCode">
+				<xs:annotation>
+					<xs:documentation>distinguish a Vodafone AiR  (VFAI) from a Arcor (ARCO) customer</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerType">
+		<xs:annotation>
+			<xs:documentation>The address of the Customer role is the legal address.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PartyRole"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Party" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Represents the abstract SID type Party.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="ID" type="PartyID"/>
+	</xs:complexType>
+	<xs:complexType name="Individual">
+		<xs:annotation>
+			<xs:documentation>Represents the SID type Individual which is a Party.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Party"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Organization">
+		<xs:annotation>
+			<xs:documentation>Represents the SID type Organization which is a Party.
+(hint: American English because written this way in PPT 'CPCOM ProduktKatalog Fachbereiche 20090814.ppt' page 3.)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="Party"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BillingAccountStatus">
+		<xs:sequence>
+			<xs:element name="accountNumber">
+				<xs:annotation>
+					<xs:documentation>CCB account number</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="dunning" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Dunning Flag is set, when customer is in dunning state. Mapping to dunning states??</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dueDate" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>this is the day the next bill period starts and should be used as applyDate when a change transaction is triggert.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

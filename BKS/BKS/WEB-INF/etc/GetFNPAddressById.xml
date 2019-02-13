@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+    <select id = "GetFNPAddressById.effonl.RetrieveAddressesForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPAddressById.effonl.RetrieveAddressesForBundle */   
+            A.ADDRESS_ID,A.STREET_NAME, A.STREET_NUMBER ,A.STREET_NUMBER_SUFFIX, A.POSTAL_CODE,
+            A.CITY_NAME,A.CITY_SUFFIX_NAME,A.COUNTRY_RD,A.ADDITIONAL_ADDRESS_DESCRIPTION,
+            A.SECOND_ADD_ADDRESS_DESCRIPTION,A.POST_OFFICE_BOX
+        FROM ADDRESS A, CONFIG_SERVICE_CHARACTERISTIC CSC, BUNDLE_ITEM BI WHERE 
+        BI.BUNDLE_ID = #value# 
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND BI.EFFECTIVE_FLAG = 'N'
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.ADDRESS_ID = A.ADDRESS_ID
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0014'
+        AND CSC.EFFECTIVE_FLAG = 'N'
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND A.EFFECTIVE_FLAG = 'N'
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 2
+    </select>
+
+    <select id = "GetFNPAddressById.effonl.RetrieveAddressesForCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPAddressById.effonl.RetrieveAddressesForCustomer */   
+            A.ADDRESS_ID,A.STREET_NAME, A.STREET_NUMBER ,A.STREET_NUMBER_SUFFIX, A.POSTAL_CODE,
+            A.CITY_NAME,A.CITY_SUFFIX_NAME,A.COUNTRY_RD,A.ADDITIONAL_ADDRESS_DESCRIPTION,
+            A.SECOND_ADD_ADDRESS_DESCRIPTION,A.POST_OFFICE_BOX
+        FROM ADDRESS A, ENTITY E WHERE 
+        E.CUSTOMER_NUMBER = #value# 
+        AND E.ENTITY_ID = A.ENTITY_ID
+        AND A.EFFECTIVE_FLAG = 'N'
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+    
+    <select id = "GetFNPAddressById.onl.RetrieveAddressesForBundle" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPAddressById.onl.RetrieveAddressesForBundle */   
+            A.ADDRESS_ID,A.STREET_NAME, A.STREET_NUMBER ,A.STREET_NUMBER_SUFFIX, A.POSTAL_CODE,
+            A.CITY_NAME,A.CITY_SUFFIX_NAME,A.COUNTRY_RD,A.ADDITIONAL_ADDRESS_DESCRIPTION,
+            A.SECOND_ADD_ADDRESS_DESCRIPTION,A.POST_OFFICE_BOX
+        FROM ADDRESS A, CONFIG_SERVICE_CHARACTERISTIC CSC, BUNDLE_ITEM BI WHERE 
+        BI.BUNDLE_ID = #value# 
+        AND BI.SUPPORTED_OBJECT_ID = CSC.SERVICE_SUBSCRIPTION_ID
+        AND BI.EFFECTIVE_DATE = (SELECT MAX(EFFECTIVE_DATE) FROM BUNDLE_ITEM BI2 WHERE 
+                                BI.BUNDLE_ITEM_ID = BI2.BUNDLE_ITEM_ID)
+        AND BI.EFFECTIVE_STATUS = 'ACTIVE'
+        AND CSC.ADDRESS_ID = A.ADDRESS_ID
+        AND CSC.SERVICE_CHARACTERISTIC_CODE = 'V0014'
+        AND CSC.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM 
+                                CONFIG_SERVICE_CHARACTERISTIC CSC1 WHERE 
+                                CSC.CONFIG_SERVICE_CHAR_ID = CSC1.CONFIG_SERVICE_CHAR_ID 
+                                AND CSC1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND CSC.EFFECTIVE_STATUS = 'ACTIVE'
+        AND A.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS A1 
+                                WHERE A.ADDRESS_ID = A1.ADDRESS_ID 
+                                AND A.ENTITY_ID = A1.ENTITY_ID 
+                                AND A1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+        AND ROWNUM &lt; 2
+    </select>
+
+    <select id = "GetFNPAddressById.onl.RetrieveAddressesForCustomer" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetFNPAddressById.onl.RetrieveAddressesForCustomer */   
+            A.ADDRESS_ID,A.STREET_NAME, A.STREET_NUMBER ,A.STREET_NUMBER_SUFFIX, A.POSTAL_CODE,
+            A.CITY_NAME,A.CITY_SUFFIX_NAME,A.COUNTRY_RD,A.ADDITIONAL_ADDRESS_DESCRIPTION,
+            A.SECOND_ADD_ADDRESS_DESCRIPTION,A.POST_OFFICE_BOX
+        FROM ADDRESS A, ENTITY E WHERE 
+        E.CUSTOMER_NUMBER = #value# 
+        AND E.ENTITY_ID = A.ENTITY_ID
+        AND A.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM ADDRESS A1 
+                                WHERE A.ADDRESS_ID = A1.ADDRESS_ID 
+                                AND A.ENTITY_ID = A1.ENTITY_ID 
+                                AND A1.EFFECTIVE_DATE &lt;= SYSDATE ) 
+        AND A.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+</sqlMap>
+                                    

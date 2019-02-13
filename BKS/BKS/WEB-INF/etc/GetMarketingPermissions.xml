@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+    
+    <select id = "GetMarketingPermissions.onl.RetrieveCustomerPermissions" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.onl.RetrieveCustomerPermissions */
+        PD.PERMISSION_ID, PD.SERVICE_ID, PD.EFFECTIVE_DATE, PD.PERMISSION_VALUE, PD.BEW_VERSION 
+        FROM  
+        PERMISSION_PREFERENCE_DETAIL PD 
+        <dynamic prepend="WHERE">
+            PD.CUSTOMER_NUMBER = #customerNumber# 
+            AND PD.EFFECTIVE_DATE = #date#
+            AND EXISTS (SELECT 1 FROM PERM_DEF PDEF WHERE PDEF.GET_ROLE_LIST LIKE #role#   
+                              AND PD.PERMISSION_ID = PDEF.PRM_ID AND PD.SERVICE_ID =PDEF.SRV_ID
+                              AND (PDEF.EXPIRATION_DATE is null or PDEF.EXPIRATION_DATE > SYSDATE))
+            <isNotEmpty property="frontendGroup">
+                 AND EXISTS (SELECT 1 FROM PERM_DEF PDEF WHERE PDEF.FRONTEND_GRP = #frontendGroup#   
+                              AND PD.PERMISSION_ID = PDEF.PRM_ID AND PD.SERVICE_ID =PDEF.SRV_ID 
+                              AND (PDEF.EXPIRATION_DATE is null or PDEF.EXPIRATION_DATE > SYSDATE))
+            </isNotEmpty>
+        </dynamic>
+        ORDER BY PERMISSION_ID,SERVICE_ID
+    </select>
+    
+    <select id = "GetMarketingPermissions.onl.RetrieveDefaultPermissions" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.onl.RetrieveDefaultPermissions */
+        PDEF.PRM_ID AS PERMISSION_ID, PDEF.SRV_ID AS SERVICE_ID, PDEF.EFFECTIVE_DATE, PDEF.DEFAULT_VALUE AS PERMISSION_VALUE
+        from perm_def PDEF
+        <dynamic prepend="WHERE">
+             NOT EXISTS (SELECT 1 FROM PERMISSION_PREFERENCE_DETAIL PD1 WHERE 
+                        PD1.CUSTOMER_NUMBER = #customerNumber#  
+                        AND PDEF.PRM_ID=PD1.PERMISSION_ID
+                        AND PDEF.SRV_ID=PD1.SERVICE_ID 
+                        AND PD1.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM PERMISSION_PREFERENCE_DETAIL PD2 
+                                 WHERE PD2.CUSTOMER_NUMBER = PD1.CUSTOMER_NUMBER  
+                                 AND PD2.PERMISSION_ID=PD1.PERMISSION_ID
+                                 AND PD2.SERVICE_ID=PD1.SERVICE_ID  
+                                 AND PD2.EFFECTIVE_DATE &lt;= SYSDATE ))            
+            AND PDEF.GET_ROLE_LIST LIKE #role#   
+            AND (PDEF.EXPIRATION_DATE is null or PDEF.EXPIRATION_DATE > SYSDATE)
+            AND PDEF.BEW_VERSION_NR = 0
+            AND PDEF.PRM_ID != 'BEW'
+            AND PDEF.SRV_ID != 'NONE'
+            <isNotEmpty property="frontendGroup">
+               AND PDEF.FRONTEND_GRP = #frontendGroup#  
+            </isNotEmpty>
+        </dynamic>
+        ORDER BY PERMISSION_ID,SERVICE_ID
+    </select>
+
+    <select id = "GetMarketingPermissions.onl.RetrieveCustLegacyPermissions" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.onl.RetrieveCustLegacyPermissions */   
+        C.MARKETING_FAX_INDICATOR,C.MARKETING_PHONE_INDICATOR,C.PERSONAL_DATA_INDICATOR,C.CUSTOMER_DATA_INDICATOR,
+         C.MARKETING_AUTHORIZATION_DATE, C.EFFECTIVE_DATE
+        FROM CUSTOMER C
+        WHERE C.CUSTOMER_NUMBER = #value#
+        AND C.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM CUSTOMER C1 
+                                 WHERE C.CUSTOMER_NUMBER = C1.CUSTOMER_NUMBER 
+                                 AND C1.EFFECTIVE_DATE &lt;= SYSDATE )
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetMarketingPermissions.onl.RetrievePermissionStatus" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.onl.RetrievePermissionStatus */
+            P.EFFECTIVE_DATE, P.SOURCE_SYSTEM, P.BEW_VERSION 
+        FROM  
+            PERMISSION_PREFERENCE P
+        WHERE
+            P.CUSTOMER_NUMBER = #value# 
+        ORDER BY EFFECTIVE_DATE DESC
+    </select>
+
+
+
+
+
+
+    <select id = "GetMarketingPermissions.effonl.RetrieveCustomerPermissions" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.effonl.RetrieveCustomerPermissions */
+        PD.PERMISSION_ID, PD.SERVICE_ID, PD.EFFECTIVE_DATE, PD.PERMISSION_VALUE, PD.BEW_VERSION 
+        FROM  
+        PERMISSION_PREFERENCE_DETAIL PD 
+        <dynamic prepend="WHERE">
+            PD.CUSTOMER_NUMBER = #customerNumber# 
+            AND PD.EFFECTIVE_DATE = #date#
+            AND EXISTS (SELECT 1 FROM PERM_DEF PDEF WHERE PDEF.GET_ROLE_LIST LIKE #role#   
+                              AND PD.PERMISSION_ID = PDEF.PRM_ID AND PD.SERVICE_ID =PDEF.SRV_ID
+                              AND (PDEF.EXPIRATION_DATE is null or PDEF.EXPIRATION_DATE > SYSDATE))
+            <isNotEmpty property="frontendGroup">
+                 AND EXISTS (SELECT 1 FROM PERM_DEF PDEF WHERE PDEF.FRONTEND_GRP = #frontendGroup#   
+                              AND PD.PERMISSION_ID = PDEF.PRM_ID AND PD.SERVICE_ID =PDEF.SRV_ID 
+                              AND (PDEF.EXPIRATION_DATE is null or PDEF.EXPIRATION_DATE > SYSDATE))
+            </isNotEmpty>
+        </dynamic>
+        ORDER BY PERMISSION_ID,SERVICE_ID
+    </select>
+    
+    <select id = "GetMarketingPermissions.effonl.RetrieveDefaultPermissions" parameterClass = "java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.effonl.RetrieveDefaultPermissions */
+        PDEF.PRM_ID AS PERMISSION_ID, PDEF.SRV_ID AS SERVICE_ID, PDEF.EFFECTIVE_DATE, PDEF.DEFAULT_VALUE AS PERMISSION_VALUE
+        from perm_def PDEF
+        <dynamic prepend="WHERE">
+             NOT EXISTS (SELECT 1 FROM PERMISSION_PREFERENCE_DETAIL PD1 WHERE 
+                        PD1.CUSTOMER_NUMBER = #customerNumber#  
+                        AND PDEF.PRM_ID=PD1.PERMISSION_ID
+                        AND PDEF.SRV_ID=PD1.SERVICE_ID 
+                        AND PD1.EFFECTIVE_DATE = ( SELECT MAX(EFFECTIVE_DATE) FROM PERMISSION_PREFERENCE_DETAIL PD2 
+                                 WHERE PD2.CUSTOMER_NUMBER = PD1.CUSTOMER_NUMBER  
+                                 AND PD2.PERMISSION_ID=PD1.PERMISSION_ID
+                                 AND PD2.SERVICE_ID=PD1.SERVICE_ID  
+                                 AND PD2.EFFECTIVE_DATE &lt;= SYSDATE ))            
+            AND PDEF.GET_ROLE_LIST LIKE #role#   
+           AND (PDEF.EXPIRATION_DATE is null or PDEF.EXPIRATION_DATE > SYSDATE)
+            AND PDEF.BEW_VERSION_NR = 0
+            AND PDEF.PRM_ID != 'BEW'
+            AND PDEF.SRV_ID != 'NONE'
+            <isNotEmpty property="frontendGroup">
+               AND PDEF.FRONTEND_GRP = #frontendGroup#  
+            </isNotEmpty>
+        </dynamic>
+        ORDER BY PERMISSION_ID,SERVICE_ID
+    </select>
+
+    <select id = "GetMarketingPermissions.effonl.RetrieveCustLegacyPermissions" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.effonl.RetrieveCustLegacyPermissions */   
+        C.MARKETING_FAX_INDICATOR,C.MARKETING_PHONE_INDICATOR,C.PERSONAL_DATA_INDICATOR,C.CUSTOMER_DATA_INDICATOR,
+         C.MARKETING_AUTHORIZATION_DATE, C.EFFECTIVE_DATE
+        FROM CUSTOMER C
+        WHERE C.CUSTOMER_NUMBER = #value#
+        AND C.EFFECTIVE_FLAG = 'N'
+        AND C.EFFECTIVE_STATUS = 'ACTIVE'
+    </select>
+
+    <select id = "GetMarketingPermissions.effonl.RetrievePermissionStatus" parameterClass = "String" resultClass="java.util.HashMap">
+        SELECT /* GetMarketingPermissions.effonl.RetrievePermissionStatus */
+            P.EFFECTIVE_DATE, P.SOURCE_SYSTEM, P.BEW_VERSION 
+        FROM  
+            PERMISSION_PREFERENCE P
+        WHERE
+            P.CUSTOMER_NUMBER = #value# 
+        ORDER BY EFFECTIVE_DATE DESC
+    </select>
+
+</sqlMap>

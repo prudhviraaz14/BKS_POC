@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" 
+		xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" 
+		xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001"
+		xmlns:bankverbindung="http://www.arcor.net/EPSM-CommonTypes-Bankverbindung-002"
+		targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Bankverbindung-002" 
+		elementFormDefault="qualified" 
+		attributeFormDefault="unqualified">
+<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+
+		<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+<xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="EPSM_Bankverbindung_Dokument_Information ">
+	<xs:annotation>
+		<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 26.10.2007  16:40</xs:documentation>
+	</xs:annotation>
+</xs:element>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Kontonummer">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) BANKVERBINDUNG.KONTONR]
+Kontonummer des Kunden z.B. 4594817</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="18"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="NameKontoinhaber">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) BANKVERBINDUNG.KONTOINH_NAME]
+Zuname oder Firmenname des Kontoinhabers z.B. Müller oder Clariant AG</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="60"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="VornameKontoinhaber">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) BANKVERBINDUNG.KONTOINH_VORNAME]
+Vorname des Kontoinhabers z.B. Max</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="60"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="DatumUnterschriftKontoinhaber">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) AUFTRAG.AUFTRAGSDATUMKUNDE]
+Unterschriftsdatum des Kontoinhabers</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:date"/>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="DatumEinzugsermaechtigung">
+	<xs:annotation>
+		<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) AUFTRAG.AUFTRAGSDATUMKUNDE]
+Datum ist gesetzt, wenn Bankeinzugsermächtigung gesondert über Auftragsformular gefordert wird. Ansonsten entspricht dieses Datum dem Auftragsunterschriftsdatum, mit dem implizit auch die Ermächtigung zum Bankeinzug durch den Kunden erteilt wird.</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:date"/>
+</xs:simpleType>
+<xs:simpleType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Bankname">
+	<xs:annotation>
+		<xs:documentation>Bankname</xs:documentation>
+	</xs:annotation>
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="100"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Bankverbindung">
+	<xs:annotation>
+		<xs:documentation>Angaben zur Bankverbindung</xs:documentation>
+	</xs:annotation>
+	<xs:complexContent>
+		<xs:extension base="ape:AuftragsPositionsElement">
+			<xs:sequence>
+				<xs:element name="kontonummer" type="bankverbindung:Kontonummer" minOccurs="0"/>
+				<xs:element name="bLZ" type="common:Bankleitzahl" minOccurs="0"/>
+				<xs:element name="nameKontoinhaber" type="bankverbindung:NameKontoinhaber" minOccurs="0"/>
+				<xs:element name="vornameKontoinhaber" type="bankverbindung:VornameKontoinhaber" minOccurs="0"/>
+				<xs:element name="datumUnterschriftKontoinhaber" type="bankverbindung:DatumUnterschriftKontoinhaber" minOccurs="0"/>
+				<xs:element name="datumEinzugsermaechtigung" type="bankverbindung:DatumEinzugsermaechtigung" minOccurs="0"/>
+				<xs:element name="bankname" type="bankverbindung:Bankname" minOccurs="0"/>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+</xs:schema>

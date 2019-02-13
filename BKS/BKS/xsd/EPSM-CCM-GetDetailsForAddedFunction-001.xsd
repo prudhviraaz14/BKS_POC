@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-GetDetailsForAddedFunction-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:som="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-GetDetailsForAddedFunction-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+    <xs:import namespace="http://www.arcor.net/orderSchema" schemaLocation="som-order.xsd" />
+    <!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+    <xs:element name="EPSM_CCM_GetDetailsForAddedFunction_Endpunkt_Dokumentation">
+        <xs:annotation>
+            <xs:documentation>
+                Aenderungshistorie:
+                Version 0.1 - 15.10.2008 - Rusbe Makuie	- initiale Version
+                Version 0.2 - 15.10.2009 - Rusbe Makuie	- Account number added to output.
+                Version 0.3 - 29.10.2014 - Rusbe Makuie	- Sales packet code and sales packet name added to output.
+                Version 0.4 - 29.10.2014 - Rusbe Makuie	- VolumeCap added to Input / output.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Bezugsdokumente">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="Realisierendes_System">
+                    <xs:annotation>
+                        <xs:documentation>
+						</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- ================================endpoint specific simple types================= -->
+    <!-- ================================endpoint specific complex types================= -->
+    <xs:complexType name="SomReferenceContainer">
+        <xs:sequence>
+            <xs:element name="functionNodeID" type="xs:string"/>
+            <xs:element name="functionName" type="xs:string"/>
+            <xs:element name="accessName" type="xs:string"/>
+            <xs:element name="variantName" type="xs:string"/>
+            <xs:element name="phoneSystemType"  minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="S2M"/>
+                        <xs:enumeration value="S0-A"/>
+                    </xs:restriction>
+                </xs:simpleType>                
+            </xs:element>
+            <xs:element name="pricingStructureCode" type="xs:string"/>
+            <xs:element name="pricingStructureName" type="xs:string" minOccurs="0"/>
+            <xs:element name="productCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="productName" type="xs:string" minOccurs="0"/>
+            <xs:element name="productVersionCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="salesPacketCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="salesPacketName" type="xs:string" minOccurs="0"/>
+            <xs:element name="mainAccessServiceCode" type="xs:string" minOccurs="0"/>
+            <xs:element name="tariffOptions" type="som:tariffOptionsList" minOccurs="0"/>
+            <xs:element name="tvCenterOptions" type="som:TVCenterOptionsList" minOccurs="0"/>
+            <xs:element name="volumeCap" type="som:Service" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- ================================endpoint specific services=====================-->
+    <xs:complexType name="GetDetailsForAddedFunctionService">
+        <xs:annotation>
+            <xs:documentation>Typdefinition Dienst GetDetailsForAddedFunction</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="base:ProviderService">
+                <xs:choice>
+                    <xs:element name="getDetailsForAddedFunctionInput" type="GetDetailsForAddedFunctionInput"/>
+                    <xs:element name="getDetailsForAddedFunctionOutput" type="GetDetailsForAddedFunctionOutput">
+                        <xs:annotation>
+                            <xs:documentation>
+							   This service is getting contract data for a service subscription 
+							</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="GetDetailsForAddedFunctionInput">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="base:InputData">
+                <xs:sequence>
+                    <xs:element name="referenceInput" type="SomReferenceContainer" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>
+								Input for reference data retrieval.
+							</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="GetDetailsForAddedFunctionOutput">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="base:OutputData">
+                <xs:sequence>
+                    <xs:element name="referenceOutput" type="SomReferenceContainer" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Output for reference data retrieval.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

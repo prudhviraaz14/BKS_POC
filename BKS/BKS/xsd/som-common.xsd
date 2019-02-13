@@ -1,0 +1,1709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.arcor.net/orderSchema" targetNamespace="http://www.arcor.net/orderSchema" elementFormDefault="qualified">
+  <annotation>
+    <documentation><![CDATA[
+Part of the XML schema definition for SOM (Simple Order Model)
+WARNING:
+This XSD denotes the structure of the SOM and its elements.
+It does NOT indicate which parts are mandatory or optional in the different use cases.
+
+Change history:
+      0.1 25.11.2009 - Gregor Emmerich initial delivery COM_133.01.00.00
+      0.11 30.11.2009 - tariffOptionsList changed to a list of tariffOption with serviceCode and serviceBillingName
+      0.11 02.12.2009 - ccbId_B, ONEGroupId, ProductBundleType
+      0.2 14.12.2009 - Gregor Emmerich - pricingStructureNameRDS removed
+Since 1.0:
+      2010-03-11 - Alex Borho - added desiredCountriesList
+Since 3.0:
+      2010-05-05 - Heiko Barthel - added type 'PhoneNumbersList'
+      2010-05-19 - Heiko Barthel - removed 'nodeId' type (replaced by 'ID' type)
+      2010-05-20 - Jadranko Mrkonjic - 
+                    - removed complexType 'IadPinChangeInformation'. It wasn't used anywhere.
+                    - added complexType 'ExistConfBoolean'
+      2010-05-27 - Jadranko Mrkonjic - added complexTypes ExistConfString16 and ExistConfString60
+      2010-05-28 - Jadranko Mrkonjic - added attribute 'action' to tariffOptionsList_Type
+      2010-06-21 - Thomas Vogt - IT-k-28523 added tariffOptionType to tariffOptionList (incl. simpleType with enum)
+Since 3.1:
+      2010-07-20 - Joerg Winter - IT-28260 added 'blocking' to 'voiceConfiguration'
+                                  IT-27143 added attribute 'action' to 'desiredCountriesList'
+                                           added abstract type 'AbstractList'
+      2010-08-02 - Hans Becker - IT-28260 replaced 'BlockingType' by 'BlockingList'
+      2010-08-05 - Hans Becker - added startDate to conditionService
+      2010-09-08 - Joerg Winter - PN-2074 added 'action' attribute to all featuresLists
+      2010-09-24 - Anja Kolberg - PN-2433 conditionsList_Type is now an AbstractListAction (means the action attribute is added)
+Since 3.2:
+      2010-10-11 - Joerg Winter - PN-2680 added 'conditionServiceSpecialBonusCode' to 'conditionsList'
+      2010-11-04 - Gesa Prien - IT-28170 added types 'pinChangeType' and 'pinChangeTypeRD',
+                                         added element 'changeReason' to 'tariffOption'
+      2010-11-08 - Gesa Prien - IT-28170 added type 'pinChange'
+      2010-11-11 - Joerg Winter - IT-27143 added 'conditionServiceEndDate' to 'simple_conditionServiceItem_Type'
+      2010-11-15 - Joerg Winter - restricted 'country' in address to two letters
+                                  restricted 'conditionServiceType' to two characters
+                                  restricted elements in 'address' section: 'city' to 40, 'citySuffix' to 30,
+                                      'postalCode' to 10, 'street' to 40, 'streetNumber' to 10,
+                                      'streetNumberSuffix' to 10, 'postOfficeBox' to 10, 'additionalAddressDescription' to 35,
+                                      'secondAdditionalAddressDescription' to 35 characters
+                                  restricted elements in 'accessNumber' section: 'countryCode' to 10, 'localAreaCode' to 10,
+                                      'pilotNumber' to 40, 'startRange' to 30, 'endRange' to 30, 'centralExtention' to 16 characters
+      2010-11-17 - Joerg Winter - forced 'orderPositionNumber' to be numeric
+      2010-11-23 - Joerg Winter - IT-27144 added 'ccbId_J' for adjustments
+      2010-11-24 - Gesa Prien - IT-28251 added 'ExistConfPinChangeType', 'ExistConfBasicChangeType', 'BasicChangeType', 'ExistConfSimpleChangeType', 'SimpleChangeType', modified 'pinChange', removed 'pinChangeTypeRD'
+Since 3.22:
+      2010-12-22 - Gesa Prien - IT-27144 added 'invalidAddressIndicator' and 'addressChangeReason' to 'address',
+                                         added 'ExistConfPhoneNumbersList'
+      2011-01-05 - Joerg Winter - added 'ExistConfPlainPhoneNumbersList' to be used in 'SelectedDestinations'
+Since 3.24:
+      2011-02-15 - Joerg Winter - PN-4198 added attribute 'action' to 'ExistConfAccessNumber'
+Since 3.3:
+      2011-02-01 - Joerg Winter - restricted all unlimited strings to 100 characters maximum
+      2011-02-11 - Hans Becker - IT-29578 added ccbId_any and ccbId_E
+      2011-03-03 - Joerg Winter - IT-k-30164 added 'ContactRoleRefIdList' and 'ExistConfRefIdWithListAction'
+Since 3.31:
+      2011-04-18 - Joerg Winter - PN-5338 added attribute 'action' (with only valid value 'remove') to 'BlockingList'
+Since 3.4:
+      2011-02-22 - Joerg Winter - made 'city' in type 'address' optional (related to PN-4432)
+      2011-03-23 - Joerg Winter - IT-28575 added complex types 'ExistConfMailboxAliasList' and 'oneGroupIdWithChangeType'
+      2011-04-27 - Joerg Winter - IT-29627 added types with description 'ExistConfDescriptionStringXXX'
+Since 3.5:
+      2011-06-16 - Joerg Winter - IT-28575 added complex type 'ccbId_O' for OneGroup
+Since 3.6:
+      2011-09-08 - Joerg Winter - IT-28900 added complex type 'FeatureService' with 'featureServiceCode'
+                                               and 'featureServiceAdditionalInfo' to 'featuresList'
+                                               (and to 'chargesAndCreditsList' and 'blockingList' by inheritance)
+      2011-09-28 - Joerg Winter - IT-28900 changed complex type for features lists from choice to sequence
+      2011-11-15 - Joerg Winter - restricted CCB-ID for type C to 12 characters
+                                  restricted elements in structure 'accessNumber': 'countryCode' to 4,
+                                      and 'pilotNumber' to 15 characters
+                                  enlarged element 'localAreaCode' to 5 characters
+Since 3.7:
+      2012-01-03 - Joerg Winter - IT-29977 added 'changeStatus' to 'ExistConfRefIdWithListAction'
+Since 3.8:
+      2012-04-18 - Gesa Prien - IT-31157 removed complex type 'refFunctionID'
+Since 3.9:
+      2012-08-07 - Joerg Winter (Gesa Prien) - IT-31752 changed complex type 'providerTrackingNumber' to enable 'parent' values
+      2012-08-22 - Gesa Prien - IT-31752 reverted change of 'providerTrackingNumber'
+Since 4.0:
+      2013-01-24 - Hans Becker - IT-32220 Added conditionServiceEndEvent to conditionService
+      2013-01-31 - Chetan Goyani - IT-32434 Created complex types 'RemovableExistConfServiceLevel' , 'ServiceLevel' and 'ServiceLevelAdditionalInfo'
+Since 4.2:
+      2013-08-20 - Neha Khombare - IT 31530 - Added releasingPortingIdentifier to the types accessNumber.
+Since 4.3:
+      2013-12-31 - Prabhat Singh - PPM 90531 - added complex types 'RemovableExistConfServiceLevelList' , 'ServiceLevelList'
+Since 4.5:
+      2014-12-22 - Prabhat Singh - PN 26915 - added attribute action to chargesAndCreditsList.
+      2015-03-17 - Prabhat Singh - PPM 124244_153216-PCR 55 added new type 'ExistConfDiscountGroup'
+Since 16.0:
+      2015-05-07 - Prabhat Singh - PPM PPM-124244-153216 - PCR 55 added new simpletype 'string7'
+Since 19.0:
+      2016-01-21 - Prabhat Singh - PPM-159238 added new Types 'ExistConfServiceVoucherCodeList', 'ServiceVoucherCodeList'
+Since 20.0:
+      2016-05-17  - Prabhat Singh - PPM-189902 added a new complex type element 'ProcessingHintList'
+      2016-05-23  - Prabhat Singh - PPM-196371 added minimumDurationPeriod and terminationDate to tariffOption
+      2016-05-26  - Prabhat Singh - PPM-136684 added 'osfSalesBundleId' to tariffOption
+      2016-06-08  - Prabhat Singh - PPM-159238_215503 moved ExistConfServiceVoucherCodeList to function xsd file
+      2016-09-08  - Apoorva Saini - ITk-33538 Added complexType 'ExistConfString1000' and simpleType 'string1000'     
+Since 22.0:
+      2017-01-30 - Neha Khombare - PPM-196228 - Added Type KiasReference. (Moved from som-customer-data.xsd to som-common.xsd)
+Since 23.0:
+      2017-05-10 - Apoorva Saini - PPM-207533 - added new complex type elements 'RemovableExistConfService' and 'Service'
+      2017-06-16 - Apoorva Saini - PPM-207533-250699 - added types 'ExistConfPricingInfo','PricingInfo','PricableExistConfString40','PricableExistConfString100'. Added pricingInfo to type FeatureService, tariffOption, Service.
+                                                       added conditionPricingInfo to type 'simple_conditionServiceItem_Type'  
+      2017-07-19 - Apoorva Saini - IT-k-33852 - added new complex type'PricableExistConfString5'and 'PricableRemovableExistConfDescriptionString100'
+Since 25.0:
+      2018-01-18 - Apoorva Saini - PPM-196251_278654 - added complex type 'RemovableExistConfNonNegativeInteger' 
+Since 27.0  
+      2018-09-06 - Neha Khombare - PPM-320858 - Added type 'ExistConfFeatureService'      
+]]></documentation>
+  </annotation>
+  <complexType name="ExistConfCcbId12" abstract="true">
+    <sequence>
+      <element name="existing" type="tns:string12" minOccurs="0"/>
+      <element name="configured" type="tns:string12" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfCcbId16" abstract="true">
+    <sequence>
+      <element name="existing" type="tns:string16" minOccurs="0"/>
+      <element name="configured" type="tns:string16" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ccbId_C">
+    <annotation>
+      <documentation>C=customer#</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId12">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="C"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfDiscountGroup">
+    <sequence>
+      <element name="existing" minOccurs="0">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="GRP[0-9]{7}"></pattern>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="configured" minOccurs="0">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="GRP[0-9]{7}"></pattern>
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ccbId_E">
+    <annotation>
+      <documentation>E=Entity</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="E"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_any">
+    <annotation>
+      <documentation>Any type of ccbId</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type" use="required">
+          <simpleType>
+            <restriction base="tns:string100">
+              <pattern value="[a-zA-Z]"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_S">
+    <annotation>
+      <documentation>S=Service subscription ID</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="S"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_A">
+    <annotation>
+      <documentation>A=account#</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="A"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_B">
+    <annotation>
+      <documentation>B=bundle Id</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="B"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_K">
+    <annotation>
+      <documentation>K=skeletonContract#</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="K"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_R">
+    <annotation>
+      <documentation>R=contact_R_ole</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="R"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_D">
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="D"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_J">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Adjustment
+Since: IT-27144 (1.37)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="J"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ccbId_O">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: One Group
+Since: IT-28575 (1.40)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfCcbId16">
+        <attribute name="type">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="O"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ownerCcbId">
+    <complexContent>
+      <extension base="tns:ExistConfString16"/>
+    </complexContent>
+  </complexType>
+  <complexType name="nonTypedCcbId">
+    <complexContent>
+      <extension base="tns:ExistConfString16"/>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfStringId">
+    <sequence>
+      <element name="existing" type="tns:stringId" minOccurs="0"/>
+      <element name="configured" type="tns:stringId" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfDate">
+    <sequence>
+      <element name="existing" type="date" minOccurs="0"/>
+      <element name="configured" type="date" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfInteger">
+    <sequence>
+      <element name="existing" type="integer" minOccurs="0"/>
+      <element name="configured" type="integer" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfNonNegativeInteger4">
+    <sequence>
+      <element name="existing" type="tns:NonNegativeInteger4" minOccurs="0"/>
+      <element name="configured" type="tns:NonNegativeInteger4" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfBoolean">
+    <sequence>
+      <element name="existing" type="boolean" minOccurs="0"/>
+      <element name="configured" type="boolean" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ConfBoolean">
+    <sequence>
+      <element name="configured" type="boolean" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString1">
+    <sequence>
+      <element name="existing" type="tns:string1" minOccurs="0"/>
+      <element name="configured" type="tns:string1" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString2">
+    <sequence>
+      <element name="existing" type="tns:string2" minOccurs="0"/>
+      <element name="configured" type="tns:string2" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString3">
+    <sequence>
+      <element name="existing" type="tns:string3" minOccurs="0"/>
+      <element name="configured" type="tns:string3" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString4">
+    <sequence>
+      <element name="existing" type="tns:string4" minOccurs="0"/>
+      <element name="configured" type="tns:string4" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString5">
+    <sequence>
+      <element name="existing" type="tns:string5" minOccurs="0"/>
+      <element name="configured" type="tns:string5" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString9">
+    <sequence>
+      <element name="existing" type="tns:string9" minOccurs="0"/>
+      <element name="configured" type="tns:string9" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString10">
+    <sequence>
+      <element name="existing" type="tns:string10" minOccurs="0"/>
+      <element name="configured" type="tns:string10" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString12">
+    <sequence>
+      <element name="existing" type="tns:string12" minOccurs="0"/>
+      <element name="configured" type="tns:string12" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString15">
+    <sequence>
+      <element name="existing" type="tns:string15" minOccurs="0"/>
+      <element name="configured" type="tns:string15" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString16">
+    <sequence>
+      <element name="existing" type="tns:string16" minOccurs="0"/>
+      <element name="configured" type="tns:string16" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString20">
+    <sequence>
+      <element name="existing" type="tns:string20" minOccurs="0"/>
+      <element name="configured" type="tns:string20" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString30">
+    <sequence>
+      <element name="existing" type="tns:string30" minOccurs="0"/>
+      <element name="configured" type="tns:string30" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString35">
+    <sequence>
+      <element name="existing" type="tns:string35" minOccurs="0"/>
+      <element name="configured" type="tns:string35" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString40">
+    <sequence>
+      <element name="existing" type="tns:string40" minOccurs="0"/>
+      <element name="configured" type="tns:string40" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString50">
+    <sequence>
+      <element name="existing" type="tns:string50" minOccurs="0"/>
+      <element name="configured" type="tns:string50" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString58">
+    <sequence>
+      <element name="existing" type="tns:string58" minOccurs="0"/>
+      <element name="configured" type="tns:string58" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString60">
+    <sequence>
+      <element name="existing" type="tns:string60" minOccurs="0"/>
+      <element name="configured" type="tns:string60" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString64">
+    <sequence>
+      <element name="existing" type="tns:string64" minOccurs="0"/>
+      <element name="configured" type="tns:string64" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString99">
+    <sequence>
+      <element name="existing" type="tns:string99" minOccurs="0"/>
+      <element name="configured" type="tns:string99" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString100">
+    <sequence>
+      <element name="existing" type="tns:string100" minOccurs="0"/>
+      <element name="configured" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfDescriptionString100">
+    <complexContent>
+      <extension base="tns:ExistConfString100">
+        <group ref="tns:ExistConfDescription"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="RemovableExistConfDescriptionString100">
+    <complexContent>
+      <extension base="tns:ExistConfString100">
+        <group ref="tns:ExistConfDescription"/>
+        <attribute name="action" type="tns:action"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfString120">
+    <sequence>
+      <element name="existing" type="tns:string120" minOccurs="0"/>
+      <element name="configured" type="tns:string120" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString160">
+    <sequence>
+      <element name="existing" type="tns:string160" minOccurs="0"/>
+      <element name="configured" type="tns:string160" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString180">
+    <sequence>
+      <element name="existing" type="tns:string180" minOccurs="0"/>
+      <element name="configured" type="tns:string180" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString360">
+    <sequence>
+      <element name="existing" type="tns:string360" minOccurs="0"/>
+      <element name="configured" type="tns:string360" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString1000">
+    <sequence>
+      <element name="existing" type="tns:string1000" minOccurs="0"/>
+      <element name="configured" type="tns:string1000" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfString1024">
+    <sequence>
+      <element name="existing" type="tns:string1024" minOccurs="0"/>
+      <element name="configured" type="tns:string1024" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfAddress">
+    <sequence>
+      <element name="existing" type="tns:address" minOccurs="0"/>
+      <element name="configured" type="tns:address" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="address">
+    <sequence>
+      <element name="city" type="tns:string40" minOccurs="0"/>
+      <element name="citySuffix" type="tns:string30" minOccurs="0"/>
+      <element name="postalCode" type="tns:string10" minOccurs="0"/>
+      <element name="street" type="tns:string40" minOccurs="0"/>
+      <element name="streetNumber" type="tns:string10" minOccurs="0"/>
+      <element name="streetNumberSuffix" type="tns:string10" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+TODO
+OPM can only handle 4 characters. Need to check whether CCB will send more than 4 chars.
+If not: change XSD and reduce DB column.
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="postOfficeBox" type="tns:string10" minOccurs="0"/>
+      <element name="additionalAddressDescription" type="tns:string35" minOccurs="0"/>
+      <element name="secondAdditionalAddressDescription" type="tns:string35" minOccurs="0"/>
+      <element name="country" type="tns:string2" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Two letter country code
+Values: e.g. 'DE' for Germany
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="invalidAddressIndicator" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: indicates if the address is invalid. If false or not existing the address is valid.
+Since: IT-27144 (1.37)
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="addressChangeReason" type="tns:string16" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: the reason for an address change, e.g. "Return to sender" if a letter has been returned to Vodafone 
+   because of an invalid receiver address
+Since: IT-27144 (1.37)
+Values: "Return to sender"
+Filled by: KBA
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="countryName" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+INTERNAL USE ONLY !!!
+Patch for Outputmanagement only; this element will not be persisted
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfAccessNumber">
+    <sequence>
+      <element name="existing" type="tns:accessNumber" minOccurs="0"/>
+      <element name="configured" type="tns:accessNumber" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="RemovableExistConfAccessNumber">
+    <sequence>
+      <element name="existing" type="tns:accessNumber" minOccurs="0"/>
+      <element name="configured" type="tns:accessNumber" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="accessNumber">
+    <sequence>
+      <element name="countryCode" type="tns:string4"/>
+      <element name="localAreaCode" type="tns:string5"/>
+      <element name="pilotNumber" type="tns:string15" minOccurs="0"/>
+      <element name="startRange" type="tns:string30" minOccurs="0"/>
+      <element name="endRange" type="tns:string30" minOccurs="0"/>
+      <element name="centralExtention" type="tns:string16" minOccurs="0"/>
+      <element name="releasingPortingIdentifier" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Maps to 'PKIabg' from WBCI. The Id of a carrier owning a line.
+Since: IT-31530 (1.47 / BSS 12)
+Filled by: Frontend
+Used by: OPM
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfServiceLocation">
+    <sequence>
+      <element name="existing" type="tns:serviceLocation" minOccurs="0"/>
+      <element name="configured" type="tns:serviceLocation" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="serviceLocation">
+    <sequence>
+      <element name="jackLocation" type="tns:string100" minOccurs="0"/>
+      <element name="floor" type="tns:string100" minOccurs="0"/>
+      <element name="room" type="tns:string100" minOccurs="0"/>
+      <element name="desk" type="tns:string100" minOccurs="0"/>
+      <element name="additionalInformation" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="conditionsList_Type">
+    <annotation>
+      <documentation><![CDATA[
+Definition of element conditionsList which is used in various function-configs.
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:simple_conditionsList_Type" minOccurs="0"/>
+          <element name="configured" type="tns:simple_conditionsList_Type" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="simple_conditionsList_Type">
+    <sequence>
+      <element name="conditionService" type="tns:simple_conditionServiceItem_Type" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="simple_conditionServiceItem_Type">
+    <sequence>
+      <element name="conditionServiceType" type="tns:string2" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: the type of the condition
+Values:
+ CO = Condition One time
+ CM = Condition Monthly
+ SB = Special Bonus
+ HW = HardWare related condition
+ DL = DeLight
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="conditionServiceName" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: In case of a delight it contains the delightDescription
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="conditionServiceID" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: In case of a delight it contains the delightCode
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="conditionServiceCode" type="tns:string5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+only needed for type SB Special Bonus      
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="conditionServiceStartDate" type="date" minOccurs="0"/>
+      <element name="conditionServiceSpecialBonusCode" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Characteristic of special bonus service V004A
+Since: PN-2680 (1.36)
+Values: 
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="conditionServiceEndDate" type="date" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: In case of ServiceType DL and ServiceCode V0213, specifies end of delight
+Since: IT-27143 (1.37)
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="conditionServiceEndEvent" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Indicates on what event the service will be cancelled.
+Filled by: Frontend
+Since: IT-32220 (1.45, BSS10)
+]]></documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="portingFinished"></enumeration>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="conditionPricingInfo" type="tns:PricingInfo" minOccurs="0" maxOccurs="2"/>
+    </sequence>
+  </complexType>
+  <complexType name="existConf_tariffOptionsList">
+    <annotation>
+      <documentation><![CDATA[
+Definition of element tariffOptionsList which is used in various function-configs.
+Examples: V0229=DSL flat special, V0295=Flatrate to VFD2, V0300=InternationalFlat1
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:tariffOptionsList" minOccurs="0"/>
+          <element name="configured" type="tns:tariffOptionsList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="tariffOptionsList">
+    <sequence>
+      <element name="tariffOption" type="tns:tariffOption" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="tariffOption">
+    <sequence>
+      <element name="serviceCode" type="tns:string5" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Examples: V0229=DSL flat special, V0295=Flatrate to VFD2, V0300=InternationalFlat1
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="serviceBillingName" type="tns:string100" minOccurs="0"/>
+      <element name="minimumDurationPeriod" type="tns:ElementMinimumDurationPeriod" minOccurs="0"/>
+      <element name="terminationDate" type="date" minOccurs="0"/>
+      <element name="osfSalesBundleId" type="tns:string32" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This element is a reference to the sales bundle as ordered by OSF.  To allow for displaying without changing the fixed net product structure it is stored in CCB as a characteristic of a tariff option. 
+Value: external id to the OSF bundle
+Filled by: OSF
+Used by: FIF
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="pricingInfo" type="tns:PricingInfo" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ElementMinimumDurationPeriod">
+    <sequence>
+      <element name="value" type="tns:NonNegativeInteger4" minOccurs="0"/>
+      <element name="unit" type="tns:string16" minOccurs="0"/>
+      <element name="startDate" type="date" minOccurs="0"/>
+      <element name="endDate" type="date" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="chargesAndCreditsList_Type">
+    <annotation>
+      <documentation><![CDATA[
+Definition of element chargesAndCredits which is used in various function-configs.
+Examples: I1211=New IAD-PIN, V0274=PacketChange, V8041=Hardware credit, V0274=PacketChange, V0097=Startguthaben
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:simple_featureServiceCodeList_Type" minOccurs="0"/>
+          <element name="configured" type="tns:simple_featureServiceCodeList_Type" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="featuresList_ExistingConfiguredType">
+    <annotation>
+      <documentation><![CDATA[
+Definition of element featuresList which is used in various function-configs.
+Examples: V0070=serviceLevel classicPlus, V0254=Sperre0137
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:simple_featureServiceCodeList_Type" minOccurs="0"/>
+          <element name="configured" type="tns:simple_featureServiceCodeList_Type" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="simple_featureServiceCodeList_Type">
+    <sequence>
+      <element name="featureServiceCode" type="tns:string5" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation><![CDATA[
+Example: V0070=serviceLevel classicPlus
+]]></documentation>
+        </annotation>
+      </element>
+      <element name="featureService" type="tns:FeatureService" minOccurs="0" maxOccurs="unbounded">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: used for feature services that are not just activated by adding a service code here, but that are specified
+   in more detail using the key value pairs of the additional info list of a FeatureService.
+Since: IT-28900 (1.41)
+]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="FeatureService">
+    <sequence>
+      <element name="featureServiceCode" type="tns:string5">
+      </element>
+      <element name="additionalInfo" type="tns:FeatureServiceAdditionalInfo" minOccurs="0" maxOccurs="unbounded">
+      </element>
+      <element name="pricingInfo" type="tns:PricingInfo" minOccurs="0" maxOccurs="2"/>
+    </sequence>
+  </complexType>
+  <complexType name="FeatureServiceAdditionalInfo">
+    <sequence>
+      <element name="key" type="tns:string100"/>
+      <element name="value" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="BlockingList">
+    <annotation>
+      <documentation><![CDATA[
+List of PSM service codes representing call blockings, e.g. V0323, V0324, V0325.
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:simple_featureServiceCodeList_Type" minOccurs="0"/>
+          <element name="configured" type="tns:simple_featureServiceCodeList_Type" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PhoneNumbersList">
+    <sequence>
+      <element name="phoneNumber" type="tns:accessNumber" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfPhoneNumbersList">
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:PhoneNumbersList" minOccurs="0"/>
+          <element name="configured" type="tns:PhoneNumbersList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PlainPhoneNumbersList">
+    <sequence>
+      <element name="plainPhoneNumber" type="tns:string20" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfPlainPhoneNumbersList">
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:PlainPhoneNumbersList" minOccurs="0"/>
+          <element name="configured" type="tns:PlainPhoneNumbersList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfMailboxAliasList">
+    <annotation>
+      <documentation><![CDATA[
+SIP
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:MailboxAliasList" minOccurs="0"/>
+          <element name="configured" type="tns:MailboxAliasList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MailboxAliasList">
+    <annotation>
+      <documentation><![CDATA[
+SIP
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="mailboxAlias" type="tns:string100" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfDesiredCountriesList">
+    <annotation>
+      <documentation><![CDATA[
+Examples: V2149=Cuba, V2225=Mayotte, V2233=Mosambik
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:DesiredCountriesList" minOccurs="0"/>
+          <element name="configured" type="tns:DesiredCountriesList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="DesiredCountriesList">
+    <sequence>
+      <element name="desiredCountryServiceCode" type="tns:string5" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="providerTrackingNumber">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: A subdividing kind of order id, at function granularity.
+Filled By: Frontend, COM
+Used by: OMTS, OPM
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:string100" minOccurs="0"/>
+      <element name="configured" type="tns:string100" minOccurs="0"/>
+    </sequence>
+    <attribute name="type" type="tns:string16">
+      <annotation>
+        <documentation><![CDATA[
+Values: new, change, default, target
+]]></documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <simpleType name="TVCenterOptionType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: contains the tariffOptionType that specific tariffOption belongs to.
+         That information is only known to EPOS+ and POS and is only used for new line creation.
+Since: IT-k-28523 (change to IT-27700 TV Center Phase 1b)
+Values:
+  THEMBUNDLE
+  THEMBUNDLEHD
+  PREMIUMTV
+  SVOD
+Filled By: EPOS+(SIDCOM)
+Used by: POS 
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="THEMBUNDLE"/>
+      <enumeration value="THEMBUNDLEHD"/>
+      <enumeration value="PREMIUMTV"/>
+      <enumeration value="SVOD"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="changeType">
+    <restriction base="string">
+      <enumeration value="ADD"/>
+      <enumeration value="CHANGE"/>
+      <enumeration value="TERM"/>
+      <enumeration value="IGNORE"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="changeStatus">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: It is necessary to mark every object in the customer data section with a status,
+    which can be used to detect, whether the object has been persisted by CCB already.
+Since: IT-29977 (1.42)
+Values:
+  completedCCM
+Filled By: CCB
+Used by: CCB, COM
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="completedCCM"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="ONEGroupId">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: 12-digit number with leading zeros. For newly-created ONE IP-Centrex groups,
+    ONEGroupId = CCM skeleton-contract-number, to which the ONE IP-Centrex voice contract and
+    the access internet contract;
+    MAY BE DEPRECATED, use element customerData/oneGroup; remaining element is in productBundle
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[0-9]{12}"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="ProductBundleType">
+    <annotation>
+      <documentation>CCM bundle type rd: 16-digit string.</documentation>
+    </annotation>
+    <restriction base="string">
+      <maxLength value="16"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="UserAccountId">
+    <annotation>
+      <documentation>CCM UserAccountId</documentation>
+    </annotation>
+    <restriction base="tns:string100"/>
+  </simpleType>
+  <simpleType name="stringId">
+    <restriction base="string">
+      <maxLength value="18"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string1">
+    <restriction base="string">
+      <maxLength value="1"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string2">
+    <restriction base="string">
+      <maxLength value="2"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string3">
+    <restriction base="string">
+      <maxLength value="3"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string4">
+    <restriction base="string">
+      <maxLength value="4"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string5">
+    <restriction base="string">
+      <maxLength value="5"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string7">
+    <restriction base="string">
+      <maxLength value="7"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string9">
+    <restriction base="string">
+      <maxLength value="9"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string10">
+    <restriction base="string">
+      <maxLength value="10"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string12">
+    <restriction base="string">
+      <maxLength value="12"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string13">
+    <restriction base="string">
+      <maxLength value="13"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string16">
+    <restriction base="string">
+      <maxLength value="16"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string15">
+    <restriction base="string">
+      <maxLength value="15"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string20">
+    <restriction base="string">
+      <maxLength value="20"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string30">
+    <restriction base="string">
+      <maxLength value="30"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string32">
+    <restriction base="string">
+      <maxLength value="32"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string35">
+    <restriction base="string">
+      <maxLength value="35"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string40">
+    <restriction base="string">
+      <maxLength value="40"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string50">
+    <restriction base="string">
+      <maxLength value="50"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string58">
+    <restriction base="string">
+      <maxLength value="58"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string60">
+    <restriction base="string">
+      <maxLength value="60"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string64">
+    <restriction base="string">
+      <maxLength value="64"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string99">
+    <restriction base="string">
+      <maxLength value="99"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string100">
+    <restriction base="string">
+      <maxLength value="100"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string120">
+    <restriction base="string">
+      <maxLength value="120"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string160">
+    <restriction base="string">
+      <maxLength value="160"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string180">
+    <restriction base="string">
+      <maxLength value="180"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string360">
+    <restriction base="string">
+      <maxLength value="360"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string1000">
+    <restriction base="string">
+      <maxLength value="1000"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="string1024">
+    <restriction base="string">
+      <maxLength value="1024"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="ID">
+    <annotation>
+      <documentation><![CDATA[
+xsd:ID is based on 'xsd:NCName — Unqualified names'
+]]></documentation>
+    </annotation>
+    <restriction base="ID">
+      <maxLength value="18"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="orderPositionNumber">
+    <restriction base="int">
+      <maxInclusive value="9999"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="processingType">
+    <annotation>
+      <documentation><![CDATA[
+Allowed values:
+ ADD   : Function was not in bundle before this order, but is added as a result of this order
+ CHANGE: Function was in bundle before this order, and is not removed but changed as a result of this order
+ TERM  : Function was in bundle before this order, and is removed as a result of this order
+ IGNORE: Function was in bundle before this order, and is neither removed nor changed as a result of this order
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="ADD"/>
+      <enumeration value="CHANGE"/>
+      <enumeration value="IGNORE"/>
+      <enumeration value="TERM"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="action">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: In case a list of entries of a list shall be removed, an indicator is required here
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="remove"/>
+    </restriction>
+  </simpleType>
+  <complexType name="AbstractListAction" abstract="true">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Optional indicator for lists that marks ALL values to be removed 
+Since: IT-27143 (1.36)
+]]></documentation>
+    </annotation>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="pinChange">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Controls pin changes in OPM. 
+Since: IT-27693
+Filled by: KBA ("lineChange")
+Used by: OPM
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="pinChangeType" type="tns:ExistConfPinChangeType">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Controls pin changes in OPM.
+  This element is mandatory within <pinChange>. If no changes are wanted just omit the entire <pinChange> or set <pinChangeType> to "None"
+  Attention: BKS returns that field as existing defaulted to "None" !!!
+Since: IT-27626
+Values: "None", "Add", "Replace"
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+Remarks: It makes no sense for KBA to set the pin value directly, because that will be set (or overwritten) by OPM. KBA can only indicate that a change is requested.
+      ]]></documentation>
+        </annotation>
+      </element>
+      <element name="sendAdditionalSMS" type="tns:ExistConfBoolean" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: Controls whether the new pin should be send to the customer via sms.
+  This field is mandatory when pinChangeType is set to "ADD"
+Since: IT-27626
+Values: "true", "false"
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+      ]]></documentation>
+        </annotation>
+      </element>
+      <element name="msisdn" type="tns:ExistConfAccessNumber" minOccurs="0">
+        <annotation>
+          <documentation><![CDATA[
+Purpose: This field holds the mobile-access number to which to send the SMS.
+  If sendAdditionalSMS is set to "false" this element is ignored and can be omitted.
+Since: IT-27626
+Values: a valid mobile access number
+Filled by: KBA ("lineChange" orders only use the "configured" value)
+Used by: OPM
+      ]]></documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfPinChangeType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Indicates pin change requests. 
+Since: IT-28170 (3.2)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ExistConfBasicChangeType"/>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfBasicChangeType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Indicates change requests. 
+Since: IT-28251 (3.2)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:BasicChangeType" minOccurs="0"/>
+      <element name="configured" type="tns:BasicChangeType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <simpleType name="BasicChangeType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: "Add" if an initial request is placed, "Replace" if a value exists and should be replaced 
+Since: IT-28251 (3.2)
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="None"/>
+      <enumeration value="Add"/>
+      <enumeration value="Replace"/>
+    </restriction>
+  </simpleType>
+  <complexType name="ExistConfSimpleChangeType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Indicates change requests. 
+Since: IT-28251 (3.2)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:SimpleChangeType" minOccurs="0"/>
+      <element name="configured" type="tns:SimpleChangeType" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <simpleType name="SimpleChangeType">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: "Replace" if a value exists and should be modified, "None" if no modification is requested.
+Since: IT-28251 (3.2)
+]]></documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="None"/>
+      <enumeration value="Replace"/>
+    </restriction>
+  </simpleType>
+  <complexType name="ContactRoleRefIdList">
+    <sequence>
+      <element name="contactRoleRef" type="tns:ExistConfRefIdWithListAction" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfRefIdWithListAction">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: This is a node ref ID to contact role nodes, that currently exists in the SOM
+Since: IT-29578 (1.38)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:stringId" minOccurs="0"/>
+          <element name="configured" type="tns:stringId" minOccurs="0"/>
+          <element name="changeStatus" type="tns:changeStatus" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: see type definition
+Since: IT-29977 (1.42)
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="KeyValuePair">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: General entries
+Since: IT-28575 (1.39)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="key" type="tns:string100" minOccurs="0"/>
+      <element name="value" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <group name="ExistConfDescription">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Can be added to ExistConfStringXXX if a descriptional field is required as well
+Since: IT-29627 (1.39)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existingDescription" type="tns:string100" minOccurs="0"/>
+      <element name="configuredDescription" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </group>
+  <complexType name="ExistConfTVCenterOptionsList">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: 
+Since: IT-29445 (1.40)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:TVCenterOptionsList" minOccurs="0"/>
+          <element name="configured" type="tns:TVCenterOptionsList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TVCenterOptionsList">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: The tvCenterOptionList holds the TV packages (Abos), which can be viewed with the tvCenter function.
+Filled by: Frontends
+Used by: FIF, OPM
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="tvCenterOption" type="tns:TVCenterOption" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="TVCenterOption">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: 
+Since: IT-29445 (1.40)
+]]></documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:tariffOption">
+        <sequence>
+          <element name="tvCenterOptionType" type="tns:TVCenterOptionType" minOccurs="0"/>
+          <element name="changeReason" type="tns:string20" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: Currently the following values are known: customer, technical. "customer" means the customer explicitely added 
+   (if it appears in configured node) or removed (if it appears in existing node) a TV Abo, "technical" means an Abo 
+   was added or removed due to technical reasons. That field is used by VTS to determine if it influences provisioning.
+Since: IT-28170 (3.2)
+Filled by: frontend
+Used by: VTS
+]]></documentation>
+            </annotation>
+          </element>
+          <element name="hotSubscriptionIndicator" type="boolean" minOccurs="0">
+            <annotation>
+              <documentation><![CDATA[
+Purpose: 
+Since: IT-29445 (1.40)
+Filled by: ePOS
+Used by: 
+]]></documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <simpleType name="NonNegativeInteger4">
+    <restriction base="nonNegativeInteger">
+      <maxExclusive value="10000"/>
+    </restriction>
+  </simpleType>
+
+  <complexType name="ServiceLevelAdditionalInfo">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: ?
+Since: IT-32434 (1.45)
+Filled by: Frontend, BKS
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="key" type="tns:string100"/>
+      <element name="value" type="tns:string100" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="ServiceLevel">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Agreement between customer and Vodafone, regarding QoS of the respective function.
+Since: IT-32434 (1.45)
+Filled by: Frontend, BKS
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="serviceCode" type="tns:string5"/>
+      <element name="serviceName" type="tns:string100" minOccurs="0"/>
+      <element name="additionalInfo" type="tns:ServiceLevelAdditionalInfo" maxOccurs="unbounded" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="Service">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Indicates the information required for DSL & KPI transparency regulations, e.g. explicit contractual information about maximum data volume.
+Since: PPM 207533 (BSS23)
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="serviceCode" type="tns:string5"/>
+      <element name="serviceBillingName" type="tns:string100" minOccurs="0"/>
+      <element name="pricingInfo" type="tns:PricingInfo" minOccurs="0" maxOccurs="2"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="RemovableExistConfServiceLevelList">
+    <complexContent>
+      <extension base="tns:AbstractListAction">
+        <sequence>
+          <element name="existing" type="tns:ServiceLevelList" minOccurs="0"/>
+          <element name="configured" type="tns:ServiceLevelList" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="ServiceLevelList">
+    <sequence>
+      <element name="serviceLevel" type="tns:ServiceLevel" minOccurs="0" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="RemovableExistConfServiceLevel">
+    <annotation>
+      <documentation><![CDATA[
+Documentation see type ServiceLevel
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:ServiceLevel" minOccurs="0"/>
+      <element name="configured" type="tns:ServiceLevel" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+
+  <complexType name="RemovableExistConfService">
+    <annotation>
+      <documentation><![CDATA[
+See type Service
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:Service" minOccurs="0"/>
+      <element name="configured" type="tns:Service" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+
+  <complexType name="RemovableExistConfString100">
+    <complexContent>
+      <extension base="tns:ExistConfString100">
+        <attribute name="action" type="tns:action"/>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="RemovableExistConfAddress">
+    <complexContent>
+      <extension base="tns:ExistConfAddress">
+        <attribute name="action" type="tns:action"/>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <simpleType name="actionEnum">
+    <restriction base="string">
+      <enumeration value="ACTIVATE"/>
+      <enumeration value="DEACTIVATE"/>
+    </restriction>
+  </simpleType>
+  <complexType name="ProcessingHintList">
+    <sequence>
+      <element name="hint" type="tns:KeyValuePair" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="KiasReference">
+    <annotation>
+      <documentation>The BAN or mobile phone number is needed in order to find the customer in KIAS when e.g. a clearing has to be created.</documentation>
+    </annotation>
+    <sequence>
+      <element name="billingAccountNumber" type="tns:ExistConfString35" minOccurs="0">
+        <annotation>
+          <documentation>The BAN.</documentation>
+        </annotation>
+      </element>
+      <element name="mobilePhoneNumber" type="tns:ExistConfAccessNumber" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ExistConfPricingInfo">
+    <annotation>
+      <documentation><![CDATA[
+See type PricingInfo
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="existing" type="tns:PricingInfo" minOccurs="0"/>
+      <element name="configured" type="tns:PricingInfo" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="PricingInfo">
+    <annotation>
+      <documentation><![CDATA[
+Purpose: Price information for a specific SOM element. The prices are used by OM for the generation of letters.
+Values: Since: PPM-207533-250699 (BSS23)
+Filled by: COM via KBA service enrichBySomWithPrigingInfo
+Used by: Output Management
+]]></documentation>
+    </annotation>
+    <sequence>
+      <element name="displayLabel" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation>Name for the priced item on the letter</documentation>
+        </annotation>
+      </element>
+      <element name="netCharge" type="decimal" minOccurs="0"/>
+      <element name="grossCharge" type="decimal" minOccurs="0"/>
+      <element name="tax" type="decimal" minOccurs="0"/>
+      <element name="chargeType" type="tns:string20" minOccurs="0">
+        <annotation>
+          <documentation>Defines the type of charge.eg: oneTimeCharge, recurringCharge, limited</documentation>
+        </annotation>
+      </element>
+      <element name="irrelevantForDisplay" type="boolean" minOccurs="0">
+        <annotation>
+          <documentation>If true, the price should not be displayed on the letter</documentation>
+        </annotation>
+      </element>
+      <element name="displayContext" type="tns:string100" minOccurs="0">
+        <annotation>
+          <documentation>Indicates where the price should be shown. Some services are related to a function, even though the price
+            belongs to the bundle. Currently only the value “Bundle” is allowed. A missing element signifies the given context of the PricingInfo element should be used.
+          </documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="PricableExistConfString40">
+    <sequence>
+      <element name="existing" type="tns:string40" minOccurs="0"/>
+      <element name="configured" type="tns:string40" minOccurs="0"/>
+      <element name="existingPrice" type="tns:PricingInfo" minOccurs="0"/>
+      <element name="configuredPrice" type="tns:PricingInfo" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="PricableExistConfString100">
+    <sequence>
+      <element name="existing" type="tns:string100" minOccurs="0"/>
+      <element name="configured" type="tns:string100" minOccurs="0"/>
+      <element name="existingPrice" type="tns:PricingInfo" minOccurs="0"/>
+      <element name="configuredPrice" type="tns:PricingInfo" minOccurs="0"/>
+    </sequence>
+    <attribute name="action" type="tns:action"/>
+  </complexType>
+  <complexType name="PricableRemovableExistConfDescriptionString100">
+    <complexContent>
+      <extension base="tns:RemovableExistConfDescriptionString100">
+        <sequence>
+          <element name="existingPrice" type="tns:PricingInfo" minOccurs="0"/>
+          <element name="configuredPrice" type="tns:PricingInfo" minOccurs="0"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PricableExistConfString5">
+    <sequence>
+      <element name="existing" type="tns:string5" minOccurs="0"/>
+      <element name="configured" type="tns:string5" minOccurs="0"/>
+      <element name="existingPrice" type="tns:PricingInfo" minOccurs="0"/>
+      <element name="configuredPrice" type="tns:PricingInfo" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="RemovableExistConfNonNegativeInteger">
+    <complexContent>
+      <extension base="tns:ExistConfNonNegativeInteger4">
+        <attribute name="action" type="tns:action"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ExistConfFeatureService">
+    <sequence>
+      <element name="existing" type="tns:FeatureService" minOccurs="0"/>
+      <element name="configured" type="tns:FeatureService" minOccurs="0"/>
+    </sequence>
+  </complexType>
+</schema>

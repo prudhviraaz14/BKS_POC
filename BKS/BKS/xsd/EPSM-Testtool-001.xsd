@@ -1,0 +1,42 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:test="http://www.arcor.net/EPSM-Testtool-001"
+  xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:am="http://www.arcor.net/auftragsmodell-001"
+  targetNamespace="http://www.arcor.net/EPSM-Testtool-001" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0" attributeFormDefault="unqualified">
+
+  <xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd" />
+  <xs:import namespace="http://www.arcor.net/auftragsmodell-001" schemaLocation="auftragsmodell-001.xsd" />
+
+  <xs:element name="echoService" type="test:EchoService"></xs:element>
+
+  <xs:complexType name="EchoService">
+    <xs:complexContent>
+      <xs:extension base="base:ProviderService">
+        <xs:choice>
+          <xs:element name="echoInput" type="test:EchoInput" />
+          <xs:element name="echoOutput" type="test:EchoOutput" />
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EchoInput">
+    <xs:complexContent>
+      <xs:extension base="base:InputData">
+        <xs:sequence>
+          <xs:element ref="am:auftragsmodell" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EchoOutput">
+    <xs:complexContent>
+      <xs:extension base="base:OutputData">
+        <xs:sequence>
+          <xs:element ref="am:auftragsmodell" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

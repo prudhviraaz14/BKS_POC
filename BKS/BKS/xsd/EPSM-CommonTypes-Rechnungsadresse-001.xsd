@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:ape="http://www.arcor.net/EPSM-CommonTypes-APE-001" xmlns:adresse="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" xmlns:rechnungsadresse="http://www.arcor.net/EPSM-CommonTypes-Rechnungsadresse-001" targetNamespace="http://www.arcor.net/EPSM-CommonTypes-Rechnungsadresse-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-Adresse-002" schemaLocation="EPSM-CommonTypes-Adresse-002.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-APE-001" schemaLocation="EPSM-CommonTypes-APE-001.xsd"/>
+	<xs:element name="EPSM_Rechnungsadresse_Dokument_Information">
+		<xs:annotation>
+			<xs:documentation>Diese Schemata wurde aus dem Adonis-XML-Export generiert. Timestamp des Adonis-Exports: 19.10.2007  13:37</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="Anrede">
+		<xs:annotation>
+			<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07)] Anrede 
+</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Name">
+		<xs:annotation>
+			<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07)] Nachname des Rechnungs-Empfängers</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Vorname">
+		<xs:annotation>
+			<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07)]  Vorname des Rechnungs-Empfängers</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Firmenname">
+		<xs:annotation>
+			<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07) ORGANISATION.FIRMENNAME1]
+[Befüllung durch BOI  (Ver. 29.5.07) SELBSTSTAENDIGER.FIRMENNAME]
+Vollständiger Firmenname z.B. Clariant AG</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Name2">
+		<xs:annotation>
+			<xs:documentation>[Befüllung durch BOI  (Ver. 29.5.07)] Nachname des Rechnungs-Empfängers</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Rechnungsadresse">
+		<xs:annotation>
+			<xs:documentation>Rechnungsanschrift des Kunden</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="adresse:Adresse">
+				<xs:sequence>
+					<xs:element name="anrede" type="rechnungsadresse:Anrede" minOccurs="0"/>
+					<xs:element name="name" type="rechnungsadresse:Name" minOccurs="0"/>
+					<xs:element name="vorname" type="rechnungsadresse:Vorname" minOccurs="0"/>
+					<xs:element name="firmenname" type="rechnungsadresse:Firmenname" minOccurs="0"/>
+					<xs:element name="name2" type="rechnungsadresse:Name2" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="BaseMessages"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:cbase="http://www.vodafone.de/ESB/Schema/Common/BaseTypes-ESB-001"
+    targetNamespace="http://www.vodafone.de/ESB/Service/Base/BaseAbstract-001.wsdl">
+    
+    <wsdl:types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://www.vodafone.de/ESB/Schema/Common/BaseTypes-ESB-001"
+                    schemaLocation="BaseTypes-ESB-001.xsd" />
+        </schema>
+    </wsdl:types>
+
+    <wsdl:message name="appMonDetailsHeader">
+        <wsdl:part element="cbase:appMonDetails" name="AppMonDetails"/>
+    </wsdl:message>
+    <wsdl:message name="controllObject">
+        <wsdl:part element="cbase:controllObject" name="ControllObject"/>
+    </wsdl:message>
+    
+    <wsdl:message name="functionalESBException">
+        <wsdl:part element="cbase:functionalESBException" name="FunctionalESBException"/>
+    </wsdl:message>
+    <wsdl:message name="technicalESBException">
+        <wsdl:part element="cbase:technicalESBException" name="TechnicalESBException"/>
+    </wsdl:message>
+
+</wsdl:definitions>

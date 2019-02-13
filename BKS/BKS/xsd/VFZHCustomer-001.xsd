@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<xs:schema xmlns="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomer-001" xmlns:this="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomer-001" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pt="http://www.vodafone.de/ESB/Schema/Common/PrimitiveBaseTypes-ESB-001" xmlns:comeai="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-EAI-001" xmlns:vfc="http://www.vodafone.de/ESB/Service/EAI/Customer/Customer/VFZHCustomer/VFZHCustomerCommonTypes-001" targetNamespace="http://www.vodafone.de/ESB/Service/EAI/Customer/VFZHCustomer/VFZHCustomer-001" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:annotation>
+		<xs:documentation>
+			Version		Date		Author			Comment
+			-------		---------		---------			----------------------------------------------------------------------------------------------------------
+			1.0		2013-10-28		Andre Genser	Initial version
+			</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.vodafone.de/ESB/Service/EAI/Customer/Customer/VFZHCustomer/VFZHCustomerCommonTypes-001" schemaLocation="VFZHCustomerCommonTypes-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/CommonTypes-EAI-001" schemaLocation="CommonTypes-EAI-001.xsd"/>
+	<xs:import namespace="http://www.vodafone.de/ESB/Schema/Common/PrimitiveBaseTypes-ESB-001" schemaLocation="PrimitiveBaseTypes-ESB-001.xsd"/>
+	<xs:element name="SearchByFNNRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fnnList" type="vfc:FnnListType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SearchByFNNResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fnnDetailedInfo" type="vfc:FnnDetailedInfoType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

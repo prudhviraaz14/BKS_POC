@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mit XMLSpy v2007 sp2 (http://www.altova.com) von Reto Renner (Arcor AG & Co. KG) bearbeitet -->
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Reto Renner (Arcor AG & Co. KG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.arcor.net/ccm/EPSM-CCM-PrefetchVertriebspaketDetails-001" xmlns:common="http://www.arcor.net/EPSM-CommonTypes-001" xmlns:base="http://www.arcor.net/EPSM-BaseTypes-001" targetNamespace="http://www.arcor.net/ccm/EPSM-CCM-PrefetchVertriebspaketDetails-001" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.arcor.net/EPSM-BaseTypes-001" schemaLocation="EPSM-BaseTypes-001.xsd"/>
+	<xs:import namespace="http://www.arcor.net/EPSM-CommonTypes-001" schemaLocation="EPSM-CommonTypes-001.xsd"/>
+	<!-- ================Dokumentation des Endpunktes Änderungshistorie ================== -->
+	<xs:element name="EPSM_CCM_PrefetchVertriebspaketDetails_Endpunkt_Dokumentation">
+		<xs:annotation>
+			<xs:documentation>
+Aenderungshistorie:
+0.2	07.11.2008	Reto Renner		- Initiale Version + Element zugefügt
+0.3	10.11.2008	Reto Renner		- Kundennummer mandatory
+</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Bezugsdokumente">
+					<xs:annotation>
+						<xs:documentation>
+Dieses Dokument basiert auf und referenziert folgende Dokumente:
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Realisierendes_System">
+					<xs:annotation>
+						<xs:documentation>
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- ================================endpoint specific simple types================= -->
+	<!-- ================================endpoint specific complex types================= -->
+	<!-- ================================endpoint specific services=====================-->
+	<xs:complexType name="PrefetchVertriebspaketDetailsService">
+		<xs:annotation>
+			<xs:documentation>Typdefinition Dienst HoleVertriebspaketDetails</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:ProviderService">
+				<xs:sequence>
+					<xs:element name="prefetchVertriebspaketDetailsInput" type="PrefetchVertriebspaketDetailsInput">
+						<xs:annotation>
+							<xs:documentation>
+							This service retrieves the complete data for supported functions of a sales package / Vertriebspaket, if the underlying CCB-contract contains a supported PSM-product.
+                            Additionally the complete master data is retrieved.
+                            The following function types are supported:
+                            •	Sprache
+                            •	Internet
+                            •	IP-TV
+                            •	SpracheMobil
+                            •	Hardware
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PrefetchVertriebspaketDetailsInput">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="base:InputData">
+				<xs:sequence>
+					<xs:element name="kundennummer" type="common:Kundennummer"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>
