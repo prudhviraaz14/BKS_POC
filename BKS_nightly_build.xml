@@ -165,7 +165,7 @@ Initial revision.
 		*** GLOBAL COMPILE TASK ***
 		***************************-->
 	<target name="compile" description="Compiles all source files">
-		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true">
+		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true" encoding="iso-8859-1">
 			<classpath>
 				<fileset dir="${lib}">
 					<include name="**/*.jar" />
