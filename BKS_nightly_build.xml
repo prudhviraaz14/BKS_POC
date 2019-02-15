@@ -159,7 +159,7 @@ Initial revision.
 			<classpath refid="classpath" />
 		</javac>
 		-->
-		<javac srcdir="${generatedsrc}" destdir="${bin}" debug="on" fork="true" memoryInitialSize="128m" memoryMaximumSize="256m">
+		<javac srcdir="${generatedsrc}" destdir="${bin}" debug="on" memoryInitialSize="128m" memoryMaximumSize="256m">
 			<classpath refid="classpath" />
 		</javac>
 		
