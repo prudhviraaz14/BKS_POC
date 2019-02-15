@@ -1,8 +1,8 @@
 pipeline {
           agent { //here we select only docker build agents
             docker {
-                //image 'webratio/ant:latest' //container will start from this image
-		  image 'frekele/ant'
+                image 'webratio/ant:latest' //container will start from this image
+		 // image 'frekele/ant'
             }
         }  
 
