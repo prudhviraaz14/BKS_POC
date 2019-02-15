@@ -5,9 +5,8 @@ pipeline {
             docker {
                 image 'webratio/ant:latest' //container will start from this image
 		 // image 'frekele/ant'
-            }
-        }  
-
+	    }
+	
 options {
     buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
