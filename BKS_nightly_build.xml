@@ -1,16 +1,13 @@
 <!--
 	ANT Build file for the BKS project
 
-	HEADER       : $Header:   //CMI_PROJECTS/archives/projects/NightlyBuild/BKS_nightly_build.xml-arc   1.15   Jun 06 2017 11:04:50   sindhu.kundapur  $
-	REVISION     : $Revision:   1.15  $
+	HEADER       : $Header:   //CMI_PROJECTS/archives/projects/NightlyBuild/BKS_nightly_build.xml-arc   1.14   Jul 15 2016 12:00:20   subitsha.u  $
+	REVISION     : $Revision:   1.14  $
 	MODULENAME   : $Workfile:   BKS_nightly_build.xml  $
-	Last Change  : $Date:   Jun 06 2017 11:04:50  $
+	Last Change  : $Date:   Jul 15 2016 12:00:20  $
 	AUTHOR       : N.Dortmann (CETEQ)
 	DESCRIPTION  : Nightly Buildfile for Ant (BKS)
 	HISTORY      : $Log:   //CMI_PROJECTS/archives/projects/NightlyBuild/BKS_nightly_build.xml-arc  $
-
-   Rev 1.15   Jun 06 2017 11:04:50   sindhu.kundapur
-1.15 revision
 
    Rev 1.14   Jul 15 2016 12:00:20   subitsha.u
 1.14
@@ -123,7 +120,6 @@ Initial revision.
 
 	<!--compile Java source files-->
 	<target name="compile_epsm_ccm" description="Compile all Java source files">
-	    <xjc binding="${xsd}/binding-003.xjb" extension="true" schema="${xsd}/basic.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
 		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-001.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
 		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-002.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
 		<xjc binding="${xsd}/binding-002.xjb" extension="true" schema="${xsd}/BKS-003.xsd" destdir="${generatedsrc}" removeOldOutput="yes"/>
@@ -150,21 +146,9 @@ Initial revision.
 				<exclude name="**/epsm_ccm_consolidatesubscriptiondata_001/*"/>
 			</fileset>
 		</delete>
-				<javac srcdir="${generatedsrc}" destdir="${bin}" debug="on">
-			<classpath refid="classpath" />
-		</javac>
-
-		<!--
 		<javac srcdir="${generatedsrc}" destdir="${bin}" debug="on">
 			<classpath refid="classpath" />
 		</javac>
-		-->
-		<javac srcdir="${generatedsrc}" destdir="${bin}" debug="on" fork="true" memoryInitialSize="128m" memoryMaximumSize="256m">
-			<classpath refid="classpath" />
-		</javac>
-		
-		
-
 	</target>
 
 	<!-- workaround for exist classes in aawSprache.jar -->
@@ -177,12 +161,7 @@ Initial revision.
 		*** GLOBAL COMPILE TASK ***
 		***************************-->
 	<target name="compile" description="Compiles all source files">
-		
-		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true" fork="true" encoding="iso-8859-1" memoryInitialSize="128m" memoryMaximumSize="256m">
-		
-		<!--
 		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true" encoding="iso-8859-1">
-		-->
 			<classpath>
 				<fileset dir="${lib}">
 					<include name="**/*.jar" />
