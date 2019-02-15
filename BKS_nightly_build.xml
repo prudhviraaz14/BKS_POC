@@ -178,7 +178,7 @@ Initial revision.
 		***************************-->
 	<target name="compile" description="Compiles all source files">
 		
-		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true" fork="true" encoding="iso-8859-1" memoryInitialSize="512m" memoryMaximumSize="2048m">
+		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true" fork="true" encoding="iso-8859-1" memoryInitialSize="128m" memoryMaximumSize="256m">
 		
 		<!--
 		<javac srcdir="${src}" destdir="${bin}" excludes="**/httprequesthandler/*.java,**/EaiClient.java" debug="true" encoding="iso-8859-1">
