@@ -1,12 +1,10 @@
 pipeline {
 	//here we select only docker build agents
 	//agent {dockerfile true} 	  
-	
-            docker {
+	docker {
                 image 'webratio/ant:latest' //container will start from this image
 		 // image 'frekele/ant'
 	    }
-	
 options {
     buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
